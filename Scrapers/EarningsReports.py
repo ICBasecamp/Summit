@@ -202,6 +202,27 @@ async def fetch_revenue_earnings(page):
     else:
         print("Revenue vs. Earnings section not found")
         
+async def fetch_analyst_price_targets(page):
+    await page.wait_for_selector('section[data-testid="analyst-price-target-card"]')
+    html_content = await page.content()
+
+    soup = BeautifulSoup(html_content, 'html.parser')
+    price_target_section = soup.find('section', {'data-testid': 'analyst-price-target-card'})
+    
+    if price_target_section:
+        print("Found Analyst Price Targets section")
+        
+        current_price_container = price_target_section.find('div', class_='priceContainer current yf-1i34qte')
+        current_price = current_price_container.find('span', class_='price yf-1i34qte').text if current_price_container else "No current price found"
+        
+        average_price_container = price_target_section.find('div', class_='priceContainer average yf-1i34qte')
+        average_price = average_price_container.find('span', class_='price yf-1i34qte').text if average_price_container else "No average price found"
+        
+        print(f'Current Price: {current_price}')
+        print(f'Average Price: {average_price}')
+    else:
+        print("Analyst Price Targets section not found")
+        
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -215,8 +236,9 @@ async def main():
             # fetch_eps_trend(page),
             # fetch_growth_estimate(page),
             # fetch_top_analysts(page),
-            # fetch_earnings_report(page)
-            fetch_revenue_earnings(page)
+            # fetch_earnings_report(page),
+            # fetch_revenue_earnings(page)
+            fetch_analyst_price_targets(page)
         )
         
         await browser.close()
