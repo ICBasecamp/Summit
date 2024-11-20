@@ -33,6 +33,3 @@ def fetch_reddit(subreddit_name: str, stock: str):
     df = pd.DataFrame(posts)
     return df
 
-# test
-df = fetch_reddit('stocks', 'AAPL')
-print(df)
