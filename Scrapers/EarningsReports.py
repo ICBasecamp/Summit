@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 import asyncio
 
-ticker = 'AAPL'
+ticker = 'MSFT'
 url = f'https://finance.yahoo.com/quote/{ticker}/analysis/'
 
 async def fetch_earnings_estimate(page):
@@ -145,23 +145,21 @@ async def fetch_top_analysts(page):
         print("No Top Analysts table found")
         
 # async def fetch_earnings_report(page):
+#     await page.goto('https://finance.yahoo.com/quote/AAPL/analysis/')
 #     await page.wait_for_selector('div.content.yf-qdsu8q')
-#     container = await page.query_selector('div.chart.yf-qdsu8q')
-#     await container.scroll_into_view_if_needed()
     
-#     # Get the bounding boxes of the circles
-#     circles = await page.query_selector_all('div.chart.yf-qdsu8q canvas')
-#     bounding_boxes = [await circle.bounding_box() for circle in circles]
+#     # Coordinates for each circle
+#     coordinates = [
+#         {'x': 37, 'y': 2},
+#         {'x': 67, 'y': 2},
+#         {'x': 110, 'y': 2},
+#         {'x': 162, 'y': 2}
+#     ]
     
-#     for i, bounding_box in enumerate(bounding_boxes):
-#         # Calculate the coordinates to move the mouse to the right of each rectangle
-#         x = bounding_box['x'] + bounding_box['width'] - 1
-#         y = bounding_box['y'] + bounding_box['height'] / 2
-#         print(f"Moving mouse to ({x}, {y})")
-        
-#         # Move the mouse to the calculated coordinates
-#         await page.mouse.move(x, y, steps=10)
-#         await page.wait_for_timeout(500)  # Wait for the tooltip to appear
+#     for i, coord in enumerate(coordinates):
+#         # Click at the specified coordinates
+#         await page.mouse.click(coord['x'], coord['y'])
+#         await page.wait_for_timeout(1000)  # Wait for the tooltip to appear
         
 #         actual = await page.query_selector('div[title="Actual"] span.txt-positive')
 #         estimate = await page.query_selector('div[title="Estimate"] span.txt-positive')
@@ -177,6 +175,7 @@ async def fetch_top_analysts(page):
 #                 print(f"Earnings Report {i + 1}: Estimate = {estimate_value}, Actual value not found")
 #         else:
 #             print(f"Earnings Report {i + 1}: Estimate value not found")
+
 
 async def fetch_revenue_earnings(page):
     await page.wait_for_selector('section[data-testid="revenue-earnings-chart"]')
@@ -231,13 +230,12 @@ async def main():
         await page.goto(url)
         
         await asyncio.gather(
-            # fetch_earnings_estimate(page),
-            # fetch_revenue_estimate(page),
-            # fetch_eps_trend(page),
-            # fetch_growth_estimate(page),
-            # fetch_top_analysts(page),
-            # fetch_earnings_report(page),
-            # fetch_revenue_earnings(page)
+            fetch_earnings_estimate(page),
+            fetch_revenue_estimate(page),
+            fetch_eps_trend(page),
+            fetch_growth_estimate(page),
+            fetch_top_analysts(page),
+            fetch_revenue_earnings(page),
             fetch_analyst_price_targets(page)
         )
         
