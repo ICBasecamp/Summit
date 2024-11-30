@@ -59,7 +59,6 @@ async def fetch_revenue_estimate(page):
             
             # Create a DataFrame
             df = pd.DataFrame(data_rows[1:], columns=headers)
-            print(df)
             return df
     return pd.DataFrame()
 
@@ -162,11 +161,11 @@ async def fetch_revenue_earnings(page):
         quarters = revenue_earnings_section.find_all('div', class_='tick yf-58fx9d')
         quarter_names = [quarter.find('div', class_='text yf-58fx9d').text for quarter in quarters]
         
-        groups = revenue_earnings_section.find_all('g', class_=['group yf-si65b', 'group selected yf-si65b'])
+        groups = revenue_earnings_section.find_all('g', class_=['group yf-eykbat', 'group selected yf-eykbat'])
         data_rows = []
         for i, group in enumerate(groups):
-            revenue_value = group.find('rect', class_='rect-one yf-si65b')['data-value']
-            earnings_value = group.find('rect', class_='rect-two yf-si65b')['data-value']
+            revenue_value = group.find('rect', class_='rect-one yf-eykbat')['data-value']
+            earnings_value = group.find('rect', class_='rect-two yf-eykbat')['data-value']
             quarter_name = quarter_names[i] if i < len(quarter_names) else f"Quarter {i + 1}"
             data_rows.append([quarter_name, revenue_value, earnings_value])
         

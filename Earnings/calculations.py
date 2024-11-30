@@ -21,17 +21,24 @@ def calculate_revenue_growth(current_revenue, year_ago_revenue):
 def calculate_profit_margin(eps_estimate, revenue_estimate):
     return (eps_estimate / revenue_estimate) * 100
 
-def calculate_estimate_spread(high_estimate, low_estimate):
+def calculate_eps_estimate_spread(high_estimate, low_estimate):
     return high_estimate - low_estimate
 
-def calculate_revision_trend(current_estimate, estimate_30_days_ago):
-    return current_estimate - estimate_30_days_ago
+def calculate_revenue_estimate_spread(high_estimate, low_estimate):
+    return high_estimate - low_estimate
+
+def calculate_eps_trend(eps_estimate, eps_7_days_ago, eps_30_days_ago, eps_60_days_ago, eps_90_days_ago):
+    trend = {
+        'current': eps_estimate,
+        '7_days_ago': eps_estimate - eps_7_days_ago,
+        '30_days_ago': eps_estimate - eps_30_days_ago,
+        '60_days_ago': eps_estimate - eps_60_days_ago,
+        '90_days_ago': eps_estimate - eps_90_days_ago
+    }
+    return trend
 
 def calculate_pe_ratio(stock_price, eps):
     return stock_price / eps
-
-def calculate_ps_ratio(stock_price, revenue_per_share):
-    return stock_price / revenue_per_share
 
 def calculate_revenue_per_employee(total_revenue, number_of_employees):
     return total_revenue / number_of_employees
@@ -47,47 +54,40 @@ def main():
     revenue_earnings_df = dataframes['revenue_earnings_df']
     analyst_price_targets_df = dataframes['analyst_price_targets_df']
     
-    print("Columns in earnings_df:", revenue_df.columns)
-    
     # Example data (replace with actual data from DataFrame)
     current_eps = float(earnings_his.loc[earnings_his['CURRENCY IN USD'] == 'EPS Actual'].iloc[0, -1])
-    print(current_eps)
     year_ago_eps = float(earnings_his.loc[earnings_his['CURRENCY IN USD'] == 'EPS Actual'].iloc[0, -4])
-    print(year_ago_eps)
-    current_revenue = convert_to_number(revenue_df.loc[revenue_df['CURRENCY IN USD '] == 'Avg. Estimate'].iloc[0, -4])
-    print(current_revenue)
+    current_revenue = convert_to_number(revenue_earnings_df.loc[revenue_earnings_df['Quarter'] == 'Quarter 4'].iloc[0, -2])
     year_ago_revenue = convert_to_number(revenue_df.loc[revenue_df['CURRENCY IN USD '] == 'Year Ago Sales'].iloc[0, -4])
-    print(year_ago_revenue)
-    eps_estimate = 2.40
-    revenue_estimate = 105000000
-    high_estimate = 2.50
-    low_estimate = 2.20
-    current_estimate = 2.45
-    estimate_30_days_ago = 2.30
-    stock_price = 300
-    revenue_per_share = 50
-    total_revenue = 1000000000
-    number_of_employees = 10000
-    
+    eps_estimate = float(eps_trend_df.loc[eps_trend_df['CURRENCY IN USD '] == 'Current Estimate'].iloc[0, -4])
+    revenue_estimate = convert_to_number(revenue_df.loc[revenue_df['CURRENCY IN USD '] == 'Avg. Estimate'].iloc[0, -4])
+    eps_high_estimate = float(earnings_df.loc[earnings_df['CURRENCY IN USD '] == 'High Estimate'].iloc[0, -4])
+    eps_low_estimate = float(earnings_df.loc[earnings_df['CURRENCY IN USD '] == 'Low Estimate'].iloc[0, -4])
+    rev_high_estimate = convert_to_number(revenue_df.loc[revenue_df['CURRENCY IN USD '] == 'High Estimate'].iloc[0, -4])
+    rev_low_estimate = convert_to_number(revenue_df.loc[revenue_df['CURRENCY IN USD '] == 'Low Estimate'].iloc[0, -4])
+    estimate_7_days_ago = float(eps_trend_df.loc[eps_trend_df['CURRENCY IN USD '] == '7 Days Ago'].iloc[0, -4])
+    estimate_30_days_ago = float(eps_trend_df.loc[eps_trend_df['CURRENCY IN USD '] == '30 Days Ago'].iloc[0, -4])
+    estimate_60_days_ago = float(eps_trend_df.loc[eps_trend_df['CURRENCY IN USD '] == '60 Days Ago'].iloc[0, -4])
+    estimate_90_days_ago = float(eps_trend_df.loc[eps_trend_df['CURRENCY IN USD '] == '90 Days Ago'].iloc[0, -4])
+    stock_price = float(analyst_price_targets_df.loc[0, 'Current Price'])
+
     # Perform calculations
     eps_growth = calculate_eps_growth(current_eps, year_ago_eps)
     revenue_growth = calculate_revenue_growth(current_revenue, year_ago_revenue)
     profit_margin = calculate_profit_margin(eps_estimate, revenue_estimate)
-    estimate_spread = calculate_estimate_spread(high_estimate, low_estimate)
-    revision_trend = calculate_revision_trend(current_estimate, estimate_30_days_ago)
+    eps_estimate_spread = calculate_eps_estimate_spread(eps_high_estimate, eps_low_estimate)
+    revenue_estimate_spread = calculate_revenue_estimate_spread(rev_high_estimate, rev_low_estimate)
+    eps_trend = calculate_eps_trend(eps_estimate, estimate_7_days_ago, estimate_30_days_ago, estimate_60_days_ago, estimate_90_days_ago)
     pe_ratio = calculate_pe_ratio(stock_price, current_eps)
-    ps_ratio = calculate_ps_ratio(stock_price, revenue_per_share)
-    revenue_per_employee = calculate_revenue_per_employee(total_revenue, number_of_employees)
     
     # Print results
     print(f"EPS Growth: {eps_growth}%")
     print(f"Revenue Growth: {revenue_growth}%")
     print(f"Profit Margin: {profit_margin}%")
-    print(f"Estimate Spread: {estimate_spread}")
-    print(f"Revision Trend: {revision_trend}")
+    print(f"Eps Estimate Spread: {eps_estimate_spread}")
+    print(f"Revenue Estimate Spread: {revenue_estimate_spread}")
+    print(f"Revision Trend: {eps_trend}")
     print(f"P/E Ratio: {pe_ratio}")
-    print(f"P/S Ratio: {ps_ratio}")
-    print(f"Revenue per Employee: {revenue_per_employee}")
 
 if __name__ == '__main__':
     main()
