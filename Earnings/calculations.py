@@ -1,16 +1,18 @@
 from EarningsReports import dataframes
 
 def convert_to_number(value):
-    if 'B' in value:
-        return float(value.replace('B', '')) * 1e9
-    elif 'T' in value:
-        return float(value.replace('T', '')) * 1e12
-    elif 'M' in value:
-        return float(value.replace('M', '')) * 1e6
-    elif 'K' in value:
-        return float(value.replace('K', '')) * 1e3
-    else:
-        return float(value)
+    if isinstance(value, str):
+        if 'B' in value:
+            return float(value.replace('B', '')) * 1e9
+        elif 'T' in value:
+            return float(value.replace('T', '')) * 1e12
+        elif 'M' in value:
+            return float(value.replace('M', '')) * 1e6
+        elif 'K' in value:
+            return float(value.replace('K', '')) * 1e3
+        elif '%' in value:
+            return float(value.replace('%', '')) / 100
+    return float(value)
 
 def calculate_eps_growth(current_eps, year_ago_eps):
     return ((current_eps - year_ago_eps) / year_ago_eps) * 100
@@ -39,9 +41,6 @@ def calculate_eps_trend(eps_estimate, eps_7_days_ago, eps_30_days_ago, eps_60_da
 
 def calculate_pe_ratio(stock_price, eps):
     return stock_price / eps
-
-def calculate_revenue_per_employee(total_revenue, number_of_employees):
-    return total_revenue / number_of_employees
 
 def main():
     # Access the DataFrames from EarningsReports.py
@@ -79,15 +78,15 @@ def main():
     revenue_estimate_spread = calculate_revenue_estimate_spread(rev_high_estimate, rev_low_estimate)
     eps_trend = calculate_eps_trend(eps_estimate, estimate_7_days_ago, estimate_30_days_ago, estimate_60_days_ago, estimate_90_days_ago)
     pe_ratio = calculate_pe_ratio(stock_price, current_eps)
-    
-    # Print results
-    print(f"EPS Growth: {eps_growth}%")
-    print(f"Revenue Growth: {revenue_growth}%")
-    print(f"Profit Margin: {profit_margin}%")
-    print(f"Eps Estimate Spread: {eps_estimate_spread}")
-    print(f"Revenue Estimate Spread: {revenue_estimate_spread}")
-    print(f"Revision Trend: {eps_trend}")
-    print(f"P/E Ratio: {pe_ratio}")
+    return {
+        'eps_growth': eps_growth,
+        'revenue_growth': revenue_growth,
+        'profit_margin': profit_margin,
+        'eps_estimate_spread': eps_estimate_spread,
+        'revenue_estimate_spread': revenue_estimate_spread,
+        'eps_trend': eps_trend,
+        'pe_ratio': pe_ratio
+    }
 
 if __name__ == '__main__':
     main()
