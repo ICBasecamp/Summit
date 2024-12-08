@@ -1,23 +1,37 @@
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
+from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
+from sklearn.metrics import make_scorer, mean_squared_error
 from calculations import main as calculate_metrics, convert_to_number
 from EarningsReports import dataframes
+import concurrent.futures
 
-# Calculated values from calculations.py
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Load the calculated values from calculations.py
 calculated_values = calculate_metrics()
 
-# Raw data from EarningsReports.py for the RF and PCA analysis
+# Load the raw data from EarningsReports.py
 earnings_df = dataframes['earnings_df']
 revenue_df = dataframes['revenue_df']
 earnings_history_df = dataframes['earnings_history']
 eps_trend_df = dataframes['eps_trend_df']
-growth_estimate_df = dataframes['growth_estimate_df']
+
+# Drop rows with all NaN values
+earnings_history_df = earnings_history_df.dropna(how='all')
+
+# Reset indices to ensure proper stacking
+earnings_df = earnings_df.reset_index(drop=True)
+revenue_df = revenue_df.reset_index(drop=True)
+earnings_history_df = earnings_history_df.reset_index(drop=True)
+eps_trend_df = eps_trend_df.reset_index(drop=True)
 
 # Raw data that is not used in the analysis due to lack of numeric features
 top_analysts_df = dataframes['top_analysts_df']
@@ -29,15 +43,23 @@ dataframes_list = [
     (earnings_df, 'earnings_df'),
     (revenue_df, 'revenue_df'),
     (earnings_history_df, 'earnings_history_df'),
-    (eps_trend_df, 'eps_trend_df'),
-    (growth_estimate_df, 'growth_estimate_df'),
+    (eps_trend_df, 'eps_trend_df')
 ]
 
-# Combine all dataframes into one
-combined_df = pd.concat([earnings_df, revenue_df, earnings_history_df, eps_trend_df, growth_estimate_df], axis=1)
+# Reduced parameter grid for smaller datasets
+param_grid = {
+    'n_estimators': [100, 200],
+    'max_depth': [10, 15],
+    'min_samples_split': [2, 5],
+    'min_samples_leaf': [1, 5],
+    'max_features': ['sqrt', 'log2'],
+    'bootstrap': [True, False]
+}
 
 # Function to preprocess and analyze the combined dataframe
 def preprocess_and_analyze(df, name):
+    results = []
+    
     # Transpose the dataframe to analyze rows
     df = df.transpose()
     
@@ -58,8 +80,8 @@ def preprocess_and_analyze(df, name):
     
     # Skip if there are no numeric features
     if not numeric_features:
-        print(f"No numeric features found in {name}. Skipping.")
-        return
+        results.append(f"No numeric features found in {name}. Skipping.")
+        return results
     
     # Define the preprocessing pipeline
     transformers = [
@@ -80,70 +102,107 @@ def preprocess_and_analyze(df, name):
     feature_names = numeric_features
     if categorical_features:
         feature_names += list(preprocessor.named_transformers_['cat'].get_feature_names_out(categorical_features))
-    preprocessed_df = pd.DataFrame(X, columns=feature_names)
+    preprocessed_df = pd.DataFrame(X, columns=feature_names, index=df.index)
     
-    # Check if preprocessed_df is empty after preprocessing
-    if preprocessed_df.empty:
-        print(f"Preprocessed DataFrame for {name} is empty after preprocessing. Skipping.")
-        return
+    X_df = pd.DataFrame(X, columns=feature_names, index=df.index)
+    if X_df.empty:
+        results.append(f"Preprocessed DataFrame for {name} is empty after preprocessing. Skipping.")
+        return results
     
-    # Random Forest for Feature Importance and Correlations
-    def random_forest_feature_importance(df):
-        X = df
-        y = np.random.rand(len(df))  # Dummy target variable for feature importance
+    # Check for NaNs and Infinities
+    if X_df.isnull().values.any() or np.isinf(X_df.values).any():
+        results.append(f"NaNs or Infinities found in {name}. Skipping.")
+        return results
+    
+    # Random Forest Feature Importance with GridSearchCV
+    def random_forest_feature_importance(X_df, target_variable):
+        if target_variable in X_df:
+            y = X_df[target_variable]
+            if name == 'earnings_history_df':
+                X = X_df
+            else:
+                X = X_df.drop(columns=[target_variable])
+        else:
+            results.append(f"No target variable '{target_variable}' found in the DataFrame. Skipping.")
+            return pd.DataFrame()
         
-        rf = RandomForestRegressor(n_estimators=100, random_state=42)
-        rf.fit(X, y)
+        results.append(f"Target variable '{target_variable}' found. Proceeding with GridSearchCV.")
+        results.append(f"Features: {X.columns.tolist()}")
+        results.append(f"Target: {y.name}")
         
-        feature_importances = pd.DataFrame(rf.feature_importances_, index=X.columns, columns=['Importance']).sort_values('Importance', ascending=False)
+        rf = RandomForestRegressor(random_state=42)
+        grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=3, n_jobs=-1, scoring='neg_mean_squared_error')
+        grid_search.fit(X, y)
         
-        return feature_importances
-
-    # Gradient Boosting for Feature Importance
-    def gradient_boosting_feature_importance(df):
-        X = df
-        y = np.random.rand(len(df))  # Dummy target variable for feature importance
-        
-        gb = GradientBoostingRegressor(n_estimators=100, random_state=42)
-        gb.fit(X, y)
-        
-        feature_importances = pd.DataFrame(gb.feature_importances_, index=X.columns, columns=['Importance']).sort_values('Importance', ascending=False)
-        
-        return feature_importances
-
-    # Principal Component Analysis (PCA) for Dimensionality Reduction
-    def pca_dimensionality_reduction(df, n_components):
-        X = df
-        
+        best_rf = grid_search.best_estimator_
+        feature_importances = pd.DataFrame(best_rf.feature_importances_, index=X.columns, columns=['Importance'])
+        return feature_importances.sort_values('Importance', ascending=False)
+    
+    # PCA for Dimensionality Reduction
+    def pca_dimensionality_reduction(X_df, n_components=3):
+        X = X_df.select_dtypes(include=[np.number])
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
         
         pca = PCA(n_components=n_components)
         principal_components = pca.fit_transform(X_scaled)
         
-        pca_df = pd.DataFrame(pca.components_.T, columns=[f'PC{i+1}' for i in range(n_components)], index=df.columns)
+        pca_df = pd.DataFrame(pca.components_.T, index=X.columns, columns=[f'PC{i+1}' for i in range(n_components)])
         
         return pca_df
-
-    rf_importances = random_forest_feature_importance(preprocessed_df)
-    gb_importances = gradient_boosting_feature_importance(preprocessed_df)
+    
+    # Define target variables for each dataset
+    target_variable = None
+    if name == 'earnings_df':
+        target_variable = 'Avg. Estimate'
+    elif name == 'revenue_df':
+        target_variable = 'Avg. Estimate'
+    elif name == 'earnings_history_df':
+        target_variable = 'EPS Actual'
+    elif name == 'eps_trend_df':
+        target_variable = 'Current Estimate'
+    
+    rf_importances = random_forest_feature_importance(X_df, target_variable)
+    
+    if rf_importances.empty:
+        results.append(f"Skipping PCA and cross-validation for {name} due to empty feature importances.")
+        return results
     
     if name == 'earnings_df' or name == 'eps_trend_df' or name == 'revenue_df':
         pca_df = pca_dimensionality_reduction(preprocessed_df, 3)
     elif name == 'earnings_history_df':
         pca_df = pca_dimensionality_reduction(preprocessed_df, 2)
-    elif name == 'growth_estimate_df':
-        pca_df = pca_dimensionality_reduction(preprocessed_df, 1)
     
-    print(f"Random Forest Feature Importances for {name}:\n", rf_importances)
-    print(f"Gradient Boosting Feature Importances for {name}:\n", gb_importances)
-    print(f"PCA DataFrame for {name}:\n", pca_df)
+    results.append(f"Random Forest Feature Importances for {name}:\n{rf_importances}")
+    results.append(f"PCA DataFrame for {name}:\n{pca_df}")
 
-# Analyze each dataframe separately
-for df, name in dataframes_list:
-    print(f"\nAnalyzing {name}...")
-    preprocess_and_analyze(df, name)
+    # Cross-Validation for Model Evaluation
+    def cross_validate_model(model, X, y):
+        n_splits = min(5, len(X))  # Ensure n_splits is not greater than the number of samples
+        if n_splits < 2:
+            results.append("Not enough samples for cross-validation. Skipping.")
+            return float('nan'), float('nan')  # Return NaN if not enough samples for cross-validation
+        kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+        scores = cross_val_score(model, X, y, cv=kf, scoring=make_scorer(mean_squared_error))
+        return scores.mean(), scores.std()
 
-# # Analyze calculated data separately
-# print("\nAnalyzing calculated_df...")
-# preprocess_and_analyze(calculated_df, 'calculated_df')
+    # Cross-validate models
+    X = preprocessed_df
+    y = X_df[target_variable] if target_variable in X_df else np.random.rand(len(preprocessed_df))  # Dummy target variable for cross-validation
+    rf_mean, rf_std = cross_validate_model(RandomForestRegressor(n_estimators=100, random_state=42), X, y)
+    
+    if not np.isnan(rf_mean):
+        results.append(f"Random Forest CV Mean MSE: {rf_mean:.4f}, Std: {rf_std:.4f}")
+    
+    return results
+
+# Analyze each dataframe separately in parallel
+all_results = []
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    futures = [executor.submit(preprocess_and_analyze, df, name) for df, name in dataframes_list]
+    for future in concurrent.futures.as_completed(futures):
+        all_results.extend(future.result())
+
+# Print all results sequentially
+for result in all_results:
+    print(result)
