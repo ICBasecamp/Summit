@@ -23,6 +23,7 @@ earnings_df = dataframes['earnings_df']
 revenue_df = dataframes['revenue_df']
 earnings_history_df = dataframes['earnings_history']
 eps_trend_df = dataframes['eps_trend_df']
+analyst_price_targets_df = dataframes['analyst_price_targets_df']
 
 # Drop rows with all NaN values
 earnings_history_df = earnings_history_df.dropna(how='all')
@@ -32,11 +33,6 @@ earnings_df = earnings_df.reset_index(drop=True)
 revenue_df = revenue_df.reset_index(drop=True)
 earnings_history_df = earnings_history_df.reset_index(drop=True)
 eps_trend_df = eps_trend_df.reset_index(drop=True)
-
-# Raw data that is not used in the analysis due to lack of numeric features
-top_analysts_df = dataframes['top_analysts_df']
-revenue_earnings_df = dataframes['revenue_earnings_df']
-analyst_price_targets_df = dataframes['analyst_price_targets_df']
 
 # List of dataframes
 dataframes_list = [
@@ -55,6 +51,16 @@ param_grid = {
     'max_features': ['sqrt', 'log2'],
     'bootstrap': [True, False]
 }
+
+# Combine calculations into a DataFrame
+calculations_df = pd.DataFrame({
+    'EPS Growth': [calculated_values['eps_growth']],
+    'Revenue Growth': [calculated_values['revenue_growth']],
+    'Profit Margin': [calculated_values['profit_margin']],
+    'EPS Estimate Spread': [calculated_values['eps_estimate_spread']],
+    'Revenue Estimate Spread': [calculated_values['revenue_estimate_spread']],
+    'P/E Ratio': [calculated_values['pe_ratio']]
+})
 
 # Function to preprocess and analyze the combined dataframe
 def preprocess_and_analyze(df, name):
@@ -114,14 +120,14 @@ def preprocess_and_analyze(df, name):
         results.append(f"NaNs or Infinities found in {name}. Skipping.")
         return results
     
+    # Print data summary for debugging
+    results.append(f"Data summary for {name}:\n{X_df.describe()}")
+    
     # Random Forest Feature Importance with GridSearchCV
     def random_forest_feature_importance(X_df, target_variable):
         if target_variable in X_df:
             y = X_df[target_variable]
-            if name == 'earnings_history_df':
-                X = X_df
-            else:
-                X = X_df.drop(columns=[target_variable])
+            X = X_df.drop(columns=[target_variable], errors='ignore')
         else:
             results.append(f"No target variable '{target_variable}' found in the DataFrame. Skipping.")
             return pd.DataFrame()
