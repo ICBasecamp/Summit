@@ -8,8 +8,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
 from sklearn.metrics import make_scorer, mean_squared_error
-from calculations import main as calculate_metrics, convert_to_number
-from EarningsReports import dataframes
+from Earnings.FinancialStats import main as calculate_metrics, convert_to_number
+from Earnings.AnalysisStats import dataframes
 import concurrent.futures
 
 # Set random seed for reproducibility

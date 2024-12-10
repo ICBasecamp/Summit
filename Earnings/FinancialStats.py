@@ -2,8 +2,22 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 import asyncio
-from EarningsReports import ticker
+from Earnings.AnalysisStats import ticker
 from datetime import datetime
+
+def convert_to_number(value):
+    if isinstance(value, str):
+        if 'B' in value:
+            return float(value.replace('B', '')) * 1e9
+        elif 'T' in value:
+            return float(value.replace('T', '')) * 1e12
+        elif 'M' in value:
+            return float(value.replace('M', '')) * 1e6
+        elif 'K' in value:
+            return float(value.replace('K', '')) * 1e3
+        elif '%' in value:
+            return float(value.replace('%', '')) / 100
+    return float(value)
 
 url_statistics = f'https://finance.yahoo.com/quote/{ticker}/key-statistics/'
 url_quote = f'https://finance.yahoo.com/quote/{ticker}/'
@@ -44,7 +58,6 @@ async def fetch_financial_metrics(page):
                         label = cells[0].text.strip()
                         value = cells[1].text.strip()
                         if any(key in label for key in ['Profit Margin', 'Operating Margin']):
-                            print(f"{label}: {value}")
                             metrics[label] = value
             break
 
@@ -61,7 +74,6 @@ async def fetch_financial_metrics(page):
                         label = cells[0].text.strip()
                         value = cells[1].text.strip()
                         if any(key in label for key in ['Return on Assets', 'Return on Equity']):
-                            print(f"{label}: {value}")
                             metrics[label] = value
             break
 
@@ -78,11 +90,9 @@ async def fetch_financial_metrics(page):
                         label = cells[0].text.strip()
                         value = cells[1].text.strip()
                         if any(key in label for key in ['Quarterly Revenue Growth', 'Quarterly Earnings Growth', 'Diluted EPS']):
-                            print(f"{label}: {value}")
                             metrics[label] = value
             break
 
-    print(metrics)
     return metrics
 
 async def fetch_quote_metrics(page):
