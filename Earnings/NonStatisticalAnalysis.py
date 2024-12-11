@@ -1,16 +1,8 @@
 import pandas as pd
+from AnalysisStats import dataframes
+from FinancialStats import convert_to_number
+import json
 import numpy as np
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import PCA
-from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LinearRegression
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from Earnings.AnalysisStats import dataframes
-from Earnings.FinancialStats import convert_to_number
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Load the raw data from EarningsReports.py
 top_analysts_df = dataframes['top_analysts_df']
@@ -39,44 +31,55 @@ top_analysts_df['Price Score'] = pd.to_numeric(top_analysts_df['Price Score'], e
 top_analysts_df['Price Target'] = pd.to_numeric(top_analysts_df['Price Target'], errors='coerce')
 
 # Group by 'Latest Rating' and calculate the mean
-print("\nAverage Scores by Latest Rating:")
-print(top_analysts_df.groupby('Latest Rating')[['Overall Score', 'Direction Score', 'Price Score']].mean())
+average_scores_by_rating = top_analysts_df.groupby('Latest Rating')[['Overall Score', 'Direction Score', 'Price Score']].mean()
 
 # Time-series analysis to observe changes in analyst sentiment
+time_series_analysis = None
 if 'Date' in top_analysts_df.columns:
-    print("\nTime-Series Analysis of Analyst Sentiment:")
-    print(top_analysts_df.set_index('Date')[['Overall Score', 'Price Target']].resample('M').mean())
+    time_series_analysis = top_analysts_df.set_index('Date')[['Overall Score', 'Price Target']].resample('M').mean()
 
 # Dataset 2: Revenue vs. Earnings Data
-print("\nRevenue vs. Earnings Data Analysis:")
-
 revenue_earnings_df['Revenue'] = revenue_earnings_df['Revenue'].apply(convert_to_number)
 revenue_earnings_df['Earnings'] = revenue_earnings_df['Earnings'].apply(convert_to_number)
 
 # Correlation between Revenue and Earnings
-print("\nCorrelation Between Revenue and Earnings:")
-print(revenue_earnings_df[['Revenue', 'Earnings']].corr())
+correlation = revenue_earnings_df[['Revenue', 'Earnings']].corr()
 
 # Calculate margins
 revenue_earnings_df['Margin'] = revenue_earnings_df['Earnings'] / revenue_earnings_df['Revenue']
-print("\nMargins:")
-print(revenue_earnings_df[['Quarter', 'Margin']])
+margins = revenue_earnings_df[['Quarter', 'Margin']]
 
 # Calculate quarterly growth rates
 revenue_earnings_df['Revenue Growth'] = revenue_earnings_df['Revenue'].pct_change()
 revenue_earnings_df['Earnings Growth'] = revenue_earnings_df['Earnings'].pct_change()
-print("\nQuarterly Growth Rates:")
-print(revenue_earnings_df[['Quarter', 'Revenue Growth', 'Earnings Growth']])
+quarterly_growth_rates = revenue_earnings_df[['Quarter', 'Revenue Growth', 'Earnings Growth']]
 
 # Dataset 3: Analyst Price Targets Data
-print("\nAnalyst Price Targets Data Analysis:")
-
-# Convert relevant columns to numeric, coercing errors to NaN
 analyst_price_targets_df['Average Price'] = pd.to_numeric(analyst_price_targets_df['Average Price'], errors='coerce')
 analyst_price_targets_df['Current Price'] = pd.to_numeric(analyst_price_targets_df['Current Price'], errors='coerce')
-top_analysts_df['Price Target'] = pd.to_numeric(top_analysts_df['Price Target'], errors='coerce')
-
-# Calculate the percentage difference
 analyst_price_targets_df['Price Gap (%)'] = (analyst_price_targets_df['Average Price'] - analyst_price_targets_df['Current Price']) / analyst_price_targets_df['Current Price'] * 100
-print("\nPrice Gap (%):")
-print(analyst_price_targets_df[['Current Price', 'Average Price', 'Price Gap (%)']])
+price_gap = analyst_price_targets_df[['Current Price', 'Average Price', 'Price Gap (%)']]
+
+# Convert Timestamp keys to strings
+if time_series_analysis is not None:
+    time_series_analysis.index = time_series_analysis.index.astype(str)
+
+# Save the results to a dictionary
+non_statistical_results = {
+    'average_scores_by_rating': average_scores_by_rating.to_dict(),
+    'time_series_analysis': time_series_analysis.to_dict() if time_series_analysis is not None else None,
+    'correlation': correlation.to_dict(),
+    'margins': margins.to_dict(),
+    'quarterly_growth_rates': quarterly_growth_rates.to_dict(),
+    'price_gap': price_gap.to_dict()
+}
+
+# Function to handle NaN values in JSON
+def handle_nan(value):
+    if isinstance(value, float) and np.isnan(value):
+        return None
+    return value
+
+# Save to JSON file
+with open('Earnings/results/non_statistical_results.json', 'w') as f:
+    json.dump(non_statistical_results, f, indent=4, default=handle_nan)

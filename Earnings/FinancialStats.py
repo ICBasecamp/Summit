@@ -2,7 +2,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 import asyncio
-from Earnings.AnalysisStats import ticker
+from AnalysisStats import ticker
 from datetime import datetime
 
 def convert_to_number(value):
@@ -143,4 +143,13 @@ async def main():
 
 # Run the main function and get the financial metrics
 all_metrics = asyncio.run(main())
-print(all_metrics)
+
+# Save the results to a dictionary
+financial_stats_results = {
+    'financial_metrics': all_metrics
+}
+
+# Save to JSON file
+import json
+with open('Earnings/results/financial_stats_results.json', 'w') as f:
+    json.dump(financial_stats_results, f, indent=4)

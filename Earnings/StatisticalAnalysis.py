@@ -8,15 +8,17 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
 from sklearn.metrics import make_scorer, mean_squared_error
-from Earnings.FinancialStats import main as calculate_metrics, convert_to_number
-from Earnings.AnalysisStats import dataframes
+from FinancialStats import main as calculate_metrics, convert_to_number
+from AnalysisStats import dataframes
 import concurrent.futures
+import json
+import asyncio
 
 # Set random seed for reproducibility
 np.random.seed(42)
 
 # Load the calculated values from calculations.py
-calculated_values = calculate_metrics()
+calculated_values = asyncio.run(calculate_metrics())
 
 # Load the raw data from EarningsReports.py
 earnings_df = dataframes['earnings_df']
@@ -52,19 +54,13 @@ param_grid = {
     'bootstrap': [True, False]
 }
 
-# Combine calculations into a DataFrame
-calculations_df = pd.DataFrame({
-    'EPS Growth': [calculated_values['eps_growth']],
-    'Revenue Growth': [calculated_values['revenue_growth']],
-    'Profit Margin': [calculated_values['profit_margin']],
-    'EPS Estimate Spread': [calculated_values['eps_estimate_spread']],
-    'Revenue Estimate Spread': [calculated_values['revenue_estimate_spread']],
-    'P/E Ratio': [calculated_values['pe_ratio']]
-})
-
 # Function to preprocess and analyze the combined dataframe
 def preprocess_and_analyze(df, name):
-    results = []
+    results = {
+        'name': name,
+        'random_forest_importances': None,
+        'pca_components': None
+    }
     
     # Transpose the dataframe to analyze rows
     df = df.transpose()
@@ -86,7 +82,6 @@ def preprocess_and_analyze(df, name):
     
     # Skip if there are no numeric features
     if not numeric_features:
-        results.append(f"No numeric features found in {name}. Skipping.")
         return results
     
     # Define the preprocessing pipeline
@@ -112,16 +107,11 @@ def preprocess_and_analyze(df, name):
     
     X_df = pd.DataFrame(X, columns=feature_names, index=df.index)
     if X_df.empty:
-        results.append(f"Preprocessed DataFrame for {name} is empty after preprocessing. Skipping.")
         return results
     
     # Check for NaNs and Infinities
     if X_df.isnull().values.any() or np.isinf(X_df.values).any():
-        results.append(f"NaNs or Infinities found in {name}. Skipping.")
         return results
-    
-    # Print data summary for debugging
-    results.append(f"Data summary for {name}:\n{X_df.describe()}")
     
     # Random Forest Feature Importance with GridSearchCV
     def random_forest_feature_importance(X_df, target_variable):
@@ -129,12 +119,7 @@ def preprocess_and_analyze(df, name):
             y = X_df[target_variable]
             X = X_df.drop(columns=[target_variable], errors='ignore')
         else:
-            results.append(f"No target variable '{target_variable}' found in the DataFrame. Skipping.")
             return pd.DataFrame()
-        
-        results.append(f"Target variable '{target_variable}' found. Proceeding with GridSearchCV.")
-        results.append(f"Features: {X.columns.tolist()}")
-        results.append(f"Target: {y.name}")
         
         rf = RandomForestRegressor(random_state=42)
         grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=3, n_jobs=-1, scoring='neg_mean_squared_error')
@@ -171,7 +156,6 @@ def preprocess_and_analyze(df, name):
     rf_importances = random_forest_feature_importance(X_df, target_variable)
     
     if rf_importances.empty:
-        results.append(f"Skipping PCA and cross-validation for {name} due to empty feature importances.")
         return results
     
     if name == 'earnings_df' or name == 'eps_trend_df' or name == 'revenue_df':
@@ -179,26 +163,8 @@ def preprocess_and_analyze(df, name):
     elif name == 'earnings_history_df':
         pca_df = pca_dimensionality_reduction(preprocessed_df, 2)
     
-    results.append(f"Random Forest Feature Importances for {name}:\n{rf_importances}")
-    results.append(f"PCA DataFrame for {name}:\n{pca_df}")
-
-    # Cross-Validation for Model Evaluation
-    def cross_validate_model(model, X, y):
-        n_splits = min(5, len(X))  # Ensure n_splits is not greater than the number of samples
-        if n_splits < 2:
-            results.append("Not enough samples for cross-validation. Skipping.")
-            return float('nan'), float('nan')  # Return NaN if not enough samples for cross-validation
-        kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
-        scores = cross_val_score(model, X, y, cv=kf, scoring=make_scorer(mean_squared_error))
-        return scores.mean(), scores.std()
-
-    # Cross-validate models
-    X = preprocessed_df
-    y = X_df[target_variable] if target_variable in X_df else np.random.rand(len(preprocessed_df))  # Dummy target variable for cross-validation
-    rf_mean, rf_std = cross_validate_model(RandomForestRegressor(n_estimators=100, random_state=42), X, y)
-    
-    if not np.isnan(rf_mean):
-        results.append(f"Random Forest CV Mean MSE: {rf_mean:.4f}, Std: {rf_std:.4f}")
+    results['random_forest_importances'] = rf_importances.to_dict()
+    results['pca_components'] = pca_df.to_dict()
     
     return results
 
@@ -207,8 +173,19 @@ all_results = []
 with concurrent.futures.ThreadPoolExecutor() as executor:
     futures = [executor.submit(preprocess_and_analyze, df, name) for df, name in dataframes_list]
     for future in concurrent.futures.as_completed(futures):
-        all_results.extend(future.result())
+        all_results.append(future.result())
 
-# Print all results sequentially
-for result in all_results:
-    print(result)
+# Save the results to a dictionary
+statistical_results = {
+    'results': all_results
+}
+
+# Function to handle NaN values in JSON
+def handle_nan(value):
+    if isinstance(value, float) and np.isnan(value):
+        return None
+    return value
+
+# Save to JSON file
+with open('Earnings/results/statistical_results.json', 'w') as f:
+    json.dump(statistical_results, f, indent=4, default=handle_nan)
