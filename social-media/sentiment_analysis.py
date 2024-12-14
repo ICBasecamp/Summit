@@ -1,13 +1,8 @@
 import json
-import asyncio
 import pandas as pd
 from transformers import pipeline
-from bertopic import BERTopic
-from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 from nltk.corpus import stopwords
-from bluesky_handler import fetch_bluesky
-from stockwits_handler import fetch_stockwits
 import re
 import yfinance as yf
 
@@ -34,7 +29,7 @@ def ticker_to_company(ticker):
         return ticker
 
 def main():
-    # Load the JSON file
+    # Load the JSON files
     with open('social-media/results/bluesky_posts.json', 'r') as f:
         bluesky_posts = json.load(f)
     with open('social-media/results/stockwits_posts.json', 'r') as f:
@@ -71,34 +66,12 @@ def main():
     print("Sentiment Counts:")
     print(sentiment_counts)
 
-    # Hashtag and Keyword Analysis
-    hashtags = df['Content'].str.findall(r'#\w+').explode().value_counts()
-    print("Trending Hashtags:")
-    print(hashtags)
-
-    # Topic Modeling using BERTopic
-    vectorizer_model = CountVectorizer(stop_words="english")
-    topic_model = BERTopic(vectorizer_model=vectorizer_model)
-    topics = topic_model.fit_transform(df['Cleaned_Content'])
-
-    # Ensure the length of topics matches the length of the DataFrame
-    if len(topics) == len(df):
-        df['Topic'] = topics
-    else:
-        print(f"Length of topics ({len(topics)}) does not match length of DataFrame ({len(df)}).")
-        df['Topic'] = [None] * len(df)
-
-    # Save the results to a CSV file
+    # Group posts by sentiment
+    positive_posts = df[df['Sentiment'] == 'positive']
+    neutral_posts = df[df['Sentiment'] == 'neutral']
+    negative_posts = df[df['Sentiment'] == 'negative']
+    
     df.to_csv('social-media/results/sentiment_analysis_results.csv', index=False)
 
-    # Save topic representations to a CSV file
-    topic_info = topic_model.get_topic_info()
-    topic_info.to_csv('social-media/results/topic_representations.csv', index=False)
-
-    print("Sentiment Analysis and Topic Modeling completed.")
-
-if __name__ == "__main__":
-    ticker = 'NVDA'
-    asyncio.run(fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100))
-    asyncio.run(fetch_stockwits(ticker, limit=100))
-    main()
+    print("Sentiment Analysis completed.")
+    return sentiment_counts, positive_posts, neutral_posts, negative_posts
