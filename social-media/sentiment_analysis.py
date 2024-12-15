@@ -34,9 +34,11 @@ def main():
         bluesky_posts = json.load(f)
     with open('social-media/results/stockwits_posts.json', 'r') as f:
         stockwits_posts = json.load(f)
+    with open('social-media/results/reddit_posts.json', 'r') as f:
+        reddit_posts = json.load(f)
     
     # Combine both posts
-    posts = bluesky_posts + stockwits_posts
+    posts = bluesky_posts + stockwits_posts + reddit_posts
 
     # Convert to DataFrame
     df = pd.DataFrame(posts)

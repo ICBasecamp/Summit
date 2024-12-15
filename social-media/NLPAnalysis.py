@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from sentiment_analysis import main as sentiment_analysis_main, ticker_to_company
 from stockwits_handler import fetch_stockwits
 from bluesky_handler import fetch_bluesky
+from reddit_handler import fetch_reddit
 
 # Configure Groq API
 load_dotenv()
@@ -29,9 +30,10 @@ async def call_groqapi_service(text):
     return chat_completion.choices[0].message.content.strip()
 
 async def fetch_posts():
-    ticker = 'NVDA'
+    ticker = 'MSTR'
     await fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100)
     await fetch_stockwits(ticker, limit=100)
+    await fetch_reddit('wallstreetbets', ticker)
 
 async def main():
     # Fetch posts
@@ -45,11 +47,19 @@ async def main():
     neutral_percentage = (sentiment_counts.get('neutral', 0) / total_posts) * 100
     negative_percentage = (sentiment_counts.get('negative', 0) / total_posts) * 100
 
-    overall_sentiment = "neutral"
-    if positive_percentage > max(neutral_percentage, negative_percentage):
-        overall_sentiment = "bullish"
-    elif negative_percentage > max(positive_percentage, neutral_percentage):
-        overall_sentiment = "bearish"
+    # Calculate overall sentiment score
+    overall_sentiment_score = (
+        sentiment_counts.get('positive', 0) * 1 +
+        sentiment_counts.get('neutral', 0) * 0 +
+        sentiment_counts.get('negative', 0) * -1
+    ) / total_posts
+
+    # Convert overall sentiment score to percentage
+    overall_sentiment_percentage = (overall_sentiment_score + 1) / 2 * 100
+    if overall_sentiment_percentage > 50:
+        word = "Bullish"
+    else:
+        word = "Bearish"
 
     positive_insights = await call_groqapi_service("\n".join(positive_posts['Content'].tolist()))
     neutral_insights = await call_groqapi_service("\n".join(neutral_posts['Content'].tolist()))
@@ -60,7 +70,7 @@ async def main():
     Positive Sentiment: {positive_percentage:.2f}%
     Neutral Sentiment: {neutral_percentage:.2f}%
     Negative Sentiment: {negative_percentage:.2f}%
-    Overall Sentiment: {overall_sentiment}
+    Overall Sentiment: {overall_sentiment_percentage:.2f}% {word}
 
     Positive Posts Insights:
     {positive_insights}

@@ -18,8 +18,11 @@ async def fetch_stockwits(symbol: str, limit: int = 10):
             print(f"Loaded content: {url}")
             
             # Click the "Popular" tab
-            await page.click('li[aria-controls="panel:r0:1"]')
-            print("Clicked 'Popular' tab")
+            try:
+                await page.click('li[aria-controls="panel:r0:1"]')
+                print("Clicked 'Popular' tab")
+            except Exception as e:
+                print("No 'Popular' tab found, skipping...")
             
             await page.wait_for_selector('div.infinite-scroll-component', timeout=60000)
             content_html = await page.content()

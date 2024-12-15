@@ -1,35 +1,34 @@
 import os
 from dotenv import load_dotenv
-
-import praw
-import pandas as pd
+import asyncpraw
+import json
 
 load_dotenv()
-reddit = praw.Reddit(
+reddit = asyncpraw.Reddit(
     client_id=os.getenv('CLIENT_ID'),
     client_secret=os.getenv('CLIENT_SECRET'), 
     user_agent=os.getenv('USER_AGENT')        
 )
 
-def fetch_reddit(subreddit_name: str, stock: str):
-
+async def fetch_reddit(subreddit_name: str, stock: str):
     posts = []
 
-    subreddit = reddit.subreddit(subreddit_name)
+    subreddit = await reddit.subreddit(subreddit_name)
 
     if not subreddit:
         print(f"Subreddit {subreddit_name} not found")
         return None
       
-    for post in subreddit.search(stock, sort='new', limit=25):
+    async for post in subreddit.search(stock, sort='new', limit=25):
+        combined_content = f"Title: {post.title}\nBody: {post.selftext}\nLink: {post.url}"
         posts.append({
-            'Title': post.title,
-            'Body': post.selftext,
-            'Score': post.score,
-            'Comments': post.num_comments,
-            'Link': post.url
+            'Content': combined_content
         })
 
-    df = pd.DataFrame(posts)
-    return df
+    # Save the results to a JSON file
+    with open('social-media/results/reddit_posts.json', 'w') as f:
+        json.dump(posts, f, indent=4)
 
+    await reddit.close()  # Close the client session
+
+    return posts
