@@ -26,7 +26,7 @@ def ticker_to_company(ticker):
         return company
     except Exception as e:
         print(f"Error converting ticker {ticker} to company name: {e}")
-        return ticker
+    return ticker
 
 def main():
     # Load the JSON files
@@ -37,7 +37,7 @@ def main():
     with open('social-media/results/reddit_posts.json', 'r') as f:
         reddit_posts = json.load(f)
     
-    # Combine both posts
+    # Combine all posts
     posts = bluesky_posts + stockwits_posts + reddit_posts
 
     # Convert to DataFrame
@@ -51,6 +51,15 @@ def main():
 
     # Sentiment Analysis using FinBERT
     sentiment_model = pipeline("sentiment-analysis", model="ProsusAI/finbert")
+
+    def truncate_text(text, max_length=512):
+        tokens = text.split()
+        if len(tokens) > max_length:
+            return ' '.join(tokens[:max_length])
+        return text
+
+    df['Cleaned_Content'] = df['Cleaned_Content'].apply(lambda x: truncate_text(x))
+
     df['Sentiment'] = df['Cleaned_Content'].apply(lambda x: sentiment_model(x)[0]['label'])
     
     def weighted_sentiment(text):
