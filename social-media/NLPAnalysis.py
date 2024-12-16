@@ -30,7 +30,7 @@ async def call_groqapi_service(text):
     return chat_completion.choices[0].message.content.strip()
 
 async def fetch_posts():
-    ticker = 'MSTR'
+    ticker = "NVDA"
     await fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100)
     await fetch_stockwits(ticker, limit=100)
     await fetch_reddit('wallstreetbets', ticker)

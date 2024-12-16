@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer
 import nltk
 from nltk.corpus import stopwords
 import re
@@ -26,7 +26,17 @@ def ticker_to_company(ticker):
         return company
     except Exception as e:
         print(f"Error converting ticker {ticker} to company name: {e}")
-    return ticker
+        return ticker
+
+# Function to split text into chunks using the tokenizer
+def split_text(text, tokenizer, max_length=300):
+    tokens = tokenizer.tokenize(text)
+    chunks = []
+    for i in range(0, len(tokens), max_length):
+        chunk_tokens = tokens[i:i + max_length]
+        chunk_text = tokenizer.convert_tokens_to_string(chunk_tokens)
+        chunks.append(chunk_text)
+    return chunks
 
 def main():
     # Load the JSON files
@@ -46,24 +56,14 @@ def main():
     # Clean the data
     df['Cleaned_Content'] = df['Content'].apply(clean_text)
 
-    # Convert tickers to company names
-    df['Cleaned_Content'] = df['Cleaned_Content'].apply(lambda x: re.sub(r'\$(\w+)', lambda m: ticker_to_company(m.group(1)), x))
-
     # Sentiment Analysis using FinBERT
     sentiment_model = pipeline("sentiment-analysis", model="ProsusAI/finbert")
+    tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
 
-    def truncate_text(text, max_length=512):
-        tokens = text.split()
-        if len(tokens) > max_length:
-            return ' '.join(tokens[:max_length])
-        return text
-
-    df['Cleaned_Content'] = df['Cleaned_Content'].apply(lambda x: truncate_text(x))
-
-    df['Sentiment'] = df['Cleaned_Content'].apply(lambda x: sentiment_model(x)[0]['label'])
-    
     def weighted_sentiment(text):
-        sentiment = sentiment_model(text)[0]['label']
+        chunks = split_text(text, tokenizer)
+        sentiments = [sentiment_model(chunk)[0]['label'] for chunk in chunks]
+        sentiment = max(set(sentiments), key=sentiments.count)  # Use the most common sentiment
         if 'bullish' in text.lower():
             return 'positive'
         elif 'bearish' in text.lower():
@@ -86,3 +86,6 @@ def main():
 
     print("Sentiment Analysis completed.")
     return sentiment_counts, positive_posts, neutral_posts, negative_posts
+
+if __name__ == "__main__":
+    sentiment_counts, positive_posts, neutral_posts, negative_posts = main()

@@ -4,7 +4,7 @@ import pandas as pd
 import asyncio
 import json
 
-async def fetch_stockwits(symbol: str, limit: int = 10):
+async def fetch_stockwits(symbol: str, limit: int = 20):
     url = f'https://stocktwits.com/symbol/{symbol}'
     posts = []
 
