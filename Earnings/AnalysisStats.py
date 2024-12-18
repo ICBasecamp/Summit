@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 import asyncio
 
-ticker = 'MSFT'
+ticker = 'NVDA'
 url = f'https://finance.yahoo.com/quote/{ticker}/analysis/'
 
 async def fetch_earnings_estimate(page):
@@ -16,11 +16,6 @@ async def fetch_earnings_estimate(page):
     
     if earnings_section:
         print("Found Earnings Estimate section")
-        
-        # Extract the title
-        title_tag = earnings_section.find('h3', class_='header')
-        title = title_tag.text if title_tag else "No title found"
-        print(f'Title: {title}')
         
         # Extract table data
         table = earnings_section.find('table')
@@ -36,11 +31,8 @@ async def fetch_earnings_estimate(page):
             
             # Create a DataFrame
             df = pd.DataFrame(data_rows[1:], columns=headers)
-            print(df)
-        else:
-            print("No table found")
-    else:
-        print("Earnings Estimate section not found")
+            return df
+    return pd.DataFrame()
 
 async def fetch_revenue_estimate(page):
     await page.wait_for_selector('section[data-testid="revenueEstimate"]')
@@ -52,11 +44,6 @@ async def fetch_revenue_estimate(page):
     
     if revenue_section:
         print("Found Revenue Estimate section")
-        
-        # Extract the title
-        title_tag = revenue_section.find('h3', class_='header')
-        title = title_tag.text if title_tag else "No title found"
-        print(f'Title: {title}')
         
         # Extract table data
         table = revenue_section.find('table')
@@ -72,110 +59,92 @@ async def fetch_revenue_estimate(page):
             
             # Create a DataFrame
             df = pd.DataFrame(data_rows[1:], columns=headers)
-            print(df)
-        else:
-            print("No table found")
-    else:
-        print("Revenue Estimate section not found")
+            return df
+    return pd.DataFrame()
 
 async def fetch_eps_trend(page):
     await page.wait_for_selector('section[data-testid="epsTrend"]')
     html_content = await page.content()
+    
+    # Use BeautifulSoup to parse the HTML content
     soup = BeautifulSoup(html_content, 'html.parser')
     eps_section = soup.find('section', {'data-testid': 'epsTrend'})
-    table = eps_section.find('table')
     
-    if table:
-        headers = [th.text for th in table.find_all('th')]
-        data_rows = []
-        rows = table.find_all('tr')
-        for row in rows:
-            columns = row.find_all('td')
-            data = [col.text for col in columns]
-            data_rows.append(data)
+    if eps_section:
+        print("Found EPS Trend section")
         
-        df = pd.DataFrame(data_rows[1:], columns=headers)
-        print("EPS Trend:")
-        print(df)
-    else:
-        print("No EPS Trend table found")
+        # Extract table data
+        table = eps_section.find('table')
+        if table:
+            headers = [th.text for th in table.find_all('th')]
+            
+            data_rows = []
+            rows = table.find_all('tr')
+            for row in rows:
+                columns = row.find_all('td')
+                data = [col.text for col in columns]
+                data_rows.append(data)
+            
+            # Create a DataFrame
+            df = pd.DataFrame(data_rows[1:], columns=headers)
+            return df
+    return pd.DataFrame()
 
 async def fetch_growth_estimate(page):
     await page.wait_for_selector('section[data-testid="growthEstimate"]')
     html_content = await page.content()
+    
+    # Use BeautifulSoup to parse the HTML content
     soup = BeautifulSoup(html_content, 'html.parser')
     growth_section = soup.find('section', {'data-testid': 'growthEstimate'})
-    table = growth_section.find('table')
     
-    if table:
-        headers = [th.text for th in table.find_all('th')]
-        data_rows = []
-        rows = table.find_all('tr')
-        for row in rows:
-            columns = row.find_all('td')
-            data = [col.text for col in columns]
-            data_rows.append(data)
+    if growth_section:
+        print("Found Growth Estimate section")
         
-        df = pd.DataFrame(data_rows[1:], columns=headers)
-        print("Growth Estimate:")
-        print(df)
-    else:
-        print("No Growth Estimate table found")
+        # Extract table data
+        table = growth_section.find('table')
+        if table:
+            headers = [th.text for th in table.find_all('th')]
+            
+            data_rows = []
+            rows = table.find_all('tr')
+            for row in rows:
+                columns = row.find_all('td')
+                data = [col.text for col in columns]
+                data_rows.append(data)
+            
+            # Create a DataFrame
+            df = pd.DataFrame(data_rows[1:], columns=headers)
+            return df
+    return pd.DataFrame()
 
 async def fetch_top_analysts(page):
     await page.wait_for_selector('section#top-analyst')
     html_content = await page.content()
+    
+    # Use BeautifulSoup to parse the HTML content
     soup = BeautifulSoup(html_content, 'html.parser')
     analysts_section = soup.find('section', {'id': 'top-analyst'})
-    table = analysts_section.find('table')
     
-    if table:
-        headers = [th.text for th in table.find_all('th')]
-        data_rows = []
-        rows = table.find_all('tr')
-        for row in rows:
-            columns = row.find_all('td')
-            data = [col.text for col in columns]
-            data_rows.append(data)
+    if analysts_section:
+        print("Found Top Analysts section")
         
-        df = pd.DataFrame(data_rows[1:], columns=headers)
-        print("Top Analysts:")
-        print(df)
-    else:
-        print("No Top Analysts table found")
-        
-# async def fetch_earnings_report(page):
-#     await page.goto('https://finance.yahoo.com/quote/AAPL/analysis/')
-#     await page.wait_for_selector('div.content.yf-qdsu8q')
-    
-#     # Coordinates for each circle
-#     coordinates = [
-#         {'x': 37, 'y': 2},
-#         {'x': 67, 'y': 2},
-#         {'x': 110, 'y': 2},
-#         {'x': 162, 'y': 2}
-#     ]
-    
-#     for i, coord in enumerate(coordinates):
-#         # Click at the specified coordinates
-#         await page.mouse.click(coord['x'], coord['y'])
-#         await page.wait_for_timeout(1000)  # Wait for the tooltip to appear
-        
-#         actual = await page.query_selector('div[title="Actual"] span.txt-positive')
-#         estimate = await page.query_selector('div[title="Estimate"] span.txt-positive')
-        
-#         if estimate:
-#             estimate_value = float((await estimate.inner_text()).replace('+', ''))
-#             if actual:
-#                 actual_value = float((await actual.inner_text()).replace('+', ''))
-#                 difference = actual_value - estimate_value
-#                 result = "Beat" if difference > 0 else "Missed"
-#                 print(f"Earnings Report {i + 1}: Actual = {actual_value}, Estimate = {estimate_value}, Difference = {difference}, Result = {result}")
-#             else:
-#                 print(f"Earnings Report {i + 1}: Estimate = {estimate_value}, Actual value not found")
-#         else:
-#             print(f"Earnings Report {i + 1}: Estimate value not found")
-
+        # Extract table data
+        table = analysts_section.find('table')
+        if table:
+            headers = [th.text for th in table.find_all('th')]
+            
+            data_rows = []
+            rows = table.find_all('tr')
+            for row in rows:
+                columns = row.find_all('td')
+                data = [col.text for col in columns]
+                data_rows.append(data)
+            
+            # Create a DataFrame
+            df = pd.DataFrame(data_rows[1:], columns=headers)
+            return df
+    return pd.DataFrame()
 
 async def fetch_revenue_earnings(page):
     await page.wait_for_selector('section[data-testid="revenue-earnings-chart"]')
@@ -192,15 +161,19 @@ async def fetch_revenue_earnings(page):
         quarters = revenue_earnings_section.find_all('div', class_='tick yf-58fx9d')
         quarter_names = [quarter.find('div', class_='text yf-58fx9d').text for quarter in quarters]
         
-        groups = revenue_earnings_section.find_all('g', class_=['group yf-si65b', 'group selected yf-si65b'])
+        groups = revenue_earnings_section.find_all('g', class_=['group yf-eykbat', 'group selected yf-eykbat'])
+        data_rows = []
         for i, group in enumerate(groups):
-            revenue_value = group.find('rect', class_='rect-one yf-si65b')['data-value']
-            earnings_value = group.find('rect', class_='rect-two yf-si65b')['data-value']
+            revenue_value = group.find('rect', class_='rect-one yf-eykbat')['data-value']
+            earnings_value = group.find('rect', class_='rect-two yf-eykbat')['data-value']
             quarter_name = quarter_names[i] if i < len(quarter_names) else f"Quarter {i + 1}"
-            print(f'{quarter_name}: Revenue = {revenue_value}, Earnings = {earnings_value}')
-    else:
-        print("Revenue vs. Earnings section not found")
+            data_rows.append([quarter_name, revenue_value, earnings_value])
         
+        # Create a DataFrame
+        df = pd.DataFrame(data_rows, columns=['Quarter', 'Revenue', 'Earnings'])
+        return df
+    return pd.DataFrame()
+
 async def fetch_analyst_price_targets(page):
     await page.wait_for_selector('section[data-testid="analyst-price-target-card"]')
     html_content = await page.content()
@@ -217,11 +190,39 @@ async def fetch_analyst_price_targets(page):
         average_price_container = price_target_section.find('div', class_='priceContainer average yf-1i34qte')
         average_price = average_price_container.find('span', class_='price yf-1i34qte').text if average_price_container else "No average price found"
         
-        print(f'Current Price: {current_price}')
-        print(f'Average Price: {average_price}')
-    else:
-        print("Analyst Price Targets section not found")
+        data = {'Current Price': [current_price], 'Average Price': [average_price]}
+        df = pd.DataFrame(data)
+        return df
+    return pd.DataFrame()
+
+async def fetch_earnings_history(page):
+    await page.wait_for_selector('section[data-testid="earningsHistory"]')
+    html_content = await page.content()
+    
+    # Use BeautifulSoup to parse the HTML content
+    soup = BeautifulSoup(html_content, 'html.parser')
+    earnings_history_section = soup.find('section', {'data-testid': 'earningsHistory'})
+    
+    if earnings_history_section:
+        print("Found Earnings History section")
         
+        # Extract table data
+        table = earnings_history_section.find('table')
+        if table:
+            headers = [th.text for th in table.find_all('th')]
+            
+            data_rows = []
+            rows = table.find_all('tr')
+            for row in rows:
+                columns = row.find_all('td')
+                data = [col.text for col in columns]
+                data_rows.append(data)
+            
+            # Create a DataFrame
+            df = pd.DataFrame(data_rows, columns=headers)
+            return df
+    return pd.DataFrame()
+
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -229,16 +230,26 @@ async def main():
         
         await page.goto(url)
         
-        await asyncio.gather(
-            fetch_earnings_estimate(page),
-            fetch_revenue_estimate(page),
-            fetch_eps_trend(page),
-            fetch_growth_estimate(page),
-            fetch_top_analysts(page),
-            fetch_revenue_earnings(page),
-            fetch_analyst_price_targets(page)
-        )
+        earnings_df = await fetch_earnings_estimate(page)
+        revenue_df = await fetch_revenue_estimate(page)
+        earnings_his = await fetch_earnings_history(page)
+        eps_trend_df = await fetch_eps_trend(page)
+        growth_estimate_df = await fetch_growth_estimate(page)
+        top_analysts_df = await fetch_top_analysts(page)
+        revenue_earnings_df = await fetch_revenue_earnings(page)
+        analyst_price_targets_df = await fetch_analyst_price_targets(page)
         
-        await browser.close()
+        # Return the DataFrames
+        return {
+            'earnings_df': earnings_df,
+            'revenue_df': revenue_df,
+            'earnings_history': earnings_his,
+            'eps_trend_df': eps_trend_df,
+            'growth_estimate_df': growth_estimate_df,
+            'top_analysts_df': top_analysts_df,
+            'revenue_earnings_df': revenue_earnings_df,
+            'analyst_price_targets_df': analyst_price_targets_df
+        }
 
-asyncio.run(main())
+# Run the main function and get the DataFrames
+dataframes = asyncio.run(main())
