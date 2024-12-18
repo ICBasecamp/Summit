@@ -74,9 +74,6 @@ def main():
 
     # Volume Tracking
     sentiment_counts = df['Sentiment'].value_counts()
-    print("Sentiment Counts:")
-    print(sentiment_counts)
-
     # Group posts by sentiment
     positive_posts = df[df['Sentiment'] == 'positive']
     neutral_posts = df[df['Sentiment'] == 'neutral']
