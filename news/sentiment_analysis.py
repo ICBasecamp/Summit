@@ -12,13 +12,13 @@ from handler import fetch
 
 async def main():
     ticker = "MSFT"
-    # df = await fetch(ticker)
+    df = await fetch(ticker)
 
     # temporarily reading/storing from csv for testing, reduce time fetching
-    df.to_csv('news/results/raw_data.csv', index=False)
+    # df.to_csv('news/results/raw_data.csv', index=False)
 
-    df = pd.read_csv('news/results/raw_data.csv')
-    df = df.head(1)
+    # df = pd.read_csv('news/results/raw_data.csv')
+    # df = df.head(1)
 
     df['Sentiments'] = None
 
