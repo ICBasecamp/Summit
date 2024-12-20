@@ -47,7 +47,7 @@ async def fetch_article(browser, link):
                 content = "No content found"
         
         print(f'Title: {title}')
-        print(f'Content: {content}')
+        # print(f'Content: {content}')
         print(f'Link: {article_url}')
         print('---')
 

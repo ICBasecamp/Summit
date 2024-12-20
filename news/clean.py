@@ -28,16 +28,13 @@ def clean_unstructured_data(text: str):
     text = text.encode('utf-8', 'ignore').decode('utf-8')
     text = contractions.fix(text)
 
-    sentences = sent_tokenize(text)
-    # print(sentences)
-    sentences_in_words = [word_tokenize(sentence) for sentence in sentences]
+    text = word_tokenize(text)
 
-    processed_sentences = []
-    for words in sentences_in_words:
-        filtered_words = [w for w in words if not w in stop_words]
-        lemmatized_words = [lemmatizer.lemmatize(w) for w in filtered_words]
-        processed_sentences.append(lemmatized_words)
+    filtered_words = [w for w in text if not w in stop_words]
+    lemmatized_words = [lemmatizer.lemmatize(w) for w in filtered_words]
     
-    return processed_sentences
+    processed_sentence_tokens = lemmatized_words
+    
+    return processed_sentence_tokens
 
 # print(clean_unstructured_data(test_string))
