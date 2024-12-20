@@ -2,22 +2,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 import asyncio
-from AnalysisStats import ticker
+from Earnings.AnalysisStats import ticker
 from datetime import datetime
-
-def convert_to_number(value):
-    if isinstance(value, str):
-        if 'B' in value:
-            return float(value.replace('B', '')) * 1e9
-        elif 'T' in value:
-            return float(value.replace('T', '')) * 1e12
-        elif 'M' in value:
-            return float(value.replace('M', '')) * 1e6
-        elif 'K' in value:
-            return float(value.replace('K', '')) * 1e3
-        elif '%' in value:
-            return float(value.replace('%', '')) / 100
-    return float(value)
 
 url_statistics = f'https://finance.yahoo.com/quote/{ticker}/key-statistics/'
 url_quote = f'https://finance.yahoo.com/quote/{ticker}/'

@@ -1,14 +1,12 @@
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
-from sklearn.metrics import make_scorer, mean_squared_error
-from FinancialStats import main as calculate_metrics, convert_to_number
+from FinancialStats import main as calculate_metrics
+from utilities import convert_to_number, random_forest_feature_importance, pca_dimensionality_reduction
 from AnalysisStats import dataframes
 import concurrent.futures
 import json
@@ -25,7 +23,6 @@ earnings_df = dataframes['earnings_df']
 revenue_df = dataframes['revenue_df']
 earnings_history_df = dataframes['earnings_history']
 eps_trend_df = dataframes['eps_trend_df']
-analyst_price_targets_df = dataframes['analyst_price_targets_df']
 
 # Drop rows with all NaN values
 earnings_history_df = earnings_history_df.dropna(how='all')
@@ -112,35 +109,6 @@ def preprocess_and_analyze(df, name):
     # Check for NaNs and Infinities
     if X_df.isnull().values.any() or np.isinf(X_df.values).any():
         return results
-    
-    # Random Forest Feature Importance with GridSearchCV
-    def random_forest_feature_importance(X_df, target_variable):
-        if target_variable in X_df:
-            y = X_df[target_variable]
-            X = X_df.drop(columns=[target_variable], errors='ignore')
-        else:
-            return pd.DataFrame()
-        
-        rf = RandomForestRegressor(random_state=42)
-        grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=3, n_jobs=-1, scoring='neg_mean_squared_error')
-        grid_search.fit(X, y)
-        
-        best_rf = grid_search.best_estimator_
-        feature_importances = pd.DataFrame(best_rf.feature_importances_, index=X.columns, columns=['Importance'])
-        return feature_importances.sort_values('Importance', ascending=False)
-    
-    # PCA for Dimensionality Reduction
-    def pca_dimensionality_reduction(X_df, n_components=3):
-        X = X_df.select_dtypes(include=[np.number])
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        
-        pca = PCA(n_components=n_components)
-        principal_components = pca.fit_transform(X_scaled)
-        
-        pca_df = pd.DataFrame(pca.components_.T, index=X.columns, columns=[f'PC{i+1}' for i in range(n_components)])
-        
-        return pca_df
     
     # Define target variables for each dataset
     target_variable = None

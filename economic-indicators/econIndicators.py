@@ -1,17 +1,12 @@
 import requests
-from datetime import datetime
+import json
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-FRED_KEY = os.getenv('FRED_KEY')  # FRED API Key
+FRED_KEY = os.getenv('FRED_KEY')
 
-def get_fred_data(series_id, api_key):
-    current_date = datetime.now()
-    previous_year_date = current_date.replace(year=current_date.year - 1)
-    start_date = previous_year_date.strftime('%Y-%m-%d')
-    end_date = current_date.strftime('%Y-%m-%d')
-    
+def get_fred_data(series_id, api_key, start_date='2023-12-01', end_date='2024-12-31'):
     url = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={api_key}&file_type=json&observation_start={start_date}&observation_end={end_date}'
     response = requests.get(url)
     data = response.json()
@@ -43,7 +38,5 @@ def get_economic_indicators(api_key):
 if __name__ == '__main__':
     economic_indicators = get_economic_indicators(FRED_KEY)
     
-    for indicator, data in economic_indicators.items():
-        print(f"\n{indicator}:")
-        for entry in data:
-            print(f"{entry['date']}: {entry['value']}")
+    with open('economic_indicators.json', 'w') as f:
+        json.dump(economic_indicators, f, indent=4)
