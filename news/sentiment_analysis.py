@@ -1,10 +1,6 @@
-import json
 import pandas as pd
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import nltk
-from nltk.corpus import stopwords
-import re
-import yfinance as yf
 from clean import clean_unstructured_data
 
 import sys
@@ -19,10 +15,11 @@ async def main():
     # df = await fetch(ticker)
 
     # temporarily reading/storing from csv for testing, reduce time fetching
-    # df.to_csv('news/results/raw_data.csv', index=False)
+    df.to_csv('news/results/raw_data.csv', index=False)
 
     df = pd.read_csv('news/results/raw_data.csv')
     df = df.head(1)
+
     df['Sentiments'] = None
 
     # using automodel instead of pipeline
