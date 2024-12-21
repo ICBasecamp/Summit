@@ -4,11 +4,16 @@ import json
 import os
 import sys
 
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+
 # Add the parent directory to the Python path to import Earnings module
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Earnings.AnalysisStats import dataframes
-from utilities import convert_to_number, random_forest_feature_importance
+from utilities import convert_to_number
 
 # Load economic indicators data
 with open('economic_indicators.json', 'r') as f:
@@ -23,6 +28,16 @@ for indicator, data in economic_indicators.items():
 # Ensure all dates are included and fill missing values with NaN
 econ_df.index = pd.to_datetime(econ_df.index)
 econ_df = econ_df.sort_index()
+
+# Manually aggregate economic indicators to quarterly data
+quarterly_econ_df = pd.DataFrame()
+for indicator in econ_df.columns:
+    quarterly_values = []
+    for i in range(0, len(econ_df), 3):
+        quarter_data = econ_df[indicator].iloc[i:i+3]
+        quarterly_average = quarter_data.mean()
+        quarterly_values.append(quarterly_average)
+    quarterly_econ_df[indicator] = quarterly_values
 
 # Load the raw data from EarningsReports.py
 earnings_df = dataframes['earnings_df']
@@ -41,20 +56,17 @@ eps_trend_df = eps_trend_df.reset_index(drop=True)
 
 # List of dataframes
 dataframes_list = [
-    (earnings_df, 'earnings_df'),
-    (revenue_df, 'revenue_df'),
-    (earnings_history_df, 'earnings_history_df'),
-    (eps_trend_df, 'eps_trend_df')
+    (earnings_df, 'Earnings Reports'),
+    (revenue_df, 'Stock Revenue'),
+    (earnings_history_df, 'Earnings History'),
+    (eps_trend_df, 'EPS Trend')
 ]
 
 # Perform correlation analysis and feature importance analysis
 for df, name in dataframes_list:
-    
     df = df.transpose()
     df.columns = df.iloc[0]
     df = df.drop(df.index[0])
-
-    # Convert all column names to strings
     df.columns = df.columns.astype(str)
 
     # Convert relevant columns to numeric using convert_to_number
@@ -62,18 +74,31 @@ for df, name in dataframes_list:
         df[col] = df[col].apply(lambda x: convert_to_number(x) if isinstance(x, str) else x)
 
     # Perform correlation analysis for each target variable in the earnings DataFrame
+    overall_correlations = {}
     for target_variable in df.columns:
         if target_variable != 'date':
+            correlations = {}
+            for econ_indicator in quarterly_econ_df.columns:
+                # Ensure that the data is being pulled correctly
+                target_data = df[target_variable].dropna().values
+                econ_data = quarterly_econ_df[econ_indicator].dropna().values
 
-            X = econ_df.columns
-            Y = target_variable
+                # Calculate the correlation coefficient
+                if len(target_data) > 0 and len(econ_data) > 0:
+                    correlation = np.corrcoef(target_data, econ_data)[0, 1]
+                    correlations[econ_indicator] = correlation
+                else:
+                    correlations[econ_indicator] = np.nan
 
-            # Perform feature importance analysis using the function from utilities.py
-            feature_importances = random_forest_feature_importance(X, Y)
-            if feature_importances.empty:
-                print(f"No feature importances found for {target_variable} in {name}.")
-                continue
+            # Aggregate correlations for overall analysis
+            for econ_indicator, correlation in correlations.items():
+                if econ_indicator not in overall_correlations:
+                    overall_correlations[econ_indicator] = []
+                overall_correlations[econ_indicator].append(correlation)
 
-            # Output feature importances
-            print(f"Feature Importances for {target_variable} in {name}:")
-            print(feature_importances)
+    # Calculate average correlation for each economic indicator
+    avg_correlations = {econ_indicator: np.nanmean(correlations) for econ_indicator, correlations in overall_correlations.items()}
+    avg_correlation_df = pd.DataFrame(list(avg_correlations.items()), columns=['Economic Indicator', 'Average Correlation'])
+    avg_correlation_df = avg_correlation_df.sort_values(by='Average Correlation', ascending=False)
+    print(f"Average Correlations for {name}:")
+    print(avg_correlation_df)
