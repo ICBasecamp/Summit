@@ -2,7 +2,7 @@ import os
 from groq import Groq
 import asyncio
 from dotenv import load_dotenv
-from sentiment_analysis import main as sentiment_analysis_main, ticker_to_company
+from sentiment_analysis import calculate_sentiment, ticker_to_company
 from stockwits_handler import fetch_stockwits
 from bluesky_handler import fetch_bluesky
 from reddit_handler import fetch_reddit
@@ -35,12 +35,12 @@ async def fetch_posts():
     await fetch_stockwits(ticker, limit=100)
     await fetch_reddit('wallstreetbets', ticker)
 
-async def main():
+async def social_media_sentiment_analysis():
     # Fetch posts
     await fetch_posts()
 
     # Run sentiment analysis and get the results
-    sentiment_counts, positive_posts, neutral_posts, negative_posts = sentiment_analysis_main()
+    sentiment_counts, positive_posts, neutral_posts, negative_posts = calculate_sentiment()
 
     total_posts = sentiment_counts.sum()
     positive_percentage = (sentiment_counts.get('positive', 0) / total_posts) * 100
@@ -86,8 +86,7 @@ async def main():
     print(insights)
 
     # Save the insights to a file
-    with open('social-media/results/nlp_insights.txt', 'w') as f:
-        f.write(insights)
+    # with open('social-media/results/nlp_insights.txt', 'w') as f:
+    #     f.write(insights)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+    return insights

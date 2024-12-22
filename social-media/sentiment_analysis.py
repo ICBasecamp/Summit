@@ -38,7 +38,7 @@ def split_text(text, tokenizer, max_length=300):
         chunks.append(chunk_text)
     return chunks
 
-def main():
+def calculate_sentiment():
     # Load the JSON files
     with open('social-media/results/bluesky_posts.json', 'r') as f:
         bluesky_posts = json.load(f)
@@ -83,6 +83,3 @@ def main():
 
     print("Sentiment Analysis completed.")
     return sentiment_counts, positive_posts, neutral_posts, negative_posts
-
-if __name__ == "__main__":
-    sentiment_counts, positive_posts, neutral_posts, negative_posts = main()
