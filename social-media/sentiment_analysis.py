@@ -5,6 +5,9 @@ import nltk
 from nltk.corpus import stopwords
 import re
 import yfinance as yf
+import asyncio
+
+from bluesky_handler import fetch_bluesky
 
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
@@ -38,15 +41,7 @@ def split_text(text, tokenizer, max_length=300):
         chunks.append(chunk_text)
     return chunks
 
-def calculate_sentiment():
-    # Load the JSON files
-    with open('social-media/results/bluesky_posts.json', 'r') as f:
-        bluesky_posts = json.load(f)
-    with open('social-media/results/stockwits_posts.json', 'r') as f:
-        stockwits_posts = json.load(f)
-    with open('social-media/results/reddit_posts.json', 'r') as f:
-        reddit_posts = json.load(f)
-    
+def calculate_sentiment(bluesky_posts, stockwits_posts, reddit_posts):
     # Combine all posts
     posts = bluesky_posts + stockwits_posts + reddit_posts
 
@@ -79,7 +74,7 @@ def calculate_sentiment():
     neutral_posts = df[df['Sentiment'] == 'neutral']
     negative_posts = df[df['Sentiment'] == 'negative']
     
-    df.to_csv('social-media/results/sentiment_analysis_results.csv', index=False)
+    # df.to_csv('social-media/results/sentiment_analysis_results.csv', index=False)
 
     print("Sentiment Analysis completed.")
     return sentiment_counts, positive_posts, neutral_posts, negative_posts

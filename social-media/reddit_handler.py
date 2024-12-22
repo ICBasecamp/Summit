@@ -27,7 +27,7 @@ async def fetch_reddit(subreddit_name: str, stock: str):
         })
 
     # Save the results to a JSON file
-    with open('social-media/results/reddit_posts.json', 'w') as f:
-        json.dump(posts, f, indent=4)
+    # with open('social-media/results/reddit_posts.json', 'w') as f:
+    #     json.dump(posts, f, indent=4)
 
     return posts

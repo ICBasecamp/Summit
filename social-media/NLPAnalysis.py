@@ -29,18 +29,19 @@ async def call_groqapi_service(text):
     )
     return chat_completion.choices[0].message.content.strip()
 
-async def fetch_posts():
-    ticker = "NVDA"
-    await fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100)
-    await fetch_stockwits(ticker, limit=100)
-    await fetch_reddit('wallstreetbets', ticker)
+async def fetch_posts(ticker):
+    bsky_posts = fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100)
+    stockwits_posts = fetch_stockwits(ticker, limit=100)
+    reddit_posts = fetch_reddit('wallstreetbets', ticker)
 
-async def social_media_sentiment_analysis():
+    return await asyncio.gather(bsky_posts, stockwits_posts, reddit_posts)
+
+async def social_media_sentiment_analysis(ticker):
     # Fetch posts
-    await fetch_posts()
+    bluesky_posts, stockwits_posts, reddit_posts = await fetch_posts(ticker)
 
     # Run sentiment analysis and get the results
-    sentiment_counts, positive_posts, neutral_posts, negative_posts = calculate_sentiment()
+    sentiment_counts, positive_posts, neutral_posts, negative_posts = calculate_sentiment(bluesky_posts, stockwits_posts, reddit_posts)
 
     total_posts = sentiment_counts.sum()
     positive_percentage = (sentiment_counts.get('positive', 0) / total_posts) * 100
@@ -90,3 +91,5 @@ async def social_media_sentiment_analysis():
     #     f.write(insights)
 
     return insights
+
+asyncio.run(social_media_sentiment_analysis('NVDA'))
