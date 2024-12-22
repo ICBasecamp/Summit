@@ -1,8 +1,10 @@
 import pandas as pd
-from earnings.AnalysisStats import dataframes
+from earnings.AnalysisStats import main as calculate_stats
 from utilities import convert_to_number
 import json
 import numpy as np
+
+dataframes = calculate_stats()
 
 def main():
     top_analysts_df = dataframes['top_analysts_df']
@@ -74,12 +76,4 @@ def main():
         'price_gap': price_gap.to_dict()
     }
 
-    # Function to handle NaN values in JSON
-    def handle_nan(value):
-        if isinstance(value, float) and np.isnan(value):
-            return None
-        return value
-
-    # Save to JSON file
-    with open('earnings/results/non_statistical_results.json', 'w') as f:
-        json.dump(non_statistical_results, f, indent=4, default=handle_nan)
+    return non_statistical_results

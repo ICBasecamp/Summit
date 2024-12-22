@@ -126,16 +126,3 @@ async def main():
         
         # Return the combined metrics
         return all_metrics
-
-    # Run the main function and get the financial metrics
-    all_metrics = asyncio.run(main())
-
-    # Save the results to a dictionary
-    financial_stats_results = {
-        'financial_metrics': all_metrics
-    }
-
-    # Save to JSON file
-    import json
-    with open('earnings/results/financial_stats_results.json', 'w') as f:
-        json.dump(financial_stats_results, f, indent=4)
