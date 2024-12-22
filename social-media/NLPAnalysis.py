@@ -86,10 +86,4 @@ async def social_media_sentiment_analysis(ticker):
     print("NLP Insights:")
     print(insights)
 
-    # Save the insights to a file
-    # with open('social-media/results/nlp_insights.txt', 'w') as f:
-    #     f.write(insights)
-
     return insights
-
-asyncio.run(social_media_sentiment_analysis('NVDA'))
