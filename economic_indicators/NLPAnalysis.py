@@ -3,12 +3,12 @@ import os
 from groq import Groq
 import asyncio
 from dotenv import load_dotenv
-from featureImportance import calculate_feature_importance
+from economic_indicators.featureImportance import calculate_feature_importance
 
 calculate_feature_importance()
 
 # Load the JSON results file
-with open('economic-indicators/results/average_correlations.json', 'r') as f:
+with open('economic_indicators/results/average_correlations.json', 'r') as f:
     average_correlations = json.load(f)
 
 # Combine all results into a single dictionary
@@ -49,7 +49,7 @@ async def call_groqapi_service(text):
     )
     return chat_completion.choices[0].message.content.strip()
 
-if __name__ == "__main__":
+def EI_NLPAnalysis():
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError as e:
@@ -60,7 +60,7 @@ if __name__ == "__main__":
             raise
 
     insights = loop.run_until_complete(call_groqapi_service(text_to_analyze))
-    print(insights)
+    return insights
 
-    with open('economic-indicators/results/nlp_insights.txt', 'w') as f:
-        f.write(insights)
+    # with open('economic_indicators/results/nlp_insights.txt', 'w') as f:
+    #     f.write(insights)

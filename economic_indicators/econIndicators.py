@@ -19,7 +19,6 @@ def get_fred_data(series_id, api_key, start_date='2023-12-01', end_date='2024-12
 
 def get_economic_indicators(api_key):
     indicators = {
-        # 'Treasury Yield': 'DGS10',  # 10-Year Treasury Constant Maturity Rate
         'FED Rate': 'FEDFUNDS',  # Effective Federal Funds Rate
         'CPI': 'CPIAUCSL',  # Consumer Price Index for All Urban Consumers: All Items
         'Retail Sales': 'RSAFS',  # Retail Sales: Retail Trade
@@ -35,8 +34,8 @@ def get_economic_indicators(api_key):
 
     return results
 
-if __name__ == '__main__':
+def main():
     economic_indicators = get_economic_indicators(FRED_KEY)
     
-    with open('economic_indicators.json', 'w') as f:
+    with open('economic_indicators/results/economic_indicators.json', 'w') as f:
         json.dump(economic_indicators, f, indent=4)

@@ -2,18 +2,22 @@ import json
 import os
 from groq import Groq
 import asyncio
-from AnalysisStats import ticker
+from earnings.AnalysisStats import ticker
+from earnings.FinancialStats import main as calculate_FS
+from earnings.NonStatisticalAnalysis import main as calculate_NSA
 from dotenv import load_dotenv
-from concurrent.futures import ThreadPoolExecutor
+
+calculate_FS()
+calculate_NSA()
 
 # Load the JSON files
-with open('Earnings/results/financial_stats_results.json', 'r') as f:
+with open('earnings/results/financial_stats_results.json', 'r') as f:
     financial_stats_results = json.load(f)
 
-with open('Earnings/results/non_statistical_results.json', 'r') as f:
+with open('earnings/results/non_statistical_results.json', 'r') as f:
     non_statistical_results = json.load(f)
 
-with open('Earnings/results/statistical_results.json', 'r') as f:
+with open('earnings/results/statistical_results.json', 'r') as f:
     statistical_results = json.load(f)
 
 # Combine all results into a single dictionary
@@ -29,7 +33,7 @@ combined_results_str = json.dumps(combined_results, indent=4)
 # Define a prompt to provide context or specific instructions
 prompt = f"""
 Please analyze the following financial data and provide insights on this stock: {ticker}. Provide insights on the data that you see and put it into human language. For context
-the statistical_results have feature importance with random forest regression and PCA components for each statistical dataframe. The financial_stats_results have financial metrics like PE Ratio, EPS, and Earnings Date. The non_statistical_results have average scores by rating, time series analysis, correlation, margins, quarterly growth rates, and price gap. 
+the statistical_results have feature importance with random forest regression and PCA components for each statistical dataframe. The financial_stats_results have financial metrics like PE Ratio, EPS, and earnings Date. The non_statistical_results have average scores by rating, time series analysis, correlation, margins, quarterly growth rates, and price gap. 
 I want you to include statistics in the analysis so you would say something like "The most important feature for X has 35% importance indicating Y". Make connections between the results and provide a clear and concise summary of the data. You have to explain what the data means and what it means for {ticker} not just state facts, in addition try and make it in
 a readable paragraph not bullet points. Focus on each part of the data equally here are some examples for each part of the data:
 
@@ -48,7 +52,7 @@ PEG Ratio (5yr expected) (0.89): A PEG ratio below 1 suggests that the stock may
 Price/Sales (31.27): This high ratio indicates that investors are paying $31.27 for every $1 of sales. This is quite high, suggesting that the market has high expectations for future growth.
 Enterprise Value/EBITDA (46.21): This high ratio suggests that the company is valued highly relative to its earnings before interest, taxes, depreciation, and amortization. This can indicate high growth expectations but also potential overvaluation.
 
-Earnings Estimate:
+earnings Estimate:
 Key Features: The Low Estimate and No. of Analysts are the most influential features, indicating that analysts' lower expectations and the number of analysts covering the stock significantly impact the average earnings estimate.
 Historical Performance: The Year Ago EPS also plays a crucial role, suggesting that past performance is a strong indicator of future earnings.
 Statistics: The cross-validation mean MSE of 0.6652 with a standard deviation of 0.8357 indicates moderate prediction accuracy and variability.
@@ -86,7 +90,7 @@ async def call_groqapi_service(text):
     )
     return chat_completion.choices[0].message.content.strip()
 
-if __name__ == "__main__":
+def ER_NLPAnalysis():
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError as e:
@@ -98,5 +102,7 @@ if __name__ == "__main__":
 
     insights = loop.run_until_complete(call_groqapi_service(text_to_analyze))
 
-    with open('Earnings/results/nlp_insights.txt', 'w') as f:
+    with open('earnings/results/nlp_insights.txt', 'w') as f:
         f.write(insights)
+        
+    return insights

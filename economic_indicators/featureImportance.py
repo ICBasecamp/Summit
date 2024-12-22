@@ -3,20 +3,18 @@ import numpy as np
 import json
 import os
 import sys
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
+from economic_indicators.econIndicators import main
 
 # Add the parent directory to the Python path to import Earnings module
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Earnings.AnalysisStats import dataframes
+from earnings.AnalysisStats import dataframes
 from utilities import convert_to_number
 
+main()
+
 def calculate_feature_importance():
-    with open('economic_indicators.json', 'r') as f:
+    with open('economic_indicators/results/economic_indicators.json', 'r') as f:
         economic_indicators = json.load(f)
 
     # Convert economic indicators to DataFrame
@@ -106,5 +104,5 @@ def calculate_feature_importance():
         average_correlations[name] = avg_correlations
         
     # Save the average correlations to a JSON file
-    with open('economic-indicators/results/average_correlations.json', 'w') as f:
+    with open('economic_indicators/results/average_correlations.json', 'w') as f:
         json.dump(average_correlations, f, indent=4)

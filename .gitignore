@@ -1,4 +1,7 @@
 .env
-Earnings/results
-social-media/results
-economic-indicators/results
+
+earnings/results/*
+
+social_media/results/*
+
+economic_indicators/results/*

@@ -1,13 +1,12 @@
 import pandas as pd
 import numpy as np
-from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from FinancialStats import main as calculate_metrics
 from utilities import convert_to_number, random_forest_feature_importance, pca_dimensionality_reduction
-from AnalysisStats import dataframes
+from earnings.AnalysisStats import dataframes
 import concurrent.futures
 import json
 import asyncio
@@ -40,16 +39,6 @@ dataframes_list = [
     (earnings_history_df, 'earnings_history_df'),
     (eps_trend_df, 'eps_trend_df')
 ]
-
-# Reduced parameter grid for smaller datasets
-param_grid = {
-    'n_estimators': [100, 200],
-    'max_depth': [10, 15],
-    'min_samples_split': [2, 5],
-    'min_samples_leaf': [1, 5],
-    'max_features': ['sqrt', 'log2'],
-    'bootstrap': [True, False]
-}
 
 # Function to preprocess and analyze the combined dataframe
 def preprocess_and_analyze(df, name):
@@ -155,5 +144,5 @@ def handle_nan(value):
     return value
 
 # Save to JSON file
-with open('Earnings/results/statistical_results.json', 'w') as f:
+with open('earnings/results/statistical_results.json', 'w') as f:
     json.dump(statistical_results, f, indent=4, default=handle_nan)
