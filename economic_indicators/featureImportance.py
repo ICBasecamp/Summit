@@ -14,8 +14,6 @@ from utilities import convert_to_number
 def calculate_feature_importance():
 
     economic_indicators = get_economic_indicators()
-    # with open('economic_indicators/results/economic_indicators.json', 'r') as f:
-    #     economic_indicators = json.load(f)
 
     # Convert economic indicators to DataFrame
     econ_df = pd.DataFrame()
@@ -104,7 +102,3 @@ def calculate_feature_importance():
         average_correlations[name] = avg_correlations
         
     return average_correlations
-
-    # Save the average correlations to a JSON file
-    # with open('economic_indicators/results/average_correlations.json', 'w') as f:
-    #     json.dump(average_correlations, f, indent=4)

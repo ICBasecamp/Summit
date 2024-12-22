@@ -33,9 +33,3 @@ def get_economic_indicators():
         results[indicator] = data
 
     return results
-
-# def main():
-#     economic_indicators = get_economic_indicators(FRED_KEY)
-    
-#     with open('economic_indicators/results/economic_indicators.json', 'w') as f:
-#         json.dump(economic_indicators, f, indent=4)

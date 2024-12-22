@@ -7,10 +7,6 @@ from featureImportance import calculate_feature_importance
 
 average_correlations = calculate_feature_importance()
 
-# Load the JSON results file
-# with open('economic_indicators/results/average_correlations.json', 'r') as f:
-#     average_correlations = json.load(f)
-
 # Combine all results into a single dictionary
 combined_results = {
     'average_correlations': average_correlations
@@ -61,8 +57,5 @@ def EI_NLPAnalysis():
 
     insights = loop.run_until_complete(call_groqapi_service(text_to_analyze))
     return insights
-
-    # with open('economic_indicators/results/nlp_insights.txt', 'w') as f:
-    #     f.write(insights)
 
 print(EI_NLPAnalysis())
