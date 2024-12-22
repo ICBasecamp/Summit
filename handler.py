@@ -7,6 +7,8 @@ import pandas as pd
 ticker = 'AAPL'
 url = f'https://finance.yahoo.com/quote/{ticker}/'
 
+
+# open and read page at link
 async def fetch_article(browser, link):
     article_url = link if link.startswith('http') else f'https://finance.yahoo.com{link}'
     page = await browser.new_page()
@@ -59,7 +61,8 @@ async def fetch_article(browser, link):
     finally:
         await page.close()
 
-async def fetch(ticker):
+# find and read articles scraped for the ticker (prev main)
+async def fetch_articles(ticker):
     url = f'https://finance.yahoo.com/quote/{ticker}/'
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -98,41 +101,3 @@ async def fetch(ticker):
         
         df = pd.DataFrame(results, columns=['Title', 'Content', 'Link'])
         return df
-    
-# Temporarily remove the asyncio.run() call to avoid running the script automatically
-# async def main():
-#     async with async_playwright() as p:
-#         browser = await p.chromium.launch(headless=True)
-#         page = await browser.new_page()
-        
-#         # Fetch the main page
-#         await page.goto(url)
-#         print("Loaded main page")
-        
-#         # Click the "News" button
-#         await page.click('button#tab-latest-news')  # Adjust the selector based on the actual HTML
-#         print("Clicked 'News' button")
-        
-#         # Wait for the news section to load
-#         await page.wait_for_selector('section.stream-items')
-#         print("News section loaded")
-        
-#         await page.wait_for_selector('div.yf-gfq5ju')
-#         html_content = await page.content()
-        
-#         # Use BeautifulSoup to parse the HTML content
-#         soup = BeautifulSoup(html_content, 'html.parser')
-#         news_section = soup.find('section', class_='stream-items small layoutCol2 autoCol yf-1x0cgbi')
-#         a_tags = news_section.find_all('a')
-        
-#         # Use a set to store unique links
-#         links = set(a_tag.get('href') for a_tag in a_tags if a_tag.get('href') and 'news' in a_tag.get('href'))
-#         print(f"Found {len(links)} unique links")
-        
-#         tasks = [fetch_article(browser, link) for link in links]
-#         await asyncio.gather(*tasks)
-        
-#         await browser.close()
-        
-        
-# asyncio.run(main())
