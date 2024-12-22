@@ -3,13 +3,13 @@ import os
 from groq import Groq
 import asyncio
 from dotenv import load_dotenv
-from economic_indicators.featureImportance import calculate_feature_importance
+from featureImportance import calculate_feature_importance
 
-calculate_feature_importance()
+average_correlations = calculate_feature_importance()
 
 # Load the JSON results file
-with open('economic_indicators/results/average_correlations.json', 'r') as f:
-    average_correlations = json.load(f)
+# with open('economic_indicators/results/average_correlations.json', 'r') as f:
+#     average_correlations = json.load(f)
 
 # Combine all results into a single dictionary
 combined_results = {
@@ -64,3 +64,5 @@ def EI_NLPAnalysis():
 
     # with open('economic_indicators/results/nlp_insights.txt', 'w') as f:
     #     f.write(insights)
+
+print(EI_NLPAnalysis())
