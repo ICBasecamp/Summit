@@ -1,19 +1,19 @@
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
-from sklearn.metrics import make_scorer, mean_squared_error
-from FinancialStats import main as calculate_metrics, convert_to_number
-from AnalysisStats import dataframes
+from earnings.FinancialStats import main as calculate_metrics
+from utilities import convert_to_number
+from earnings.AnalysisStats import main as calculate_stats
 import concurrent.futures
-import json
 import asyncio
 
+dataframes = calculate_stats()
 # Set random seed for reproducibility
 np.random.seed(42)
 
@@ -25,7 +25,6 @@ earnings_df = dataframes['earnings_df']
 revenue_df = dataframes['revenue_df']
 earnings_history_df = dataframes['earnings_history']
 eps_trend_df = dataframes['eps_trend_df']
-analyst_price_targets_df = dataframes['analyst_price_targets_df']
 
 # Drop rows with all NaN values
 earnings_history_df = earnings_history_df.dropna(how='all')
@@ -113,7 +112,17 @@ def preprocess_and_analyze(df, name):
     if X_df.isnull().values.any() or np.isinf(X_df.values).any():
         return results
     
-    # Random Forest Feature Importance with GridSearchCV
+    # Define target variables for each dataset
+    target_variable = None
+    if name == 'earnings_df':
+        target_variable = 'Avg. Estimate'
+    elif name == 'revenue_df':
+        target_variable = 'Avg. Estimate'
+    elif name == 'earnings_history_df':
+        target_variable = 'EPS Actual'
+    elif name == 'eps_trend_df':
+        target_variable = 'Current Estimate'
+        
     def random_forest_feature_importance(X_df, target_variable):
         if target_variable in X_df:
             y = X_df[target_variable]
@@ -129,6 +138,11 @@ def preprocess_and_analyze(df, name):
         feature_importances = pd.DataFrame(best_rf.feature_importances_, index=X.columns, columns=['Importance'])
         return feature_importances.sort_values('Importance', ascending=False)
     
+    rf_importances = random_forest_feature_importance(X_df, target_variable)
+    
+    if rf_importances.empty:
+        return results
+    
     # PCA for Dimensionality Reduction
     def pca_dimensionality_reduction(X_df, n_components=3):
         X = X_df.select_dtypes(include=[np.number])
@@ -142,22 +156,6 @@ def preprocess_and_analyze(df, name):
         
         return pca_df
     
-    # Define target variables for each dataset
-    target_variable = None
-    if name == 'earnings_df':
-        target_variable = 'Avg. Estimate'
-    elif name == 'revenue_df':
-        target_variable = 'Avg. Estimate'
-    elif name == 'earnings_history_df':
-        target_variable = 'EPS Actual'
-    elif name == 'eps_trend_df':
-        target_variable = 'Current Estimate'
-    
-    rf_importances = random_forest_feature_importance(X_df, target_variable)
-    
-    if rf_importances.empty:
-        return results
-    
     if name == 'earnings_df' or name == 'eps_trend_df' or name == 'revenue_df':
         pca_df = pca_dimensionality_reduction(preprocessed_df, 3)
     elif name == 'earnings_history_df':
@@ -168,24 +166,16 @@ def preprocess_and_analyze(df, name):
     
     return results
 
-# Analyze each dataframe separately in parallel
-all_results = []
-with concurrent.futures.ThreadPoolExecutor() as executor:
-    futures = [executor.submit(preprocess_and_analyze, df, name) for df, name in dataframes_list]
-    for future in concurrent.futures.as_completed(futures):
-        all_results.append(future.result())
+def main():
+    all_results = []
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(preprocess_and_analyze, df, name) for df, name in dataframes_list]
+        for future in concurrent.futures.as_completed(futures):
+            all_results.append(future.result())
 
-# Save the results to a dictionary
-statistical_results = {
-    'results': all_results
-}
+    # Save the results to a dictionary
+    statistical_results = {
+        'results': all_results
+    }
 
-# Function to handle NaN values in JSON
-def handle_nan(value):
-    if isinstance(value, float) and np.isnan(value):
-        return None
-    return value
-
-# Save to JSON file
-with open('Earnings/results/statistical_results.json', 'w') as f:
-    json.dump(statistical_results, f, indent=4, default=handle_nan)
+    return statistical_results

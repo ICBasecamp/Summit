@@ -223,12 +223,12 @@ async def fetch_earnings_history(page):
             return df
     return pd.DataFrame()
 
-async def main():
+async def getData():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         
-        await page.goto(url)
+        await page.goto(url, timeout=60000)
         
         earnings_df = await fetch_earnings_estimate(page)
         revenue_df = await fetch_revenue_estimate(page)
@@ -251,5 +251,6 @@ async def main():
             'analyst_price_targets_df': analyst_price_targets_df
         }
 
-# Run the main function and get the DataFrames
-dataframes = asyncio.run(main())
+def main():
+    data = asyncio.run(getData())
+    return data
