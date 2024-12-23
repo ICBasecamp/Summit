@@ -3,19 +3,20 @@ import numpy as np
 import json
 import os
 import sys
-from economic_indicators.econIndicators import main
+from econIndicators import get_economic_indicators
 
 # Add the parent directory to the Python path to import Earnings module
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from earnings.AnalysisStats import main as calculate_stats
+from Earnings.AnalysisStats import main as calculate_stats
 from utilities import convert_to_number
 
 dataframes = calculate_stats()
 
 def calculate_feature_importance():
-    with open('economic_indicators/results/economic_indicators.json', 'r') as f:
-        economic_indicators = json.load(f)
+    # with open('economic_indicators/results/economic_indicators.json', 'r') as f:
+    #     economic_indicators = json.load(f)
+    economic_indicators = get_economic_indicators()
 
     # Convert economic indicators to DataFrame
     econ_df = pd.DataFrame()
@@ -103,6 +104,4 @@ def calculate_feature_importance():
         avg_correlation_df = avg_correlation_df.sort_values(by='Average Correlation', ascending=False)
         average_correlations[name] = avg_correlations
         
-    # Save the average correlations to a JSON file
-    with open('economic_indicators/results/average_correlations.json', 'w') as f:
-        json.dump(average_correlations, f, indent=4)
+    return average_correlations    
