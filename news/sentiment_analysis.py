@@ -1,18 +1,24 @@
 import pandas as pd
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import nltk
-from clean import clean_unstructured_data
+from news.clean import clean_unstructured_data
 
 import sys
 import os
 import asyncio
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-from handler import fetch
+from handler import fetch_articles
 
-async def main():
-    ticker = "MSFT"
-    df = await fetch(ticker)
+# accepts ticker as input, scrapes news articles and performs sentiment analysis, returning
+# as an array of dictionaries of individual sentences and their sentiment scores
+async def sentiment_analysis_on_ticker(ticker):
+
+    df = await fetch_articles(ticker)
+
+    if df.empty:
+        print("No articles found for the ticker.")
+        return []
 
     # temporarily reading/storing from csv for testing, reduce time fetching
     # df.to_csv('news/results/raw_data.csv', index=False)
@@ -57,7 +63,3 @@ async def main():
 
     print("Sentiment Analysis completed.")
     return df['Sentiments'].tolist()
-
-if __name__ == "__main__":
-    sentiments = asyncio.run(main())
-

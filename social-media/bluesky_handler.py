@@ -41,9 +41,4 @@ async def fetch_bluesky(query: str, limit: int = 10):
         finally:
             await page.close()
 
-    # Save the results to a JSON file
-    with open('social-media/results/bluesky_posts.json', 'w') as f:
-        json.dump(posts, f, indent=4)
-
     return posts
-

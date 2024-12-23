@@ -49,8 +49,4 @@ async def fetch_stockwits(symbol: str, limit: int = 20):
         finally:
             await page.close()
 
-    # Save the results to a JSON file
-    with open('social-media/results/stockwits_posts.json', 'w') as f:
-        json.dump(posts, f, indent=4)
-
     return posts
