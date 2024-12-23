@@ -1,12 +1,7 @@
 import pandas as pd
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
-import asyncio
-from earnings.AnalysisStats import ticker
 from datetime import datetime
-
-url_statistics = f'https://finance.yahoo.com/quote/{ticker}/key-statistics/'
-url_quote = f'https://finance.yahoo.com/quote/{ticker}/'
 
 async def fetch_financial_metrics(page):
     await page.wait_for_selector('section[data-testid="qsp-statistics"]')
@@ -103,6 +98,8 @@ async def fetch_quote_metrics(page):
     # Calculate days till earnings
     if 'Earnings Date' in metrics:
         earnings_date_str = metrics['Earnings Date']
+        # Clean the earnings_date_str to remove extra characters
+        earnings_date_str = earnings_date_str.split(' - ')[-1].strip()
         earnings_date = datetime.strptime(earnings_date_str, '%b %d, %Y')
         today = datetime.today()
         days_till_earnings = (earnings_date - today).days
@@ -110,7 +107,9 @@ async def fetch_quote_metrics(page):
 
     return metrics
 
-async def main():
+async def main(ticker):
+    url_statistics = f'https://finance.yahoo.com/quote/{ticker}/key-statistics/'
+    url_quote = f'https://finance.yahoo.com/quote/{ticker}/'
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()

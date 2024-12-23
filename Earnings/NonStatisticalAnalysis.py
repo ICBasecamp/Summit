@@ -1,12 +1,10 @@
 import pandas as pd
 from earnings.AnalysisStats import main as calculate_stats
 from utilities import convert_to_number
-import json
-import numpy as np
 
-dataframes = calculate_stats()
-
-def main():
+async def main(ticker):
+    dataframes = await calculate_stats(ticker)
+    
     top_analysts_df = dataframes['top_analysts_df']
     revenue_earnings_df = dataframes['revenue_earnings_df']
     analyst_price_targets_df = dataframes['analyst_price_targets_df']

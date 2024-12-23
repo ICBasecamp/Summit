@@ -5,9 +5,6 @@ import nltk
 from nltk.corpus import stopwords
 import re
 import yfinance as yf
-import asyncio
-
-from bluesky_handler import fetch_bluesky
 
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))

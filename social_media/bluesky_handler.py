@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
-import pandas as pd
-import json
 
 async def fetch_bluesky(query: str, limit: int = 10):
     url = f'https://bsky.app/search?q={query}'

@@ -13,45 +13,36 @@ from earnings.AnalysisStats import main as calculate_stats
 import concurrent.futures
 import asyncio
 
-dataframes = calculate_stats()
-# Set random seed for reproducibility
-np.random.seed(42)
+async def getDataframes(ticker):
+    dataframes = await calculate_stats(ticker)
+    np.random.seed(42)
 
-# Load the calculated values from calculations.py
-calculated_values = asyncio.run(calculate_metrics())
+    await calculate_metrics(ticker)
 
-# Load the raw data from EarningsReports.py
-earnings_df = dataframes['earnings_df']
-revenue_df = dataframes['revenue_df']
-earnings_history_df = dataframes['earnings_history']
-eps_trend_df = dataframes['eps_trend_df']
+    # Load the raw data from EarningsReports.py
+    earnings_df = dataframes['earnings_df']
+    revenue_df = dataframes['revenue_df']
+    earnings_history_df = dataframes['earnings_history']
+    eps_trend_df = dataframes['eps_trend_df']
 
-# Drop rows with all NaN values
-earnings_history_df = earnings_history_df.dropna(how='all')
+    # Drop rows with all NaN values
+    earnings_history_df = earnings_history_df.dropna(how='all')
 
-# Reset indices to ensure proper stacking
-earnings_df = earnings_df.reset_index(drop=True)
-revenue_df = revenue_df.reset_index(drop=True)
-earnings_history_df = earnings_history_df.reset_index(drop=True)
-eps_trend_df = eps_trend_df.reset_index(drop=True)
+    # Reset indices to ensure proper stacking
+    earnings_df = earnings_df.reset_index(drop=True)
+    revenue_df = revenue_df.reset_index(drop=True)
+    earnings_history_df = earnings_history_df.reset_index(drop=True)
+    eps_trend_df = eps_trend_df.reset_index(drop=True)
 
-# List of dataframes
-dataframes_list = [
-    (earnings_df, 'earnings_df'),
-    (revenue_df, 'revenue_df'),
-    (earnings_history_df, 'earnings_history_df'),
-    (eps_trend_df, 'eps_trend_df')
-]
-
-# Reduced parameter grid for smaller datasets
-param_grid = {
-    'n_estimators': [100, 200],
-    'max_depth': [10, 15],
-    'min_samples_split': [2, 5],
-    'min_samples_leaf': [1, 5],
-    'max_features': ['sqrt', 'log2'],
-    'bootstrap': [True, False]
-}
+    # List of dataframes
+    dataframes_list = [
+        (earnings_df, 'earnings_df'),
+        (revenue_df, 'revenue_df'),
+        (earnings_history_df, 'earnings_history_df'),
+        (eps_trend_df, 'eps_trend_df')
+    ]
+    
+    return dataframes_list
 
 # Function to preprocess and analyze the combined dataframe
 def preprocess_and_analyze(df, name):
@@ -122,6 +113,16 @@ def preprocess_and_analyze(df, name):
         target_variable = 'EPS Actual'
     elif name == 'eps_trend_df':
         target_variable = 'Current Estimate'
+    
+    # Reduced parameter grid for smaller datasets
+    param_grid = {
+        'n_estimators': [100, 200],
+        'max_depth': [10, 15],
+        'min_samples_split': [2, 5],
+        'min_samples_leaf': [1, 5],
+        'max_features': ['sqrt', 'log2'],
+        'bootstrap': [True, False]
+    }
         
     def random_forest_feature_importance(X_df, target_variable):
         if target_variable in X_df:
@@ -166,7 +167,8 @@ def preprocess_and_analyze(df, name):
     
     return results
 
-def main():
+async def main(ticker):
+    dataframes_list = await getDataframes(ticker)    
     all_results = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = [executor.submit(preprocess_and_analyze, df, name) for df, name in dataframes_list]

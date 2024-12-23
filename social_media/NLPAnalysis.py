@@ -2,10 +2,10 @@ import os
 from groq import Groq
 import asyncio
 from dotenv import load_dotenv
-from sentiment_analysis import calculate_sentiment, ticker_to_company
-from stockwits_handler import fetch_stockwits
-from bluesky_handler import fetch_bluesky
-from reddit_handler import fetch_reddit
+from social_media.sentiment_analysis import calculate_sentiment, ticker_to_company
+from social_media.stockwits_handler import fetch_stockwits
+from social_media.bluesky_handler import fetch_bluesky
+from social_media.reddit_handler import fetch_reddit
 
 # Configure Groq API
 load_dotenv()

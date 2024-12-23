@@ -2,18 +2,19 @@ import json
 import os
 from groq import Groq
 import asyncio
-from earnings.AnalysisStats import ticker
 from earnings.FinancialStats import main as calculate_FS
 from earnings.NonStatisticalAnalysis import main as calculate_NSA
-from earnings.StatisticalAnalysis import preprocess_and_analyze, dataframes_list
+from earnings.StatisticalAnalysis import preprocess_and_analyze, getDataframes
 from dotenv import load_dotenv
 
-async def run_calculations():
+async def run_calculations(ticker):
+    dataframes_list = await getDataframes(ticker)
+    
     # Run the financial stats calculation
-    financial_stats_results = await calculate_FS()
+    financial_stats_results = await calculate_FS(ticker)
 
     # Run the non-statistical analysis
-    non_statistical_results = calculate_NSA()
+    non_statistical_results = calculate_NSA(ticker)
 
     # Run the statistical analysis
     statistical_results = []
@@ -47,12 +48,19 @@ async def call_groqapi_service(text):
     )
     return chat_completion.choices[0].message.content.strip()
 
-async def ER_NLPAnalysis():
-    combined_results = await run_calculations()
+async def ER_NLPAnalysis(ticker):
+    combined_results = await run_calculations(ticker)
 
-    # Convert the combined results to a string for NLP processing
-    combined_results_str = json.dumps(combined_results, indent=4)
-
+    combined_results_str = ""
+    for key, value in combined_results.items():
+        combined_results_str += f"{key}:\n"
+        if isinstance(value, list):
+            for item in value:
+                combined_results_str += f"{item}\n"
+        else:
+            combined_results_str += f"{value}\n"
+            combined_results_str = combined_results_str.strip()
+    
     # Define a prompt to provide context or specific instructions
     prompt = f"""
     Please analyze the following financial data and provide insights on this stock: {ticker}. Provide insights on the data that you see and put it into human language. For context
@@ -95,14 +103,11 @@ async def ER_NLPAnalysis():
     insights = await call_groqapi_service(text_to_analyze)
     return insights
 
-async def main():
+async def NLP(ticker):
     load_dotenv()
     groq_api_key = os.getenv("groq_api_key")
     global client
     client = Groq(api_key=groq_api_key)
 
-    insights = await ER_NLPAnalysis()
+    insights = await ER_NLPAnalysis(ticker)
     return insights
-
-if __name__ == "__main__":
-    asyncio.run(main())

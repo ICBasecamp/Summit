@@ -3,9 +3,6 @@ from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 import asyncio
 
-ticker = 'NVDA'
-url = f'https://finance.yahoo.com/quote/{ticker}/analysis/'
-
 async def fetch_earnings_estimate(page):
     await page.wait_for_selector('section[data-testid="earningsEstimate"]')
     html_content = await page.content()
@@ -223,7 +220,8 @@ async def fetch_earnings_history(page):
             return df
     return pd.DataFrame()
 
-async def getData():
+async def getData(ticker):
+    url = f'https://finance.yahoo.com/quote/{ticker}/analysis/'
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
@@ -251,6 +249,6 @@ async def getData():
             'analyst_price_targets_df': analyst_price_targets_df
         }
 
-def main():
-    data = asyncio.run(getData())
+async def main(ticker):
+    data = await getData(ticker)
     return data

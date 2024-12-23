@@ -3,21 +3,17 @@ import numpy as np
 import json
 import os
 import sys
-from econIndicators import get_economic_indicators
+from economic_indicators.econIndicators import get_economic_indicators
 
 # Add the parent directory to the Python path to import Earnings module
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Earnings.AnalysisStats import main as calculate_stats
+from earnings.AnalysisStats import main as calculate_stats
 from utilities import convert_to_number
-
-dataframes = calculate_stats()
-
-def calculate_feature_importance():
-    # with open('economic_indicators/results/economic_indicators.json', 'r') as f:
-    #     economic_indicators = json.load(f)
+    
+async def calculate_feature_importance(ticker):
     economic_indicators = get_economic_indicators()
-
+    dataframes = await calculate_stats(ticker)
     # Convert economic indicators to DataFrame
     econ_df = pd.DataFrame()
     for indicator, data in economic_indicators.items():

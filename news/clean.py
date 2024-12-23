@@ -1,8 +1,7 @@
 # from handler import fetch_articles
-from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import re
 import contractions
 
 stop_words = set(stopwords.words('english'))
