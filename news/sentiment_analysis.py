@@ -6,9 +6,8 @@ from news.clean import clean_unstructured_data
 import sys
 import os
 import asyncio
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-from handler import fetch_articles
+from news.handler import fetch_articles
 
 # accepts ticker as input, scrapes news articles and performs sentiment analysis, returning
 # as an array of dictionaries of individual sentences and their sentiment scores
