@@ -1,12 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import './App.css';
 
-function App() {
+const TickerForm: React.FC = () => {
+  const [ticker, setTicker] = useState<string>('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    navigate(`/results/${ticker}`);
+  };
+
+  return (
+    <div>
+      <h1>Enter Ticker</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={ticker}
+          onChange={(e) => setTicker(e.target.value)}
+          placeholder="Enter ticker symbol"
+          required
+        />
+        <button type="submit">Analyze</button>
+      </form>
+    </div>
+  );
+};
+
+const AnalysisResults: React.FC = () => {
+  const { ticker } = useParams<{ ticker: string }>();
   const [messages, setMessages] = useState<string[]>([]);
 
-  const handleAnalyze = () => {
+  React.useEffect(() => {
     setMessages([]);
-    const eventSource = new EventSource('http://127.0.0.1:5000/analyze/AAPL');
+    const eventSource = new EventSource(`http://127.0.0.1:5000/analyze/${ticker}`);
 
     eventSource.onmessage = (event) => {
       setMessages((prevMessages) => [...prevMessages, event.data]);
@@ -20,15 +48,11 @@ function App() {
     return () => {
       eventSource.close();
     };
-  }
+  }, [ticker]);
 
   return (
-    <>
-      <div>
-      </div>
-      <div className="card">
-        <button onClick={handleAnalyze}>Start Analysis</button>
-      </div>
+    <div>
+      <h1>Stock Analysis Results for {ticker}</h1>
       <div>
         <h2>Analysis Updates</h2>
         <ul>
@@ -37,8 +61,19 @@ function App() {
           ))}
         </ul>
       </div>
-    </>
+    </div>
   );
-}
+};
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<TickerForm />} />
+        <Route path="/results/:ticker" element={<AnalysisResults />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;
