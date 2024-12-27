@@ -1,7 +1,6 @@
 Title,Link,Sentiments
-No title found,https://finance.yahoo.com/news/microsoft-msft-reduces-openai-dependency-151041534.html,"[{'sentence': 'No content found', 'sentiment_score': np.float32(0.905041)}]"
-No title found,https://finance.yahoo.com/m/fe0e8138-8244-3fd1-ba39-bd6d0890275a/the-biggest-news-stories-of.html,"[{'sentence': 'No content found', 'sentiment_score': np.float32(0.905041)}]"
-Error,https://finance.yahoo.com/news/agentic-ai-gain-traction-2025-143600338.html,"[{'sentence': 'Error', 'sentiment_score': np.float32(0.80537)}]"
-No title found,https://finance.yahoo.com/news/why-c3-ai-stock-gaining-205500570.html,"[{'sentence': 'No content found', 'sentiment_score': np.float32(0.905041)}]"
-No title found,https://finance.yahoo.com/news/ai-agents-drive-2025-boom-154254525.html,"[{'sentence': 'No content found', 'sentiment_score': np.float32(0.905041)}]"
-Error,https://finance.yahoo.com/news/microsofts-bold-ai-gamble-breaking-165158914.html,"[{'sentence': 'Error', 'sentiment_score': np.float32(0.80537)}]"
+No title found,https://finance.yahoo.com/news/apple-aapl-ascends-while-market-224521758.html,"[{'sentence': 'No content found', 'sentiment_score': 0.905041}]"
+No title found,https://finance.yahoo.com/news/apple-investors-cautioned-amid-recent-191309372.html,"[{'sentence': 'No content found', 'sentiment_score': 0.905041}]"
+No title found,https://finance.yahoo.com/news/dan-niles-apple-aapl-data-203820799.html,"[{'sentence': 'No content found', 'sentiment_score': 0.905041}]"
+No title found,https://finance.yahoo.com/news/apple-stock-touches-intraday-high-after-nod-of-confidence-from-wall-street-154221679.html,"[{'sentence': 'No content found', 'sentiment_score': 0.905041}]"
+No title found,https://finance.yahoo.com/news/nvidia-dominated-2024-big-time-next-year-plenty-of-challenges-110047391.html,"[{'sentence': 'No content found', 'sentiment_score': 0.905041}]"

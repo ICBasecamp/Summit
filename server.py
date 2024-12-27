@@ -3,6 +3,7 @@ from flask_cors import CORS
 import asyncio
 import os
 import sys
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -14,47 +15,51 @@ from news.sentiment_analysis import sentiment_analysis_on_ticker as NA_NLPAnalys
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    data = request.get_json()
-    ticker = data.get('ticker')
+# test route to test sse
+@app.route('/updates')
+def updates():
+    def generate():
+        yield "data: Collecting data...\n\n"
+        time.sleep(2)  # Simulate lengthy process
+        yield "data: Processing data...\n\n"
+        time.sleep(2)
+        yield "data: Finalizing...\n\n"
+        time.sleep(1)
+        yield "data: Completed!\n\n"
+    return Response(generate(), content_type='text/event-stream')
+
+@app.route('/analyze/<ticker>')
+def analyze(ticker):
     print(f"Received ticker: {ticker}")
 
     @stream_with_context
     def workflow():
         try:
-            yield "Starting analysis...\n"
+            yield "data: Starting analysis...\n\n"
 
             # Social Media Analysis
-            yield "Analyzing social media...\n"
+            yield "data: Analyzing social media...\n\n"
             social_media = asyncio.run(SM_NLPAnalysis(ticker))
-            yield f"socialMedia: {social_media}\n"
+            yield f"data: socialMedia: {social_media}\n\n"
 
             # Earnings Analysis
-            yield "Analyzing earnings reports...\n"
+            yield "data: Analyzing earnings reports...\n\n"
             earnings = asyncio.run(ER_NLPAnalysis(ticker))
-            yield f"earnings: {earnings}\n"
+            yield f"data: earnings: {earnings}\n\n"
 
             # News Analysis
-            yield "Analyzing news articles...\n"
+            yield "data: Analyzing news articles...\n\n"
             news = asyncio.run(NA_NLPAnalysis(ticker))
-            yield f"news: {news}\n"
+            yield f"data: news: {news}\n\n"
 
             # Economic Indicators Analysis
-            yield "Analyzing economic indicators...\n"
+            yield "data: Analyzing economic indicators...\n\n"
             economic_indicators = asyncio.run(EI_NLPAnalysis(ticker))
-            yield f"economicIndicators: {economic_indicators}\n"
+            yield f"data: economicIndicators: {economic_indicators}\n\n"
 
-            # Final result
-            result = {
-                "socialMedia": social_media,
-                "earnings": earnings,
-                "news": news,
-                "economicIndicators": economic_indicators
-            }
-            yield f"Final Result: {result}\n"
+            yield "data: Analysis complete.\n\n"
         except Exception as e:
-            yield f"An error occurred: {str(e)}\n"
+            yield f"data: An error occurred: {str(e)}\n\n"
 
     return Response(workflow(), content_type='text/event-stream')
 
