@@ -110,14 +110,32 @@ async def fetch_quote_metrics(page):
 async def main(ticker):
     url_statistics = f'https://finance.yahoo.com/quote/{ticker}/key-statistics/'
     url_quote = f'https://finance.yahoo.com/quote/{ticker}/'
+    retries = 3
+    
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         
-        await page.goto(url_statistics)
+        for attempt in range(1, retries + 1):
+            try:
+                await page.goto(url_statistics, timeout=30000)
+                break
+            except TimeoutError:
+                print(f"TimeoutError: Retrying {attempt}/{retries}...")
+                if attempt == retries:
+                    raise
+        
         financial_metrics = await fetch_financial_metrics(page)
         
-        await page.goto(url_quote)
+        for attempt in range(1, retries + 1):
+            try:
+                await page.goto(url_quote, timeout=30000)
+                break
+            except TimeoutError:
+                print(f"TimeoutError: Retrying {attempt}/{retries}...")
+                if attempt == retries:
+                    raise
+        
         quote_metrics = await fetch_quote_metrics(page)
         
         # Combine both metrics

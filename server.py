@@ -1,4 +1,5 @@
 from flask import Flask, Response, request, stream_with_context
+from flask_cors import CORS
 import asyncio
 import os
 import sys
@@ -11,6 +12,7 @@ from social_media.NLPAnalysis import social_media_sentiment_analysis as SM_NLPAn
 from news.sentiment_analysis import sentiment_analysis_on_ticker as NA_NLPAnalysis
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -26,22 +28,22 @@ def analyze():
             # Social Media Analysis
             yield "Analyzing social media...\n"
             social_media = asyncio.run(SM_NLPAnalysis(ticker))
-            # yield f"{social_media}\n"
+            yield f"socialMedia: {social_media}\n"
 
             # Earnings Analysis
             yield "Analyzing earnings reports...\n"
             earnings = asyncio.run(ER_NLPAnalysis(ticker))
-            # yield f"{earnings}\n"
+            yield f"earnings: {earnings}\n"
 
             # News Analysis
             yield "Analyzing news articles...\n"
             news = asyncio.run(NA_NLPAnalysis(ticker))
-            # yield f"{news}\n"
+            yield f"news: {news}\n"
 
             # Economic Indicators Analysis
             yield "Analyzing economic indicators...\n"
             economic_indicators = asyncio.run(EI_NLPAnalysis(ticker))
-            # yield f"{economic_indicators}\n"
+            yield f"economicIndicators: {economic_indicators}\n"
 
             # Final result
             result = {
