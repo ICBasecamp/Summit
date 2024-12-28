@@ -1,8 +1,6 @@
 "use client";
 
 import { Header } from '@/app/components/header'
-import Head from 'next/head';
-
 
 const testData = {
     sentences: [
