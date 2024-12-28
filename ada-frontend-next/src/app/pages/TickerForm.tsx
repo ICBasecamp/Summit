@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PlaceholdersAndVanishInput } from './components/ticker-bar';
+import { PlaceholdersAndVanishInput } from '../components/ticker-bar';
 
 const TickerForm: React.FC = () => {
   const [ticker, setTicker] = useState<string>('');
@@ -22,7 +22,7 @@ const TickerForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push(`/results/${ticker}`);
+    router.push(`/analyze/${ticker}`);
   };
 
   return (
