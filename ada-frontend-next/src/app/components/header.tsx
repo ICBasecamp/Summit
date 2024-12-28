@@ -1,6 +1,18 @@
 import { Tabs } from './tabs';
 import { PlaceholdersAndVanishInputHeader } from './ticker-bar-header';
 
+import { Geist, Geist_Mono } from "next/font/google";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
 export const Header = () => {
     
     const tabs = [
@@ -28,9 +40,9 @@ export const Header = () => {
     ]
     
     return (
-        <div className="w-full px-8 gap-2 flex flex-col">
-            <div className="bg-zinc-800 flex h-20 w-full items-center gap-2">
-                <p>Logo goes here</p>
+        <div className="w-screen py-4 px-8 gap-2 flex flex-col">
+            <div className="flex h-20 w-full items-center gap-2">
+                <p className="font-semibold text-lg --font-geist-mono">Ice Climbers</p>
                 <div className="flex w-1/2 items-center">
                     <PlaceholdersAndVanishInputHeader 
                         placeholders={['Search for a new ticker']}
@@ -38,6 +50,7 @@ export const Header = () => {
                         onSubmit={() => {}}
                     />
                 </div>
+                <p className="ml-auto">Raw Data</p>
             </div>
             <Tabs tabs={tabs} />
         </div>

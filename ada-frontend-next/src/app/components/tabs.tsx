@@ -4,6 +4,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "../../../lib/utils";
 
+import { Open_Sans } from 'next/font/google';
+
+const openSans = Open_Sans({ subsets: ['latin'] })
+
 type Tab = {
   title: string;
   value: string;
@@ -62,13 +66,13 @@ export const Tabs = ({
                 layoutId="clickedbutton"
                 transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
                 className={cn(
-                  "absolute inset-0 bg-zinc-900 dark:bg-zinc-900 rounded-full ",
+                  "absolute inset-0 bg-neutral-800 dark:bg-zinc-900 rounded-full ",
                   activeTabClassName
                 )}
               />
             )}
 
-            <span className="relative block text-white dark:text-white">
+            <span className={cn("relative block text-white dark:text-white")}>
               {tab.title}
             </span>
           </button>

@@ -1,5 +1,5 @@
 "use client";
-
+import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from '@/app/components/header'
 
 const testData = {
@@ -13,11 +13,20 @@ const testData = {
     ]
 }
 
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
 const NewsPage = () => {
 
-
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col bg-neutral-900 w-full h-screen">
             <Header />
             <h1>News Page</h1>
         </div>
