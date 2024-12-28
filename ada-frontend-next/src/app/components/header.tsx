@@ -38,7 +38,7 @@ export const Header = () => {
                         onSubmit={() => {}}
                     />
                 </div>
-                <p className="ml-auto">Raw Data</p>
+                <p className="ml-auto hover:underline cursor-pointer">Raw Data</p>
             </div>
             <Tabs tabs={tabs} />
         </div>
