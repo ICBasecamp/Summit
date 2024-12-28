@@ -7,6 +7,10 @@ import TickerForm from './TickerForm';
 import AnalysisResults from './AnalysisResults';
 import "./globals.css";
 
+import { Open_Sans } from 'next/font/google';
+
+const openSans = Open_Sans({ subsets: ['latin'] })
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.className} ${geistMono.className} antialiased`}
       >
         <main>
           {pathname === '/' && <TickerForm />}
