@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.className} ${geistMono.className} antialiased`}
+        className={`${geistSans.className} ${geistMono.className} antialiased bg-neutral-900`}
       >
         <main>
           {pathname === '/' && <TickerForm />}
