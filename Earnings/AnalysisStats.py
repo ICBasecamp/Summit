@@ -1,7 +1,6 @@
 import pandas as pd
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
-import asyncio
 
 async def fetch_earnings_estimate(page):
     await page.wait_for_selector('section[data-testid="earningsEstimate"]')
@@ -222,11 +221,20 @@ async def fetch_earnings_history(page):
 
 async def getData(ticker):
     url = f'https://finance.yahoo.com/quote/{ticker}/analysis/'
+    retries = 3
+    
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         
-        await page.goto(url, timeout=60000)
+        for attempt in range(1, retries + 1):
+            try:
+                await page.goto(url, timeout=30000)
+                break
+            except TimeoutError:
+                print(f"TimeoutError: Retrying {attempt}/{retries}...")
+                if attempt == retries:
+                    raise
         
         earnings_df = await fetch_earnings_estimate(page)
         revenue_df = await fetch_revenue_estimate(page)

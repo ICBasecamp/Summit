@@ -13,9 +13,17 @@ async def fetch_article(browser, link):
     article_url = link if link.startswith('http') else f'https://finance.yahoo.com{link}'
     page = await browser.new_page()
     print(f"Fetching article: {article_url}")
+    retries = 3
     
     try:
-        await page.goto(article_url, timeout=60000)  # Increase timeout to 60 seconds
+        for attempt in range(1, retries + 1):
+            try:
+                await page.goto(url, timeout=30000)
+                break
+            except TimeoutError:
+                print(f"TimeoutError: Retrying {attempt}/{retries}...")
+                if attempt == retries:
+                    raise  # Increase timeout to 60 seconds
         print(f"Loaded article: {article_url}")
         
         # Grab the title before clicking the "Continue Reading" button
