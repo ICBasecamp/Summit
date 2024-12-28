@@ -1,32 +1,7 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useParams } from 'react-router-dom';
 import './App.css';
-
-const TickerForm: React.FC = () => {
-  const [ticker, setTicker] = useState<string>('');
-  const navigate = useNavigate();
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    navigate(`/results/${ticker}`);
-  };
-
-  return (
-    <div>
-      <h1>Enter Ticker</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={ticker}
-          onChange={(e) => setTicker(e.target.value)}
-          placeholder="Enter ticker symbol"
-          required
-        />
-        <button type="submit">Analyze</button>
-      </form>
-    </div>
-  );
-};
+import TickerForm from './TickerForm';
 
 const AnalysisResults: React.FC = () => {
   const { ticker } = useParams<{ ticker: string }>();
