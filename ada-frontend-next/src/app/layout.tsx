@@ -1,10 +1,11 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Geist, Geist_Mono } from "next/font/google";
-import TickerForm from './TickerForm';
-import AnalysisResults from './AnalysisResults';
+import { AnalysisProvider } from './context/AnalysisContext';
+import TickerForm from './pages/TickerForm';
+import AnalysisResults from './pages/AnalysisResults';
+import { metadata } from './metadata';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,7 +13,7 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = createGeistMono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -23,18 +24,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const ticker = pathname.split('/analyze/')[1] || null;
+  const [tickerState, setTicker] = useState<string | null>(null);
 
   return (
     <html lang="en">
+      <head>
+        <title>Stock Analysis App</title>
+        <meta name="description" content="Analyze stock data with insights from various sources" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main>
-          {pathname === '/' && <TickerForm />}
-          {pathname.startsWith('/results') && <AnalysisResults />}
-          {children}
-        </main>
+        <AnalysisProvider>
+          <main>
+            {pathname === '/' && <TickerForm setTicker={setTicker} />}
+            {pathname.startsWith('/analyze') && <AnalysisResults ticker={ticker ?? ''} />}
+            {children}
+          </main>
+        </AnalysisProvider>
       </body>
     </html>
   );
+}
+
+function Geist({ variable, subsets }: { variable: string; subsets: string[]; }) {
+  return { variable, subsets };
+}
+
+function createGeistMono({ variable, subsets }: { variable: string; subsets: string[]; }) {
+  return { variable, subsets };
 }
