@@ -5,6 +5,8 @@ import { CircularProgress } from '@/app/components/circular-progress';
 
 import { useCountUp } from 'use-count-up';
 
+import * as Tooltip from '@radix-ui/react-tooltip';
+
 const testJsonResponse = [
     {
         Link: "https://finance.yahoo.com/news/microsoft-corporation-msft-leads-ai-031051641.html",
@@ -95,9 +97,28 @@ const NewsPage = () => {
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
                                 <h2 className="text-lg font-semibold self-center">Highest Sentiment Sentences</h2>
                                 {highestSentences.map((sentence, index) => (
+                                    
                                     <div key={index} className="flex flex-col gap-1">
                                         <p className="font-semibold text-emerald-400" >{(sentence.sentiment_score * 100).toFixed(2)}%</p>
-                                        <p className="text-xs">{sentence.sentence}</p>
+                                        <Tooltip.Provider>
+                                            <Tooltip.Root>
+                                                <Tooltip.Trigger asChild>
+                                                    <p className="cursor-default text-xs">{sentence.sentence}</p>
+                                                </Tooltip.Trigger>
+                                                <Tooltip.Portal>
+                                                    <Tooltip.Content 
+                                                        className="TooltipContent" 
+                                                        sideOffset={5}
+                                                        align="start"
+                                                    >
+                                                        <div className="flex items-center justify-center py-0.5 px-1 rounded-md bg-zinc-950">
+                                                            <a href={sentence.link} className='text-white text-xs'>{sentence.link}</a>
+                                                        </div>
+                                                        <Tooltip.Arrow className="TooltipArrow" />
+                                                    </Tooltip.Content>
+                                                </Tooltip.Portal>
+                                            </Tooltip.Root>
+                                        </Tooltip.Provider>
                                     </div>
                                 ))}
                             </div>
