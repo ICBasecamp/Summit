@@ -4,8 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlaceholdersAndVanishInput } from '../components/ticker-bar';
 
-const TickerForm: React.FC = () => {
-  const [ticker, setTicker] = useState<string>('');
+interface TickerFormProps {
+  setTicker: (ticker: string) => void;
+}
+
+const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
+  const [tickerInput, setTickerInput] = useState<string>('');
   const router = useRouter();
 
   const placeholders = [
@@ -17,12 +21,13 @@ const TickerForm: React.FC = () => {
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTicker(e.target.value);
+    setTickerInput(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push(`/analyze/${ticker}`);
+    setTicker(tickerInput);
+    router.push(`/analyze/${tickerInput}`);
   };
 
   return (

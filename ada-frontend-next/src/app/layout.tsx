@@ -1,11 +1,11 @@
 "use client";
 
-import React from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { Geist, Geist_Mono } from "next/font/google";
+import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { AnalysisProvider } from './context/AnalysisContext';
 import TickerForm from './pages/TickerForm';
 import AnalysisResults from './pages/AnalysisResults';
-import { AnalysisProvider } from './context/AnalysisContext';
+import { metadata } from './metadata';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,7 +13,7 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = createGeistMono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const ticker = searchParams.get('ticker');
+  const ticker = pathname.split('/analyze/')[1] || null;
+  const [tickerState, setTicker] = useState<string | null>(null);
 
   return (
     <html lang="en">
@@ -38,7 +38,7 @@ export default function RootLayout({
       >
         <AnalysisProvider>
           <main>
-            {pathname === '/' && <TickerForm />}
+            {pathname === '/' && <TickerForm setTicker={setTicker} />}
             {pathname.startsWith('/analyze') && <AnalysisResults ticker={ticker ?? ''} />}
             {children}
           </main>
@@ -46,4 +46,12 @@ export default function RootLayout({
       </body>
     </html>
   );
+}
+
+function Geist({ variable, subsets }: { variable: string; subsets: string[]; }) {
+  return { variable, subsets };
+}
+
+function createGeistMono({ variable, subsets }: { variable: string; subsets: string[]; }) {
+  return { variable, subsets };
 }

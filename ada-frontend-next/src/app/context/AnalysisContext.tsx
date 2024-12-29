@@ -1,5 +1,4 @@
-// src/app/context/AnalysisContext.tsx
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, FC } from 'react';
 
 interface AnalysisData {
   socialMedia: string;
@@ -15,7 +14,7 @@ interface AnalysisContextType {
 
 const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined);
 
-export const AnalysisProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AnalysisProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [data, setData] = useState<AnalysisData | null>(null);
 
   return (
