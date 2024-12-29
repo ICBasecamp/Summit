@@ -127,7 +127,25 @@ const NewsPage = () => {
                                 {lowestSentences.map((sentence, index) => (
                                     <div key={index} className="flex flex-col gap-0.5">
                                         <p className="font-semibold text-red-400" >{(sentence.sentiment_score * 100).toFixed(2)}%</p>
-                                        <p className="text-xs">{sentence.sentence}</p>
+                                        <Tooltip.Provider>
+                                            <Tooltip.Root>
+                                                <Tooltip.Trigger asChild>
+                                                    <p className="cursor-default text-xs">{sentence.sentence}</p>
+                                                </Tooltip.Trigger>
+                                                <Tooltip.Portal>
+                                                    <Tooltip.Content 
+                                                        className="TooltipContent" 
+                                                        sideOffset={5}
+                                                        align="start"
+                                                    >
+                                                        <div className="flex items-center justify-center py-0.5 px-1 rounded-md bg-zinc-950">
+                                                            <a href={sentence.link} className='text-white text-xs'>{sentence.link}</a>
+                                                        </div>
+                                                        <Tooltip.Arrow className="TooltipArrow" />
+                                                    </Tooltip.Content>
+                                                </Tooltip.Portal>
+                                            </Tooltip.Root>
+                                        </Tooltip.Provider>
                                     </div>
                                 ))}
                             </div>
