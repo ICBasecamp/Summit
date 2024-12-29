@@ -16,7 +16,12 @@ const testJsonResponse = [
             { sentence: "More Real Estate.", sentiment_score: 0.9383361 },
             { sentence: "More Power.", sentiment_score: 0.92113954 },
             { sentence: "More Water.", sentiment_score: 0.92024726 },
-            { sentence: "More Everything, explores the resource-intensive nature of artificial intelligence, emphasizing its demands on electricity, water, and infrastructure.", sentiment_score: 0.9168238 }
+            { sentence: "More Everything, explores the resource-intensive nature of artificial intelligence, emphasizing its demands on electricity, water, and infrastructure.", sentiment_score: 0.9168238 },
+            { sentence: "Number of Hedge Fund Holders: 279\nMicrosoft Corporation (NASDAQ:MSFT) uses AI across its cloud services, productivity tools, and business solutions to enhance automation, security, and user experience.", sentiment_score: 0.7505022 },
+            { sentence: "Its AI initiatives include intelligent cloud services, AI-driven applications for business operations, and advanced capabilities in language processing and cloud computing.", sentiment_score: 0.92186314 },
+            { sentence: "Omidia, a technology consultancy estimates that Microsoft purchased 485,000 of Nvidia's Hopper GPUs in 2024, as reported by Financial Times.", sentiment_score: 0.9121019 },
+            { sentence: "Overall MSFT ranks 2nd on our list of the trending AI stocks.", sentiment_score: 0.72807175 },
+            { sentence: "While we acknowledge the potential of MSFT as an investment, our conviction lies in the belief that AI stocks hold greater promise for delivering higher returns and doing so within a shorter timeframe.", sentiment_score: 0.04312906 }
         ]
     },
     {
@@ -24,13 +29,17 @@ const testJsonResponse = [
         Sentiments: [
             { sentence: "The year 2025 is virtually here, bringing with it a wave of curiosity from investors eager to see what the stock market holds.", sentiment_score: 0.50006336 },
             { sentence: "To capture the pulse of the moment, Quartz asked five AI chatbots — OpenAI's ChatGPT, Google's (GOOGL) Gemini, Meta (META) AI, Microsoft's (MSFT) Copilot, and Groq — to share predictions on the stocks that may outperform in 2025.", sentiment_score: 0.4835702 },
-            { sentence: "The slides that follow contain exact quotes from the bots.", sentiment_score: 0.9230646 },
-            { sentence: "The purpose of this article is to offer readers a glimpse into how AI interprets the dynamic world of investing.", sentiment_score: 0.91414225 }
+            { sentence: "Microsoft (MSFT): Microsoft's strong product lineup, including Windows, Office, and Azure cloud platform, positions it well for future growth.", sentiment_score: 0.07472271 },
+            { sentence: "Its focus on productivity and collaboration tools is also driving strong demand.", sentiment_score: 0.2506462 },
+            { sentence: "Apple (AAPL): Apple's innovative products, including the iPhone, iPad, and Mac, continue to be popular with consumers.", sentiment_score: 0.52340305 },
+            { sentence: "Its strong brand loyalty and ecosystem of services provide a solid foundation for future growth.", sentiment_score: 0.17264448 },
+            { sentence: "Tesla (TSLA): Tesla is leading the electric vehicle revolution and is rapidly expanding its production capacity.", sentiment_score: 0.066005215 },
+            { sentence: "Its strong brand recognition and innovative technology give it a competitive advantage in the market.", sentiment_score: 0.10793233 },
+            { sentence: "Apple Inc. (AAPL): Apple continues to be a leader in technology with strong growth in its services segment, including payment processing and streaming media.", sentiment_score: 0.06272849 }
+    
         ]
     }
 ];
-
-
 
 const testData = {
     response: testJsonResponse.flatMap((json) => 
