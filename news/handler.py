@@ -48,6 +48,7 @@ async def fetch_article(browser, link):
             
             # Fetch the content from <p> tags within the "article-wrap no-bb" class
             article_html_content = await page.content()
+            print(article_html_content)
             article_soup = BeautifulSoup(article_html_content, 'html.parser')
             article_wrap = article_soup.find('div', class_='article-wrap no-bb')
             if article_wrap:
@@ -99,8 +100,6 @@ async def fetch_articles(ticker):
         # Use a set to store unique links
         links = set(a_tag.get('href') for a_tag in a_tags if a_tag.get('href') and 'news' in a_tag.get('href'))
         print(f"Found {len(links)} unique links")
-
-
         
         tasks = [fetch_article(browser, link) for link in links]
         results = await asyncio.gather(*tasks)
