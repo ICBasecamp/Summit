@@ -8,7 +8,14 @@ import AnalysisResults from './pages/AnalysisResults';
 import { metadata } from './metadata';
 import "./globals.css";
 
-const geistSans = Geist({
+import { Open_Sans } from 'next/font/google';
+
+import { motion } from "framer-motion";
+import { HeroHighlight, Highlight } from "./components/highlight";
+
+export const openSans = Open_Sans({ subsets: ['latin'] })
+
+export const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -34,15 +41,17 @@ export default function RootLayout({
         <meta name="description" content="Analyze stock data with insights from various sources" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.className} ${geistMono.className} antialiased bg-neutral-900`}
       >
-        <AnalysisProvider>
-          <main>
-            {pathname === '/' && <TickerForm setTicker={setTicker} />}
-            {pathname.startsWith('/analyze') && <AnalysisResults ticker={ticker ?? ''} />}
-            {children}
-          </main>
-        </AnalysisProvider>
+        <HeroHighlight className='h-screen'>
+          <AnalysisProvider>
+            <main>
+              {pathname === '/' && <TickerForm setTicker={setTicker} />}
+              {pathname.startsWith('/analyze') && <AnalysisResults ticker={ticker ?? ''} />}
+              {children}
+            </main>
+          </AnalysisProvider>
+        </HeroHighlight>
       </body>
     </html>
   );

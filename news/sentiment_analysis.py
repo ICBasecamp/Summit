@@ -1,30 +1,30 @@
 import pandas as pd
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import nltk
-from news.clean import clean_unstructured_data
+from clean import clean_unstructured_data
 
 import sys
 import os
 import asyncio
 
-from news.handler import fetch_articles
+from handler import fetch_articles
 
 # accepts ticker as input, scrapes news articles and performs sentiment analysis, returning
 # as an array of dictionaries of individual sentences and their sentiment scores
 async def sentiment_analysis_on_ticker(ticker):
 
-    df = await fetch_articles(ticker)
+    # df = await fetch_articles(ticker)
 
-    if df.empty:
-        print("No articles found for the ticker.")
-        return []
+    # if df.empty:
+    #     print("No articles found for the ticker.")
+    #     return []
 
     # temporarily reading/storing from csv for testing, reduce time fetching
     # df.to_csv('news/results/raw_data.csv', index=False)
 
-    # df = pd.read_csv('news/results/raw_data.csv')
-    # df = df.head(1)
-
+    df = pd.read_csv('news/results/raw_data.csv')
+    df = df.head(3)
+    
     df['Sentiments'] = None
 
     # using automodel instead of pipeline
@@ -33,7 +33,7 @@ async def sentiment_analysis_on_ticker(ticker):
     
     def calculate_sentiment_score(sentiment):
         scores = sentiment.logits.softmax(dim=-1).detach().cpu().numpy()[0]
-        sentiment_score = scores[2] - scores[0]  # positive - negative
+        sentiment_score = scores[2]  # positive - negative
         return sentiment_score
     
     def analyze_sentiment(row):
@@ -62,3 +62,5 @@ async def sentiment_analysis_on_ticker(ticker):
 
     print("Sentiment Analysis completed.")
     return df['Sentiments'].tolist()
+
+asyncio.run(sentiment_analysis_on_ticker('MSFT')) # for testing
