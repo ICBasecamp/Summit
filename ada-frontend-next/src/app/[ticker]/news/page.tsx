@@ -5,19 +5,41 @@ import { CircularProgress } from '@/app/components/circular-progress';
 
 import { useCountUp } from 'use-count-up';
 
+const testJsonResponse = [
+    {
+        Link: "https://finance.yahoo.com/news/microsoft-corporation-msft-leads-ai-031051641.html",
+        Sentiments: [
+            { sentence: "We recently compiled a list of the 9 Trending AI Stocks on Latest News and Ratings.", sentiment_score: 0.9332724 },
+            { sentence: "In this article, we are going to take a look at where Microsoft Corporation (NASDAQ:MSFT) stands against the other AI stocks.", sentiment_score: 0.94106907 },
+            { sentence: "A Bloomberg report from December 13, AI Wants More Data.", sentiment_score: 0.93741614 },
+            { sentence: "More Chips.", sentiment_score: 0.9341822 },
+            { sentence: "More Real Estate.", sentiment_score: 0.9383361 },
+            { sentence: "More Power.", sentiment_score: 0.92113954 },
+            { sentence: "More Water.", sentiment_score: 0.92024726 },
+            { sentence: "More Everything, explores the resource-intensive nature of artificial intelligence, emphasizing its demands on electricity, water, and infrastructure.", sentiment_score: 0.9168238 }
+        ]
+    },
+    {
+        Link: "https://finance.yahoo.com/news/asked-5-ai-chatbots-pick-193700333.html",
+        Sentiments: [
+            { sentence: "The year 2025 is virtually here, bringing with it a wave of curiosity from investors eager to see what the stock market holds.", sentiment_score: 0.50006336 },
+            { sentence: "To capture the pulse of the moment, Quartz asked five AI chatbots — OpenAI's ChatGPT, Google's (GOOGL) Gemini, Meta (META) AI, Microsoft's (MSFT) Copilot, and Groq — to share predictions on the stocks that may outperform in 2025.", sentiment_score: 0.4835702 },
+            { sentence: "The slides that follow contain exact quotes from the bots.", sentiment_score: 0.9230646 },
+            { sentence: "The purpose of this article is to offer readers a glimpse into how AI interprets the dynamic world of investing.", sentiment_score: 0.91414225 }
+        ]
+    }
+];
+
+
 
 const testData = {
-    sentences: [
-        {'sentence': 'Microsoft led the purchases with 615,000 units, but Chinese firms ByteDance and Tencent bought about 230,000 each, which meets U.S. export restrictions.', 'sentiment_score': 0.9326189},
-        {'sentence': 'Microsoft led the purchases with 615,000 units, but Chinese firms ByteDance and Tencent bought about 230,000 each, which meets U.S. export restrictions.', 'sentiment_score': 0.8326189},
-        {'sentence': 'Microsoft led the purchases with 615,000 units, but Chinese firms ByteDance and Tencent bought about 230,000 each, which meets U.S. export restrictions.', 'sentiment_score': -0.9326189},
-        {'sentence': "However, Amazon and Google's purchase of 196,000 and 169,000 Hopper chips, respectively, demonstrates a competitive shift in the cloud computing market as the companies pursue their own development pipelines of custom AI chips.", 'sentiment_score': -0.50443673},
-        {'sentence': 'Microsoft led the purchases with 615,000 units, but Chinese firms ByteDance and Tencent bought about 230,000 each, which meets U.S. export restrictions.', 'sentiment_score': 0.8326189},
-        {'sentence': "However, Amazon and Google's purchase of 196,000 and 169,000 Hopper chips, respectively, demonstrates a competitive shift in the cloud computing market as the companies pursue their own development pipelines of custom AI chips.", 'sentiment_score': -0.50443673},
-        {'sentence': 'Microsoft led the purchases with 615,000 units, but Chinese firms ByteDance and Tencent bought about 230,000 each, which meets U.S. export restrictions.', 'sentiment_score': 0.8326189},
-        {'sentence': "However, Amazon and Google's purchase of 196,000 and 169,000 Hopper chips, respectively, demonstrates a competitive shift in the cloud computing market as the companies pursue their own development pipelines of custom AI chips.", 'sentiment_score': -0.50443673},
-        {'sentence': "However, Amazon and Google's purchase of 196,000 and 169,000 Hopper chips, respectively, demonstrates a competitive shift in the cloud computing market as the companies pursue their own development pipelines of custom AI chips.", 'sentiment_score': -0.50443673}
-    ]
+    response: testJsonResponse.flatMap((json) => 
+        json.Sentiments.map((sentiment) => ({
+            link: json.Link,
+            sentence: sentiment.sentence,
+            sentiment_score: sentiment.sentiment_score
+        }))
+    ),
 };
 
 const negativeSentThreshold = -15.00;
@@ -25,9 +47,9 @@ const positiveSentThreshold = 15.00;
 
 const NewsPage = () => {
 
-    const averageSentiment = parseFloat(((testData.sentences.reduce((acc, curr) => acc + curr.sentiment_score, 0) / testData.sentences.length) * 100).toFixed(2));
+    const averageSentiment = parseFloat(((testData.response.reduce((acc, curr) => acc + curr.sentiment_score, 0) / testData.response.length) * 100).toFixed(2));
 
-    const sortedSentences = testData.sentences.sort((a, b) => b.sentiment_score - a.sentiment_score);
+    const sortedSentences = testData.response.sort((a, b) => b.sentiment_score - a.sentiment_score);
     const highestSentences = sortedSentences.slice(0, 3);
     const lowestSentences = sortedSentences.slice(-3).reverse();
 
@@ -55,7 +77,7 @@ const NewsPage = () => {
                         <div className="flex flex-col">
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
                                 <CircularProgress value={value} className="size-52" colour={sentimentColour}/>
-                                <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.sentences.length}</span> sentences scraped.</p>
+                                <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.response.length}</span> sentences scraped.</p>
                             </div>
                         </div>
                     </div>
