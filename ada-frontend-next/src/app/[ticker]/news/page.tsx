@@ -83,8 +83,8 @@ const NewsPage = () => {
                     </div>
                     <div className="grow w-3/5">
                         <div className="flex flex-col gap-8">
-                            <div className="flex flex-col rounded-xl bg-zinc-800 p-6 items-center gap-2">
-                                <h2 className="text-lg font-semibold">Highest Sentiment Sentences</h2>
+                            <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
+                                <h2 className="text-lg font-semibold self-center">Highest Sentiment Sentences</h2>
                                 {highestSentences.map((sentence, index) => (
                                     <div key={index} className="flex flex-col gap-1">
                                         <p className="font-semibold text-emerald-400" >{(sentence.sentiment_score * 100).toFixed(2)}%</p>
@@ -92,8 +92,8 @@ const NewsPage = () => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex flex-col rounded-xl bg-zinc-800 p-6 items-center gap-2">
-                                <h2 className="text-lg font-semibold">Lowest Sentiment Sentences</h2>
+                            <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
+                                <h2 className="text-lg font-semibold self-center">Lowest Sentiment Sentences</h2>
                                 {lowestSentences.map((sentence, index) => (
                                     <div key={index} className="flex flex-col gap-0.5">
                                         <p className="font-semibold text-red-400" >{(sentence.sentiment_score * 100).toFixed(2)}%</p>
