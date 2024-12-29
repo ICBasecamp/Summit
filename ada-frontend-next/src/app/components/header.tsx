@@ -1,5 +1,7 @@
 import { Tabs } from './tabs';
 import { PlaceholdersAndVanishInputHeader } from './ticker-bar-header';
+import { Braces } from 'lucide-react';
+import { ArrowDownToLine } from 'lucide-react';
 
 export const Header = () => {
     
@@ -38,7 +40,10 @@ export const Header = () => {
                         onSubmit={() => {}}
                     />
                 </div>
-                <p className="ml-auto hover:underline cursor-pointer">Raw Data</p>
+                <div className="flex gap-1.5 ml-auto items-center">
+                    <ArrowDownToLine size={18}/>
+                    <p className="hover:underline cursor-pointer">Raw Data</p>
+                </div>
             </div>
             <Tabs tabs={tabs} />
         </div>
