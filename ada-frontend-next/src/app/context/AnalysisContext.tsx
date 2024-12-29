@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode, FC } from 'react';
 
 interface AnalysisData {
-  socialMedia: string;
-  earnings: string;
-  news: string;
-  economicIndicators: string;
+  socialMedia?: string;
+  earnings?: string;
+  news?: string;
+  economicIndicators?: string;
+  nonJsonMessages?: string[];
 }
 
 interface AnalysisContextType {

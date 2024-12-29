@@ -1,18 +1,32 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAnalysis } from '../context/AnalysisContext';
+import { Spinner } from '@nextui-org/spinner';
 
 const AnalysisResults: React.FC<{ ticker: string | null }> = ({ ticker }) => {
-  const [messages, setMessages] = useState<string[]>([]);
+  const { setData } = useAnalysis();
+  const [latestMessage, setLatestMessage] = useState<string>('');
+  const router = useRouter();
 
   useEffect(() => {
     if (!ticker) return;
 
-    setMessages([]);
+    setLatestMessage('');
     const eventSource = new EventSource(`http://127.0.0.1:5000/analyze/${ticker}`);
 
     eventSource.onmessage = (event) => {
-      setMessages((prevMessages) => [...prevMessages, event.data]);
+      const newMessage = event.data;
+      setLatestMessage(newMessage);
+
+      // Assuming the event data is in JSON format and contains the analysis data
+      const parsedData = newMessage;
+      setData(parsedData);
+
+      if (newMessage === "Analysis complete.") {
+        router.push(`/${ticker}/news`);
+      }
     };
 
     eventSource.onerror = (error) => {
@@ -23,23 +37,15 @@ const AnalysisResults: React.FC<{ ticker: string | null }> = ({ ticker }) => {
     return () => {
       eventSource.close();
     };
-  }, [ticker]);
+  }, [ticker, setData, router]);
 
   if (!ticker) {
     return <div>Please enter a ticker symbol.</div>;
   }
 
   return (
-    <div>
-      <h1>Stock Analysis Results for {ticker}</h1>
-      <div>
-        <h2>Analysis Updates</h2>
-        <ul>
-          {messages.map((message, index) => (
-            <li key={index}>{message}</li>
-          ))}
-        </ul>
-      </div>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Spinner color='default' size='lg' label={latestMessage} />
     </div>
   );
 };
