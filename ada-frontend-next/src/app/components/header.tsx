@@ -29,7 +29,7 @@ export const Header = () => {
     
     return (
         <div className="w-screen py-4 px-8 gap-2 flex flex-col">
-            <div className="flex h-20 w-full items-center gap-2">
+            <div className=" flex h-20 w-full items-center gap-2">
                 <p className="font-semibold text-lg --font-geist-mono">Ice Climbers</p>
                 <div className="flex w-1/2 items-center">
                     <PlaceholdersAndVanishInputHeader 

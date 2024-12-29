@@ -7,6 +7,8 @@ import { useCountUp } from 'use-count-up';
 
 import * as Tooltip from '@radix-ui/react-tooltip';
 
+import { geistSans, openSans } from '@/app/layout';
+
 const testJsonResponse = [
     {
         Link: "https://finance.yahoo.com/news/microsoft-corporation-msft-leads-ai-031051641.html",
@@ -83,19 +85,20 @@ const NewsPage = () => {
         <div className="flex flex-col bg-neutral-900 w-full h-screen">
             <Header />
             <div className="flex flex-col px-8 pt-2 pb-8">
-                <div className="flex justify-between gap-8">
-                    <div className="grow w-2/5">
+                <div className="flex justify-between gap-12">
+                    <div className="grow w-3/5">
                         <div className="flex flex-col">
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
+                                <p className={`text-2xl font-semibold ${openSans.className}`}>Average Sentiment Score</p>
                                 <CircularProgress value={value} className="size-52" colour={sentimentColour}/>
                                 <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.response.length}</span> sentences scraped.</p>
                             </div>
                         </div>
                     </div>
-                    <div className="grow w-3/5">
+                    <div className="grow w-2/5">
                         <div className="flex flex-col gap-8">
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
-                                <h2 className="text-lg font-semibold self-center">Highest Sentiment Sentences</h2>
+                                <h2 className={`text-lg font-medium self-center ${openSans.className}`}>Highest Sentiment Sentences</h2>
                                 {highestSentences.map((sentence, index) => (
                                     
                                     <div key={index} className="flex flex-col gap-1">
@@ -123,7 +126,7 @@ const NewsPage = () => {
                                 ))}
                             </div>
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
-                                <h2 className="text-lg font-semibold self-center">Lowest Sentiment Sentences</h2>
+                                <h2 className={`text-lg font-medium self-center ${openSans.className}`} >Lowest Sentiment Sentences</h2>
                                 {lowestSentences.map((sentence, index) => (
                                     <div key={index} className="flex flex-col gap-0.5">
                                         <p className="font-semibold text-red-400" >{(sentence.sentiment_score * 100).toFixed(2)}%</p>

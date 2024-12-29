@@ -9,9 +9,9 @@ import "./globals.css";
 
 import { Open_Sans } from 'next/font/google';
 
-const openSans = Open_Sans({ subsets: ['latin'] })
+export const openSans = Open_Sans({ subsets: ['latin'] })
 
-const geistSans = Geist({
+export const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
