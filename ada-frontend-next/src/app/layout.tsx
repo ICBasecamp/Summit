@@ -14,6 +14,8 @@ import { Open_Sans } from 'next/font/google';
 import { motion } from "framer-motion";
 import { HeroHighlight, Highlight } from "./components/highlight";
 
+import { Geist_Mono } from 'next/font/google';
+
 export const openSans = Open_Sans({ subsets: ['latin'] })
 
 export const geistSans = Geist({
@@ -21,7 +23,7 @@ export const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = createGeistMono({
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -42,7 +44,7 @@ export default function RootLayout({
         <meta name="description" content="Analyze stock data with insights from various sources" />
       </head>
       <body
-        className={`${geistSans.className} ${geistMono.className} antialiased`}
+        className={`${geistMono.className} antialiased bg-neutral-900`}
       >
         <HeroHighlight className='h-screen'>
           <AnalysisProvider>
