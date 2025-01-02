@@ -7,15 +7,56 @@ import { PlaceholdersAndVanishInput } from '../components/ticker-bar';
 import { FlipWords } from "../components/flip-words";
 import { poppins } from '../layout';
 
+import Image from 'next/image';
 
 interface TickerFormProps {
   setTicker: (ticker: string) => void;
 }
 
+interface Suggestion {
+  symbol: string;
+  fullName: string;
+  icon: string;
+}
+
 
 const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
   const [tickerInput, setTickerInput] = useState<string>('');
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const router = useRouter();
+
+  const testTickers = [
+    {
+      symbol: 'AAPL',
+      fullName: 'Apple Inc.',
+      icon: 'https://logo.clearbit.com/apple.com'
+    },
+    {
+      symbol: 'GOOGL',
+      fullName: 'Alphabet Inc.',
+      icon: 'https://logo.clearbit.com/google.com'
+    },
+    {
+      symbol: 'AMZN',
+      fullName: 'Amazon.com Inc.',
+      icon: 'https://logo.clearbit.com/amazon.com'
+    },
+    {
+      symbol: 'TSLA',
+      fullName: 'Tesla Inc.',
+      icon: 'https://logo.clearbit.com/tesla.com'
+    },
+    {
+      symbol: 'MSFT',
+      fullName: 'Microsoft Corporation',
+      icon: 'https://logo.clearbit.com/microsoft.com'
+    },
+    {
+      symbol: 'NFLX',
+      fullName: 'Netflix Inc.',
+      icon: 'https://logo.clearbit.com/netflix.com'
+    }
+  ]
 
   const flipWords = [
     '$META?', '$AAPL?', '$AMZN?', '$NFLX?', '$GOOGL?', 
@@ -31,12 +72,23 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTickerInput(e.target.value);
+    if (e.target.value === '') {
+      setSuggestions([]);
+      return;
+    } 
+    setSuggestions(testTickers.filter(ticker => ticker.symbol.includes(e.target.value.toUpperCase())));
+
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setTicker(tickerInput);
-    router.push(`/analyze/${tickerInput}`);
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   setTicker(tickerInput);
+  //   router.push(`/analyze/${tickerInput}`);
+  // };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setTickerInput(suggestion);
+    setSuggestions([]);
   };
 
   return (
@@ -48,11 +100,27 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
         <p className={`text-2xl text-left sm:text-5xl dark:text-white text-white ${poppins.className}`}>We'll break it down for you.</p>
       </div>
 
-      <PlaceholdersAndVanishInput
-        placeholders={placeholders}
-        onChange={handleChange}
-        onSubmit={handleSubmit}
-      />
+      <div className="relative w-full max-w-xl">
+        <PlaceholdersAndVanishInput
+          placeholders={placeholders}
+          onChange={handleChange}
+          value={tickerInput}
+        />
+        {suggestions.length > 0 && (
+          <ul className="py-2 flex flex-col gap-2 absolute bg-neutral-800 border border-zinc-900 w-full mt-1 rounded-lg shadow-lg z-10 max-h-40 overflow-y-auto">
+            {suggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                className="px-4 py-2 cursor-pointer hover:bg-neutral-700 flex justify-between items-center"
+                onClick={() => handleSuggestionClick(suggestion.symbol)}
+              >
+                {suggestion.symbol} - {suggestion.fullName}
+                <span><Image src={suggestion.icon} alt={suggestion.fullName} width={28} height={28} className='rounded-md' /></span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
