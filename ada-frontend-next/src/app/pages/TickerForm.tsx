@@ -115,14 +115,14 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
           placeholders={placeholders}
           onChange={handleChange}
           onSubmit={handleSubmit}
-          value={tickerInput}
+          currentValue={tickerInput}
         />
         {suggestions.length > 0 && (
-          <ul className="py-2 flex flex-col gap-2 absolute bg-neutral-800 border border-zinc-900 w-full mt-1 rounded-lg shadow-lg z-10 max-h-40 overflow-y-auto">
+          <ul className="py-2 flex flex-col absolute bg-neutral-800 border border-zinc-900 w-full mt-1 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
             {suggestions.map((suggestion, index) => (
               <li
                 key={index}
-                className="px-4 py-2 cursor-pointer hover:bg-neutral-700 flex justify-between items-center"
+                className="px-4 py-3 cursor-pointer hover:bg-neutral-700 flex justify-between items-center"
                 onClick={() => handleSuggestionClick(suggestion.symbol)}
               >
                 {suggestion.symbol} - {suggestion.fullName}
