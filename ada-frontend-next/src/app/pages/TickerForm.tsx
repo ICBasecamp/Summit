@@ -102,7 +102,7 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
   };
 
   return (
-    <div className="h-[40rem] flex flex-col justify-center items-center px-4">
+    <div className="h-screen flex flex-col justify-center items-center px-4 self-center">
       <div className="flex flex-col gap-4 mb-10 sm:mb-20 ">
         <h1 className={`text-2xl text-left sm:text-5xl dark:text-white text-white ${poppins.className}`}>
           Thinking of investing in <span className="inline-block w-[120px]"><FlipWords className="text-white" words={flipWords} duration={3000} /></span> <br />
@@ -110,7 +110,7 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
         <p className={`text-2xl text-left sm:text-5xl dark:text-white text-white ${poppins.className}`}>We'll help you decide.</p>
       </div>
 
-      <div className="relative w-full max-w-xl">
+      <div className="relative w-full max-w-xl ">
         <PlaceholdersAndVanishInput
           placeholders={placeholders}
           onChange={handleChange}
