@@ -55,7 +55,17 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
       symbol: 'NFLX',
       fullName: 'Netflix Inc.',
       icon: 'https://logo.clearbit.com/netflix.com'
-    }
+    },
+    {
+      symbol: 'META',
+      fullName: 'Meta Platforms Inc.',
+      icon: 'https://logo.clearbit.com/meta.com'
+    },
+    {
+      symbol: 'NVDA',
+      fullName: 'Nvidia Corporation',
+      icon: 'https://logo.clearbit.com/nvidia.com'
+    },
   ]
 
   const flipWords = [
@@ -80,11 +90,11 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
 
   };
 
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   setTicker(tickerInput);
-  //   router.push(`/analyze/${tickerInput}`);
-  // };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setTicker(tickerInput);
+    router.push(`/analyze/${tickerInput}`);
+  };
 
   const handleSuggestionClick = (suggestion: string) => {
     setTickerInput(suggestion);
@@ -104,6 +114,7 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
         <PlaceholdersAndVanishInput
           placeholders={placeholders}
           onChange={handleChange}
+          onSubmit={handleSubmit}
           value={tickerInput}
         />
         {suggestions.length > 0 && (
