@@ -107,7 +107,7 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
         <h1 className={`text-2xl text-left sm:text-5xl dark:text-white text-white ${poppins.className}`}>
           Thinking of investing in <span className="inline-block w-[120px]"><FlipWords className="text-white" words={flipWords} duration={3000} /></span> <br />
         </h1>
-        <p className={`text-2xl text-left sm:text-5xl dark:text-white text-white ${poppins.className}`}>We'll break it down for you.</p>
+        <p className={`text-2xl text-left sm:text-5xl dark:text-white text-white ${poppins.className}`}>We'll help you decide.</p>
       </div>
 
       <div className="relative w-full max-w-xl">
