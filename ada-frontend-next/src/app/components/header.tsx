@@ -23,7 +23,7 @@ export const Header = () => {
         },
         {
             title: "Earning Reports",
-            value: "earning-reports",
+            value: "earnings-reports/earnings",
             content: <></>
         },
 

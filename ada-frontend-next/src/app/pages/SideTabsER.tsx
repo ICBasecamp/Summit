@@ -12,32 +12,46 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "../../../lib/utils";
 
-export function SidebarDemo({ ticker, children }: { children: React.ReactNode }) {
+export function SidebarDemo({ children }: { children: React.ReactNode }) {
   const links = [
     {
       label: "Earnings Report",
-      href: `/${ticker}/earnings-reports`,
+      href: `/earnings-reports/earnings`,
       icon: (
         <IconBrandTabler className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Revenue",
-      href: `/${ticker}/revenue`,
+      href: `/earnings-reports/revenue`,
       icon: (
         <IconUserBolt className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Earnings History",
-      href: `/${ticker}/earnings-history`,
+      href: `/earnings-reports/earnings-history`,
       icon: (
         <IconSettings className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "EPS Trend",
-      href: `/${ticker}/eps-trend`,
+      href: `/earnings-reports/eps-trend`,
+      icon: (
+        <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Analyst Recommendations",
+      href: `/earnings-reports/analyst`,
+      icon: (
+        <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Financials",
+      href: `/earnings-reports/financials`,
       icon: (
         <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),

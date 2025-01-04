@@ -4,26 +4,24 @@ interface AnalysisContextType {
   messages: string[];
   setMessages: React.Dispatch<React.SetStateAction<string[]>>;
   fetchData: (ticker: any) => () => void;
+  ticker: string | null;
+  setTicker: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const AnalysisContext = createContext<AnalysisContextType | null>(null);
 
 export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
-  const [messages, setMessages] = useState<string[]>([]);
-
-  useEffect(() => {
+  const [messages, setMessages] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
-      // Retrieve messages from localStorage if available
       const savedMessages = localStorage.getItem('messages');
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      }
+      return savedMessages ? JSON.parse(savedMessages) : [];
     }
-  }, []);
+    return [];
+  });
+  const [ticker, setTicker] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Save messages to localStorage whenever they change
       localStorage.setItem('messages', JSON.stringify(messages));
     }
   }, [messages]);
@@ -53,7 +51,7 @@ export const AnalysisProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AnalysisContext.Provider value={{ messages, setMessages, fetchData }}>
+    <AnalysisContext.Provider value={{ messages, setMessages, fetchData, ticker, setTicker }}>
       {children}
     </AnalysisContext.Provider>
   );

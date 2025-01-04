@@ -69,7 +69,7 @@ async def ER_NLPAnalysis(ticker):
     a readable paragraph not bullet points. I want a paragraph for the analysis on each of the 4 dataframes in the earnings estimate meaning one for 
     earnings, eps trend, earnings-history and revenue. One paragraph focusing on Non-statistical data, and one paragraph focusin on financial stats
     therefore leading to 6 paragraphs of NLP. The paragraphs of statitical analysis should make remarks on BOTH the PCA scores grouping the labels together based on the results
-    AND the feature importance scores. The paragraphs should make remarks on everything needed. Focus on each part of the data equally here are some examples for each part of the data:
+    AND the feature importance scores. The paragraphs should make remarks on everything needed. LABEL each section as **Earnings Estimate**, **Revenue Estimate**, **Earnings History Estimate**, **EPS trend Estimate**, **Non Statistical Estimate**, **Financial Estimate** MAKE sure to include analysis ON EACH OF THESE SECTIONS EQUALLY. Focus on each part of the data equally here are some examples for each part of the data:
 
     EXAMPLES:
     Non-Statistical Data:
@@ -80,6 +80,7 @@ async def ER_NLPAnalysis(ticker):
     Despite the decrease in Overall Score, the Price Target has increased, indicating higher expected future value.
 
     Financial Stats:
+    FOR FINANCIAL STATS FOCUS ON EVERY PART OF THE FINANCIAL STATS DON't SKIP ANY.
     PE Ratio (TTM) (56.08): This indicates that investors are willing to pay $56.08 for every $1 of earnings over the trailing twelve months. A high P/E ratio can suggest that the stock is overvalued, but it can also indicate strong growth expectations.
     Forward P/E (33.44): This indicates that investors are willing to pay $33.44 for every $1 of expected future earnings. While still high, it is lower than the trailing P/E, suggesting expectations of future earnings growth.
     PEG Ratio (5yr expected) (0.89): A PEG ratio below 1 suggests that the stock may be undervalued relative to its growth prospects. This is a positive indicator.
@@ -96,8 +97,6 @@ async def ER_NLPAnalysis(ticker):
     Growth Projections: The Sales Growth (year/est) has a minimal impact, indicating that growth projections are less influential compared to historical data and analyst estimates.
     Statistics: The cross-validation mean MSE of 1.0205 with a standard deviation of 0.9040 suggests higher prediction error and variability compared to earnings estimates.
     EPS Trend:
-    
-    As well as return the raw data for each paragraph so if it's the revenue paragraph return the feature importance scores and PCA data with the labels.
 
     Financial Data:
     """
