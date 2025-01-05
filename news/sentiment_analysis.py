@@ -1,13 +1,13 @@
 import pandas as pd
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import nltk
-from clean import clean_unstructured_data
+from news.clean import clean_unstructured_data
 
 import sys
 import os
 import asyncio
 
-from handler import fetch_articles
+from news.handler import fetch_articles
 
 # accepts ticker as input, scrapes news articles and performs sentiment analysis, returning
 # as an array of dictionaries of individual sentences and their sentiment scores
