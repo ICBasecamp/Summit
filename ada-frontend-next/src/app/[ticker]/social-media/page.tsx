@@ -143,7 +143,7 @@ const SocialMediaPage = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="relative flex-1 overflow-hidden">
+                                <div className="relative flex-1 overflow-scroll">
                                     <div className={`absolute inset-0 transition-transform duration-300 ${isAnimating ? (direction === 'next' ? 'animate-swipe-out-right' : 'animate-swipe-out-left') : ''}`}>
                                         <p className="text-sm text-neutral-300">
                                             {summaries[currentIndex].content}
