@@ -23,16 +23,24 @@ const AllMessagesDisplay: React.FC<{ ticker: string }> = ({ ticker }) => {
 
   useEffect(() => {
     const earningsReportMessage = messages?.find(message => message.includes("earnings:"));
+    console.log(earningsReportMessage);
     if (earningsReportMessage) {
-      const statisticalAnalysisData = earningsReportMessage.match(/statistical_analysis: (\{(?:[^{}]*|\{(?:[^{}]*|\{[^{}]*\})*\})*\})/);
-      if (statisticalAnalysisData && statisticalAnalysisData[1]) {
+      const statisticalAnalysisData = earningsReportMessage.match(/'name': 'earnings_df', 'random_forest_importances': (\{(?:[^{}]*|\{(?:[^{}]*|\{[^{}]*\})*\})*\}), 'pca_components': (\{(?:[^{}]*|\{(?:[^{}]*|\{[^{}]*\})*\})*\})/);
+      if (statisticalAnalysisData && statisticalAnalysisData[1] && statisticalAnalysisData[2]) {
         try {
-          let jsonString = statisticalAnalysisData[1];
-          jsonString = jsonString.replace(/'/g, '"'); 
-          const parsedData = JSON.parse(jsonString);
-          setFeatureImportances(parsedData.random_forest_importances.Importance);
-          setPcaValues(parsedData.pca_components);
-          setEarningsMessage(jsonString.trim());
+          let rfJsonString = statisticalAnalysisData[1];
+          let pcaJsonString = statisticalAnalysisData[2];
+          rfJsonString = rfJsonString.replace(/'/g, '"');
+          pcaJsonString = pcaJsonString.replace(/'/g, '"');
+          const rfParsedData = JSON.parse(rfJsonString);
+          const pcaParsedData = JSON.parse(pcaJsonString);
+          if (rfParsedData && rfParsedData.Importance) {
+            setFeatureImportances(rfParsedData.Importance);
+          } else {
+            setFeatureImportances(null);
+          }
+          setPcaValues(pcaParsedData);
+          setEarningsMessage(JSON.stringify({ random_forest_importances: rfParsedData, pca_components: pcaParsedData }, null, 2));
         } catch (error) {
           console.error("Failed to parse JSON:", error);
           setEarningsMessage(null);
@@ -50,7 +58,7 @@ const AllMessagesDisplay: React.FC<{ ticker: string }> = ({ ticker }) => {
       setPcaValues(null);
     }
   }, [messages]);
-
+  
   useEffect(() => {
     const earningsReportMessage = messages?.find(message => message.includes("earnings:"));
     if (earningsReportMessage) {

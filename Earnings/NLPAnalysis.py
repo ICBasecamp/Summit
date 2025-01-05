@@ -14,7 +14,7 @@ async def run_calculations(ticker):
     financial_stats_results = await calculate_FS(ticker)
 
     # Run the non-statistical analysis
-    non_statistical_results = calculate_NSA(ticker)
+    non_statistical_results = await calculate_NSA(ticker)
 
     # Run the statistical analysis
     statistical_results = []

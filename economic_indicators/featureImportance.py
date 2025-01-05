@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import json
 import os
 import sys
 from economic_indicators.econIndicators import get_economic_indicators
@@ -80,6 +79,11 @@ async def calculate_feature_importance(ticker):
                     # Ensure that the data is being pulled correctly
                     target_data = df[target_variable].dropna().values
                     econ_data = quarterly_econ_df[econ_indicator].dropna().values
+                    
+                    # Ensure that target_data and econ_data have the same length
+                    min_length = min(len(target_data), len(econ_data))
+                    target_data = target_data[:min_length]
+                    econ_data = econ_data[:min_length]
 
                     # Calculate the correlation coefficient
                     if len(target_data) > 0 and len(econ_data) > 0:

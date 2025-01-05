@@ -84,7 +84,7 @@ const FinancialStatsPage: React.FC<{ ticker: string }> = ({ ticker }) => {
               <div className="grow w-2/5">
                 <div className="flex flex-col gap-8">
                   <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
-                    <h2 className="text-lg font-medium self-center">NLP Analysis</h2>
+                    <h2 className="text-lg font-medium self-center">Financial Analysis</h2>
                     <p>{nlpAnalysis}</p>
                   </div>
                   <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">

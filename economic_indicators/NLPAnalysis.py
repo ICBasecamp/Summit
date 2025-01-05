@@ -3,6 +3,10 @@ import os
 from groq import Groq
 import asyncio
 from dotenv import load_dotenv
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from economic_indicators.featureImportance import calculate_feature_importance
 
 async def call_groqapi_service(text):
