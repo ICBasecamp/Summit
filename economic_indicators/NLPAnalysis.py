@@ -28,11 +28,11 @@ async def call_groqapi_service(text):
     return chat_completion.choices[0].message.content.strip()
 
 async def EI_NLPAnalysis(ticker):
-    average_correlations = await calculate_feature_importance(ticker)
+    average_correlations, raw_data = await calculate_feature_importance(ticker)
 
     # Combine all results into a single dictionary
     combined_results = {
-        'average_correlations': average_correlations
+        'average_correlations': average_correlations,
     }
 
     # Convert the combined results to a string for NLP processing
@@ -43,6 +43,8 @@ async def EI_NLPAnalysis(ticker):
     Please analyze the following financial data and provide insights on this stock. Provide insights on the data that you see and put it into human language. For context, the average_correlations have the average correlation values for each economic indicator with the earnings reports, stock revenue, earnings history, and EPS trend. To elaborate it is the average pearson correlation therefore a value of 1 indicates a perfect positive linear relationship, -1 indicates a perfect negative linear relationship, and 0 indicates no linear relationship.
     I want you to include statistics in the analysis so you would say something like "The most important feature for X has 35% importance indicating Y". Make connections between the results and provide a clear and concise summary of the data. You have to explain what the data means and what it means for the stock, not just state facts. Remember a positive
     correlation means they are positively correlated when one goes up the other also goes up. If very negative (close to -1) they are inversely correlated so if one goes up the other goes down, both are equally impactful. Make it in a readable paragraph, not bullet points. Focus on each part of the data equally.
+    Seperate the data into each economic indicator and provide insights on each one. The labels HAVE TO BE "**FED Rate**, **CPI**, **Retail Sales**, **Durable Goods Orders**, **Unemployment Rate**, and **Nonfarm Payroll** so focus on each of these sections
+    EQUALLY and make insights on these sections but have those labels in front of the insights first. The average_correlations are the average correlation values for each economic indicator with the earnings reports, stock revenue, earnings history, and EPS trend.
 
     Financial Data:
     """
@@ -60,4 +62,4 @@ async def EI_NLPAnalysis(ticker):
             raise
 
     insights = await call_groqapi_service(text_to_analyze)
-    return insights
+    return insights, combined_results_str, raw_data

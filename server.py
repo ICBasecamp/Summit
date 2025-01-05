@@ -47,7 +47,7 @@ def analyze(ticker):
             # Economic Indicators Analysis
             yield "data: Analyzing economic indicators...\n\n"
             economic_indicators = asyncio.run(EI_NLPAnalysis(ticker))
-            if isinstance(economic_indicators, list):
+            if isinstance(economic_indicators, (list, tuple)):
                 economic_indicators = ' '.join(map(str, economic_indicators))
             yield f"data: economicIndicators: {economic_indicators.replace('\n', ' ')}\n\n"
 

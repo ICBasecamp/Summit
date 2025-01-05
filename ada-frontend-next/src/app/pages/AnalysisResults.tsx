@@ -30,6 +30,7 @@ const AnalysisResults: React.FC<{ ticker: string | null }> = ({ ticker }) => {
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
+      console.log(lastMessage);
       setLatestMessage(lastMessage);
 
       if (lastMessage.includes("Analysis complete.")) {

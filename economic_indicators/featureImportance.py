@@ -72,9 +72,11 @@ async def calculate_feature_importance(ticker):
 
         # Perform correlation analysis for each target variable in the earnings DataFrame
         overall_correlations = {}
+        all_raw_data = {}
         for target_variable in df.columns:
             if target_variable != 'date':
                 correlations = {}
+                raw_data = {}
                 for econ_indicator in quarterly_econ_df.columns:
                     # Ensure that the data is being pulled correctly
                     target_data = df[target_variable].dropna().values
@@ -84,6 +86,12 @@ async def calculate_feature_importance(ticker):
                     min_length = min(len(target_data), len(econ_data))
                     target_data = target_data[:min_length]
                     econ_data = econ_data[:min_length]
+                    
+                    # Store raw data for scatter plots
+                    raw_data[econ_indicator] = {
+                    'Earnings Data': target_data,
+                    'Economic Indicators': econ_data
+                    }
 
                     # Calculate the correlation coefficient
                     if len(target_data) > 0 and len(econ_data) > 0:
@@ -91,6 +99,9 @@ async def calculate_feature_importance(ticker):
                         correlations[econ_indicator] = correlation
                     else:
                         correlations[econ_indicator] = np.nan
+                
+                # Store the raw data for the current target variable
+                all_raw_data[target_variable] = raw_data
 
                 # Aggregate correlations for overall analysis
                 for econ_indicator, correlation in correlations.items():
@@ -104,4 +115,4 @@ async def calculate_feature_importance(ticker):
         avg_correlation_df = avg_correlation_df.sort_values(by='Average Correlation', ascending=False)
         average_correlations[name] = avg_correlations
         
-    return average_correlations    
+    return average_correlations, all_raw_data

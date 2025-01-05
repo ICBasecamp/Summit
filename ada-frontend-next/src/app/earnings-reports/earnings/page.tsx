@@ -23,7 +23,6 @@ const AllMessagesDisplay: React.FC<{ ticker: string }> = ({ ticker }) => {
 
   useEffect(() => {
     const earningsReportMessage = messages?.find(message => message.includes("earnings:"));
-    console.log(earningsReportMessage);
     if (earningsReportMessage) {
       const statisticalAnalysisData = earningsReportMessage.match(/'name': 'earnings_df', 'random_forest_importances': (\{(?:[^{}]*|\{(?:[^{}]*|\{[^{}]*\})*\})*\}), 'pca_components': (\{(?:[^{}]*|\{(?:[^{}]*|\{[^{}]*\})*\})*\})/);
       if (statisticalAnalysisData && statisticalAnalysisData[1] && statisticalAnalysisData[2]) {
