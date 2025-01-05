@@ -10,12 +10,13 @@ import AllMessagesDisplay from './earnings-reports/earnings/page'; // Correct im
 import { metadata } from './metadata';
 import "./globals.css";
 
-import { Open_Sans } from 'next/font/google';
+import { Open_Sans, Poppins } from 'next/font/google';
 
 import { motion } from "framer-motion";
 import { HeroHighlight, Highlight } from "./components/highlight";
-
 import { Geist_Mono } from 'next/font/google';
+
+export const poppins = Poppins({ weight: '500', subsets: ['latin'] })
 
 export const openSans = Open_Sans({ subsets: ['latin'] })
 
@@ -53,7 +54,6 @@ export default function RootLayout({
               {pathname === '/' && <TickerForm setTicker={setTicker} />}
               {pathname.startsWith('/analyze') && <AnalysisResults ticker={ticker ?? ''} />}
               {pathname.startsWith('/news') && <NewsPage />}
-              {/* {pathname.startsWith('/earnings-reports') && <AllMessagesDisplay ticker={tickerState ?? ''}/>} */}
               {children}
             </main>
           </AnalysisProvider>

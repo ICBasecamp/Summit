@@ -8,10 +8,12 @@ export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
   onSubmit,
+  currentValue
 }: {
   placeholders: string[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  currentValue?: string;
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
@@ -174,6 +176,13 @@ export function PlaceholdersAndVanishInput({
     vanishAndSubmit();
     onSubmit && onSubmit(e);
   };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toUpperCase();
+    setValue(value);
+    onChange && onChange(e);
+  };
+
   return (
     <form
       className={cn(
@@ -190,15 +199,10 @@ export function PlaceholdersAndVanishInput({
         ref={canvasRef}
       />
       <input
-        onChange={(e) => {
-          if (!animating) {
-            setValue(e.target.value);
-            onChange && onChange(e);
-          }
-        }}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
         ref={inputRef}
-        value={value}
+        value={currentValue}
         type="text"
         className={cn(
           "w-full relative text-sm sm:text-base z-50 border-none dark:text-white bg-transparent text-white h-full rounded-full focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20",
