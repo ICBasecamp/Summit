@@ -38,7 +38,9 @@ const SocialMediaPage = () => {
         end: testJsonResponse.positiveScore * 100,
       });
 
-    let sentimentColour = 'text-violet-400';
+    const positiveColour = 'bg-emerald-400';
+    const neutralColour = 'bg-violet-400';
+    const negativeColour = 'bg-red-500';
 
     return (
         <div className="flex flex-col bg-neutral-900 w-full h-screen">
@@ -49,7 +51,7 @@ const SocialMediaPage = () => {
                         <div className="flex flex-col">
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
                                 <p className={`text-2xl font-semibold ${openSans.className}`}>Sentiment Scores Across # Posts</p>
-                                <ProgressBar value={positiveScore}/>
+                                <ProgressBar value={positiveScore} colour={positiveColour}/>
 
                                 {/* <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.response.length}</span> sentences scraped.</p> */}
                             </div>
