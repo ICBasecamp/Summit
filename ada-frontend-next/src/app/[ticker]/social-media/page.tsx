@@ -9,6 +9,9 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 
 import { geistSans, openSans } from '@/app/layout';
 
+import { useState } from 'react';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+
 const testJsonResponse = {
     positiveSummary: `The stock market has continued to soar to new heights, with the Dow, S&P 500, and Russell 2000 reaching record highs despite threats of tariffs from former President Trump. Additionally, AI chipmaker Nvidia has taken a backseat to a lesser-known Ohio-based cooling technology stock, which has seen its market cap balloon in just two years since the launch of ChatGPT. Meanwhile, MicroStrategy, a tech company, has emerged as the best-performing stock in the Russell 1000 over the last seven years, with a return of over 3,400%. Despite some volatility, Nvidia's stock price has displayed a strong inverse head and shoulders pattern, leading many analysts to predict a bullish break-out above $135.70, potentially pushing the stock price to $141 or even $160, which could be a Christmas 
 gift in itself.`,
@@ -23,6 +26,32 @@ rise, with the current level standing 22.9% above projections for Q2 2024 in the
 }
 
 const SocialMediaPage = () => {
+
+
+                        const summaries = [
+                            {
+                                title: 'Positive Summary',
+                                content: testJsonResponse.positiveSummary,
+                            },
+                            {
+                                title: 'Neutral Summary',
+                                content: testJsonResponse.neutralSummary,
+                            },
+                            {
+                                title: 'Negative Summary',
+                                content: testJsonResponse.negativeSummary,
+                            },
+                        ];
+
+                        const [currentIndex, setCurrentIndex] = useState(0);
+
+                        const nextSlide = () => {
+                            setCurrentIndex((prevIndex) => (prevIndex + 1) % summaries.length);
+                        };
+
+                        const previousSlide = () => {
+                            setCurrentIndex((prevIndex) => (prevIndex - 1 + summaries.length) % summaries.length);
+                        };
 
     let overallSentiment = "neutral";
     if (testJsonResponse.positiveScore > testJsonResponse.neutralScore && testJsonResponse.positiveScore > testJsonResponse.negativeScore) {
@@ -59,9 +88,9 @@ const SocialMediaPage = () => {
     return (
         <div className="flex flex-col bg-neutral-900 w-full h-screen">
             <Header />
-            <div className="flex flex-col px-8 pt-2 pb-8">
-                <div className="flex justify-between gap-12">
-                    <div className="grow w-3/5">
+            <div className="flex flex-col px-8 pt-2 pb-8 h-full">
+                <div className="flex justify-between gap-12 h-full">
+                    <div className="grow w-2/5">
                         <div className="w-full flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
                             <p className={`text-2xl font-medium ${openSans.className}`}>Sentiment Scores Across # Posts</p>
                             <div className="flex w-full gap-4 items-center">
@@ -78,63 +107,45 @@ const SocialMediaPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="grow w-2/5">
-                        <div className="flex flex-col gap-8">
-                            {/* <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
-                                <h2 className={`text-lg font-medium self-center ${openSans.className}`}>Highest Sentiment Sentences</h2>
-                                {highestSentences.map((sentence, index) => (
-                                    
-                                    <div key={index} className="flex flex-col gap-1">
-                                        <p className="font-semibold text-emerald-400" >{(sentence.sentiment_score * 100).toFixed(2)}%</p>
-                                        <Tooltip.Provider>
-                                            <Tooltip.Root>
-                                                <Tooltip.Trigger asChild>
-                                                    <p className="cursor-default text-xs">{sentence.sentence}</p>
-                                                </Tooltip.Trigger>
-                                                <Tooltip.Portal>
-                                                    <Tooltip.Content 
-                                                        className="TooltipContent" 
-                                                        sideOffset={5}
-                                                        align="start"
-                                                    >
-                                                        <div className="flex items-center justify-center py-0.5 px-1 rounded-md bg-zinc-950">
-                                                            <a href={sentence.link} className='text-white text-xs'>{sentence.link}</a>
-                                                        </div>
-                                                        <Tooltip.Arrow className="TooltipArrow" />
-                                                    </Tooltip.Content>
-                                                </Tooltip.Portal>
-                                            </Tooltip.Root>
-                                        </Tooltip.Provider>
+                    <div className="grow w-3/5 h-full">
+                        <div className="h-1/2">
+
+                            <div className="flex flex-col rounded-xl bg-zinc-800 p-8 gap-4 h-full w-full">
+                                <div className="flex justify-between items-center">
+                                    <p className={`text-2xl font-medium ${openSans.className}`}>
+                                        {summaries[currentIndex].title}
+                                    </p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={previousSlide}
+                                            className="p-2 rounded-full hover:bg-zinc-700"
+                                        >
+                                            <ChevronLeftIcon className="h-5 w-5" />
+                                        </button>
+                                        <button
+                                            onClick={nextSlide}
+                                            className="p-2 rounded-full hover:bg-zinc-700"
+                                        >
+                                            <ChevronRightIcon className="h-5 w-5" />
+                                        </button>
                                     </div>
-                                ))}
+                                </div>
+                                <div className="flex-1 overflow-y-auto">
+                                    <p className="text-sm text-neutral-300">
+                                        {summaries[currentIndex].content}
+                                    </p>
+                                </div>
+                                <div className="flex justify-center gap-2">
+                                    {summaries.map((_, index) => (
+                                        <div
+                                            key={index}
+                                            className={`h-2 w-2 rounded-full ${
+                                                index === currentIndex ? 'bg-white' : 'bg-zinc-600'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
                             </div>
-                            <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
-                                <h2 className={`text-lg font-medium self-center ${openSans.className}`} >Lowest Sentiment Sentences</h2>
-                                {lowestSentences.map((sentence, index) => (
-                                    <div key={index} className="flex flex-col gap-0.5">
-                                        <p className="font-semibold text-red-400" >{(sentence.sentiment_score * 100).toFixed(2)}%</p>
-                                        <Tooltip.Provider>
-                                            <Tooltip.Root>
-                                                <Tooltip.Trigger asChild>
-                                                    <p className="cursor-default text-xs">{sentence.sentence}</p>
-                                                </Tooltip.Trigger>
-                                                <Tooltip.Portal>
-                                                    <Tooltip.Content 
-                                                        className="TooltipContent" 
-                                                        sideOffset={5}
-                                                        align="start"
-                                                    >
-                                                        <div className="flex items-center justify-center py-0.5 px-1 rounded-md bg-zinc-950">
-                                                            <a href={sentence.link} className='text-white text-xs'>{sentence.link}</a>
-                                                        </div>
-                                                        <Tooltip.Arrow className="TooltipArrow" />
-                                                    </Tooltip.Content>
-                                                </Tooltip.Portal>
-                                            </Tooltip.Root>
-                                        </Tooltip.Provider>
-                                    </div>
-                                ))}
-                            </div> */}
                         </div>
                     </div>
                 </div>
