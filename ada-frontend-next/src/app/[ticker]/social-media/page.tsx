@@ -1,7 +1,7 @@
 "use client";
 
 import { Header } from '@/app/components/header'
-import { CircularProgress } from '@/app/components/circular-progress';
+import { ProgressBar } from '@/app/components/progress-bar';
 
 import { useCountUp } from 'use-count-up';
 
@@ -49,14 +49,7 @@ const SocialMediaPage = () => {
                         <div className="flex flex-col">
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
                                 <p className={`text-2xl font-semibold ${openSans.className}`}>Sentiment Scores Across # Posts</p>
-                                <div className="flex items-center gap-x-3 whitespace-nowrap">
-                                    <div className="flex w-80 h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" role="progressbar" aria-valuenow={positiveScore} aria-valuemin={0} aria-valuemax={100}>
-                                    <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{width: `${positiveScore}%`}}></div>
-                                    </div>
-                                    <div className="w-10 text-end">
-                                    <span className="text-sm text-white">{positiveScore}%</span>
-                                    </div>
-                                </div>
+                                <ProgressBar value={positiveScore}/>
 
                                 {/* <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.response.length}</span> sentences scraped.</p> */}
                             </div>
