@@ -83,7 +83,4 @@ async def social_media_sentiment_analysis(ticker):
     {negative_insights}
     """
 
-    print("NLP Insights:")
-    print(insights)
-
     return insights

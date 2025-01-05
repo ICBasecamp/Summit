@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { AnalysisProvider } from './context/AnalysisContext';
 import TickerForm from './pages/TickerForm';
 import AnalysisResults from './pages/AnalysisResults';
+import NewsPage from './[ticker]/news/page';
+import AllMessagesDisplay from './earnings-reports/earnings/page'; // Correct import path
 import { metadata } from './metadata';
 import "./globals.css";
 
@@ -50,6 +52,8 @@ export default function RootLayout({
             <main>
               {pathname === '/' && <TickerForm setTicker={setTicker} />}
               {pathname.startsWith('/analyze') && <AnalysisResults ticker={ticker ?? ''} />}
+              {pathname.startsWith('/news') && <NewsPage />}
+              {/* {pathname.startsWith('/earnings-reports') && <AllMessagesDisplay ticker={tickerState ?? ''}/>} */}
               {children}
             </main>
           </AnalysisProvider>
@@ -60,9 +64,9 @@ export default function RootLayout({
 }
 
 function Geist({ variable, subsets }: { variable: string; subsets: string[]; }) {
-  return { variable, subsets };
+  return { variable, subsets, className: variable };
 }
 
 function createGeistMono({ variable, subsets }: { variable: string; subsets: string[]; }) {
-  return { variable, subsets };
+  return { variable, subsets, className: variable };
 }
