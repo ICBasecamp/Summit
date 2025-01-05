@@ -26,32 +26,30 @@ rise, with the current level standing 22.9% above projections for Q2 2024 in the
 }
 
 const SocialMediaPage = () => {
+    const summaries = [
+        {
+            title: 'Positive Summary',
+            content: testJsonResponse.positiveSummary,
+        },
+        {
+            title: 'Neutral Summary',
+            content: testJsonResponse.neutralSummary,
+        },
+        {
+            title: 'Negative Summary',
+            content: testJsonResponse.negativeSummary,
+        },
+    ];
 
+    const [currentIndex, setCurrentIndex] = useState(0);
 
-                        const summaries = [
-                            {
-                                title: 'Positive Summary',
-                                content: testJsonResponse.positiveSummary,
-                            },
-                            {
-                                title: 'Neutral Summary',
-                                content: testJsonResponse.neutralSummary,
-                            },
-                            {
-                                title: 'Negative Summary',
-                                content: testJsonResponse.negativeSummary,
-                            },
-                        ];
+    const nextSlide = () => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % summaries.length);
+    };
 
-                        const [currentIndex, setCurrentIndex] = useState(0);
-
-                        const nextSlide = () => {
-                            setCurrentIndex((prevIndex) => (prevIndex + 1) % summaries.length);
-                        };
-
-                        const previousSlide = () => {
-                            setCurrentIndex((prevIndex) => (prevIndex - 1 + summaries.length) % summaries.length);
-                        };
+    const previousSlide = () => {
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + summaries.length) % summaries.length);
+    };
 
     let overallSentiment = "neutral";
     if (testJsonResponse.positiveScore > testJsonResponse.neutralScore && testJsonResponse.positiveScore > testJsonResponse.negativeScore) {
@@ -103,13 +101,12 @@ const SocialMediaPage = () => {
                             </div>
                             <div className="flex w-full gap-4 items-center">
                                 <ProgressBar value={negativeScore} colour={negativeColour}/>
-                                <p className="text-sm w-12">Positive</p>
+                                <p className="text-sm w-12">Negative</p>
                             </div>
                         </div>
                     </div>
                     <div className="grow w-3/5 h-full">
                         <div className="h-1/2">
-
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-8 gap-4 h-full w-full">
                                 <div className="flex justify-between items-center">
                                     <p className={`text-2xl font-medium ${openSans.className}`}>
