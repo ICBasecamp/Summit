@@ -20,7 +20,31 @@ rise, with the current level standing 22.9% above projections for Q2 2024 in the
     positiveScore: 0.3953,
     neutralScore: 0.4884,
     negativeScore: 0.1163,
+    rawBlueskyPosts: [
+        {
+            content: `Nvidia ($NVDA) invested $1 billion in AI startups in 2024. This move has significantly boosted its influence in the sector. 
 
+They have been one of the smartest investors in AI startups as witnessed last year as I was watching AI started funding rounds very closely.`,
+            authorName: 'Michael Kevin Spencer',
+            authorHandle: '@aisupremacy.bsky.social',
+            authorImage: 'https://bsky.app/profile/did:plc:5hkogxu5u4wkelj6qm6iarip?ref_src=embed', 
+            date: 'January 3, 2025 at 8:59 AM',
+        }
+    ]
+
+}
+
+const BlueskyEmbed = () => {
+
+
+    return (
+        <div>
+            <blockquote className="bluesky-embed" data-bluesky-uri="at://did:plc:5hkogxu5u4wkelj6qm6iarip/app.bsky.feed.post/3le5ojisqg22j" data-bluesky-cid="bafyreihs45klonrm7bwcwwpwnpipunmwlyaajvglorvdojtcnbkyamvdyq">
+                <p lang="en">
+                    {text}
+                </p>&mdash; {authorName} (<a href={authorURL}>{authorHandle}</a>) <a href={postURL}>January 3, 2025 at 8:59 AM</a></blockquote><script async src="https://embed.bsky.app/static/embed.js" charSet="utf-8"></script>
+                            </div>
+    )
 }
 
 const SocialMediaPage = () => {
@@ -43,6 +67,11 @@ const SocialMediaPage = () => {
     const [isAnimating, setIsAnimating] = useState(false);
     const [direction, setDirection] = useState('next');
     const [nextIndex, setNextIndex] = useState(0);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     useEffect(() => {
         if (isAnimating) {
@@ -104,7 +133,7 @@ const SocialMediaPage = () => {
             <Header />
             <div className="flex flex-col px-8 pt-2 pb-8 h-full">
                 <div className="flex justify-between gap-12 h-full">
-                    <div className="grow w-2/5">
+                    <div className="grow w-2/5 flex flex-col justify-between">
                         <div className="w-full flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
                             <p className={`text-2xl font-medium ${openSans.className}`}>Sentiment Scores Across # Posts</p>
                             <div className="flex w-full gap-4 items-center">
@@ -120,6 +149,12 @@ const SocialMediaPage = () => {
                                 <p className="text-sm w-12">Negative</p>
                             </div>
                         </div>
+                        {isClient && (
+                            <div>
+                                <blockquote className="bluesky-embed" data-bluesky-uri="at://did:plc:5hkogxu5u4wkelj6qm6iarip/app.bsky.feed.post/3lexk5k5u7k2i" data-bluesky-cid="bafyreihs45klonrm7bwcwwpwnpipunmwlyaajvglorvdojtcnbkyamvdyq">
+                                    <p lang="en"></p></blockquote><script async src="https://embed.bsky.app/static/embed.js" charSet="utf-8"></script>
+                            </div>
+                        )}
                     </div>
                     <div className="grow w-3/5 h-full">
                         <div className="h-1/2 relative overflow-hidden">
@@ -170,6 +205,8 @@ const SocialMediaPage = () => {
                     </div>
                 </div>
             </div>
+
+
             <style jsx>{`
                 @keyframes swipe-out-left {
                     from { transform: translateX(0); }
@@ -196,9 +233,7 @@ const SocialMediaPage = () => {
                 .animate-swipe-in-left {
                     animation: swipe-in-left 0.3s forwards;
                 }
-                .animate-swipe-in-right {
-                    animation: swipe-in-right 0.3s forwards;
-                }
+                .animate-swipe-in-right {                    animation: swipe-in-right 0.3s forwards;                }
             `}</style>
         </div>
     );

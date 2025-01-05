@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@atproto/api": "^0.13.25",
     "@radix-ui/react-tooltip": "^1.1.6",
     "aceternity-ui": "^0.2.2",
     "clsx": "^2.1.1",
