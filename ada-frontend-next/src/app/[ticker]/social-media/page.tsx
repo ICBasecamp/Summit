@@ -5,11 +5,9 @@ import { ProgressBar } from '@/app/components/progress-bar';
 
 import { useCountUp } from 'use-count-up';
 
-import * as Tooltip from '@radix-ui/react-tooltip';
+import { openSans } from '@/app/layout';
 
-import { geistSans, openSans } from '@/app/layout';
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 const testJsonResponse = {
@@ -42,13 +40,31 @@ const SocialMediaPage = () => {
     ];
 
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [direction, setDirection] = useState('next');
+    const [nextIndex, setNextIndex] = useState(0);
+
+    useEffect(() => {
+        if (isAnimating) {
+            const timeout = setTimeout(() => {
+                setCurrentIndex(nextIndex);
+                setIsAnimating(false);
+            }, 300); // Duration of the animation
+
+            return () => clearTimeout(timeout);
+        }
+    }, [isAnimating, nextIndex]);
 
     const nextSlide = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % summaries.length);
+        setDirection('next');
+        setNextIndex((currentIndex + 1) % summaries.length);
+        setIsAnimating(true);
     };
 
     const previousSlide = () => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + summaries.length) % summaries.length);
+        setDirection('prev');
+        setNextIndex((currentIndex - 1 + summaries.length) % summaries.length);
+        setIsAnimating(true);
     };
 
     let overallSentiment = "neutral";
@@ -106,8 +122,8 @@ const SocialMediaPage = () => {
                         </div>
                     </div>
                     <div className="grow w-3/5 h-full">
-                        <div className="h-1/2">
-                            <div className="flex flex-col rounded-xl bg-zinc-800 p-8 gap-4 h-full w-full">
+                        <div className="h-1/2 relative overflow-hidden">
+                            <div className="absolute inset-0 flex flex-col rounded-xl bg-zinc-800 p-8 gap-4 h-full w-full">
                                 <div className="flex justify-between items-center">
                                     <p className={`text-2xl font-medium ${openSans.className}`}>
                                         {summaries[currentIndex].title}
@@ -127,10 +143,17 @@ const SocialMediaPage = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="flex-1 overflow-y-auto">
-                                    <p className="text-sm text-neutral-300">
-                                        {summaries[currentIndex].content}
-                                    </p>
+                                <div className="relative flex-1 overflow-hidden">
+                                    <div className={`absolute inset-0 transition-transform duration-300 ${isAnimating ? (direction === 'next' ? 'animate-swipe-out-right' : 'animate-swipe-out-left') : ''}`}>
+                                        <p className="text-sm text-neutral-300">
+                                            {summaries[currentIndex].content}
+                                        </p>
+                                    </div>
+                                    <div className={`absolute inset-0 transition-transform duration-300 ${isAnimating ? (direction === 'next' ? 'animate-swipe-in-left' : 'animate-swipe-in-right') : ''}`}>
+                                        <p className="text-sm text-neutral-300">
+                                            {summaries[nextIndex].content}
+                                        </p>
+                                    </div>
                                 </div>
                                 <div className="flex justify-center gap-2">
                                     {summaries.map((_, index) => (
@@ -147,6 +170,36 @@ const SocialMediaPage = () => {
                     </div>
                 </div>
             </div>
+            <style jsx>{`
+                @keyframes swipe-out-left {
+                    from { transform: translateX(0); }
+                    to { transform: translateX(-100%); }
+                }
+                @keyframes swipe-out-right {
+                    from { transform: translateX(0); }
+                    to { transform: translateX(100%); }
+                }
+                @keyframes swipe-in-left {
+                    from { transform: translateX(-100%); }
+                    to { transform: translateX(0); }
+                }
+                @keyframes swipe-in-right {
+                    from { transform: translateX(100%); }
+                    to { transform: translateX(0); }
+                }
+                .animate-swipe-out-left {
+                    animation: swipe-out-left 0.3s forwards;
+                }
+                .animate-swipe-out-right {
+                    animation: swipe-out-right 0.3s forwards;
+                }
+                .animate-swipe-in-left {
+                    animation: swipe-in-left 0.3s forwards;
+                }
+                .animate-swipe-in-right {
+                    animation: swipe-in-right 0.3s forwards;
+                }
+            `}</style>
         </div>
     );
 }
