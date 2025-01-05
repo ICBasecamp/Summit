@@ -63,17 +63,19 @@ const SocialMediaPage = () => {
                 <div className="flex justify-between gap-12">
                     <div className="grow w-3/5">
                         <div className="w-full flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
-                            <p className={`text-2xl font-semibold ${openSans.className}`}>Sentiment Scores Across # Posts</p>
-                            <div className="w-full">
+                            <p className={`text-2xl font-medium ${openSans.className}`}>Sentiment Scores Across # Posts</p>
+                            <div className="flex w-full gap-4 items-center">
                                 <ProgressBar value={positiveScore} colour={positiveColour}/>
+                                <p className="text-sm w-12">Positive</p>
                             </div>
-                            <div className="w-full">
+                            <div className="flex w-full gap-4 items-center">
                                 <ProgressBar value={neutralScore} colour={neutralColour}/>
+                                <p className="text-sm w-12">Neutral</p>
                             </div>
-                            <div className="w-full">
+                            <div className="flex w-full gap-4 items-center">
                                 <ProgressBar value={negativeScore} colour={negativeColour}/>
+                                <p className="text-sm w-12">Positive</p>
                             </div>
-                                {/* <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.response.length}</span> sentences scraped.</p> */}
                         </div>
                     </div>
                     <div className="grow w-2/5">
