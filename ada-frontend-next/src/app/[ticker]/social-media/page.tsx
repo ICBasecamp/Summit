@@ -31,7 +31,7 @@ const SocialMediaPage = () => {
         overallSentiment = "negative";
     }
 
-    const { value, reset } = useCountUp({
+    const { value: positiveScore, reset } = useCountUp({
         isCounting: true,
         duration: 1,
         start: 0,
@@ -50,11 +50,11 @@ const SocialMediaPage = () => {
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
                                 <p className={`text-2xl font-semibold ${openSans.className}`}>Sentiment Scores Across # Posts</p>
                                 <div className="flex items-center gap-x-3 whitespace-nowrap">
-                                    <div className="flex w-80 h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" role="progressbar" aria-valuenow={25} aria-valuemin={0} aria-valuemax={100}>
-                                    <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{width: '25%'}}></div>
+                                    <div className="flex w-80 h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" role="progressbar" aria-valuenow={positiveScore} aria-valuemin={0} aria-valuemax={100}>
+                                    <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{width: `${positiveScore}%`}}></div>
                                     </div>
                                     <div className="w-10 text-end">
-                                    <span className="text-sm text-white">25%</span>
+                                    <span className="text-sm text-white">{positiveScore}%</span>
                                     </div>
                                 </div>
 
