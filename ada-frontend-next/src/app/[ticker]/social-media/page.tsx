@@ -31,12 +31,26 @@ const SocialMediaPage = () => {
         overallSentiment = "negative";
     }
 
-    const { value: positiveScore, reset } = useCountUp({
+    const { value: positiveScore, reset: resetPositive } = useCountUp({
         isCounting: true,
         duration: 1,
         start: 0,
         end: testJsonResponse.positiveScore * 100,
-      });
+    });
+
+    const { value: neutralScore, reset: resetNeutral } = useCountUp({
+        isCounting: true,
+        duration: 1,
+        start: 0,
+        end: testJsonResponse.neutralScore * 100,
+    });
+
+    const { value: negativeScore, reset: resetNegative } = useCountUp({
+        isCounting: true,
+        duration: 1,
+        start: 0,
+        end: testJsonResponse.negativeScore * 100,
+    });
 
     const positiveColour = 'bg-emerald-400';
     const neutralColour = 'bg-violet-400';
@@ -52,6 +66,9 @@ const SocialMediaPage = () => {
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
                                 <p className={`text-2xl font-semibold ${openSans.className}`}>Sentiment Scores Across # Posts</p>
                                 <ProgressBar value={positiveScore} colour={positiveColour}/>
+                                <ProgressBar value={neutralScore} colour={neutralColour}/>
+                                <ProgressBar value={negativeScore} colour={negativeColour}/>
+
 
                                 {/* <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.response.length}</span> sentences scraped.</p> */}
                             </div>
