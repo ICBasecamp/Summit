@@ -9,77 +9,36 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 
 import { geistSans, openSans } from '@/app/layout';
 
-const testJsonResponse = [
-    {
-        Link: "https://finance.yahoo.com/news/microsoft-corporation-msft-leads-ai-031051641.html",
-        Sentiments: [
-            { sentence: "We recently compiled a list of the 9 Trending AI Stocks on Latest News and Ratings.", sentiment_score: 0.9332724 },
-            { sentence: "In this article, we are going to take a look at where Microsoft Corporation (NASDAQ:MSFT) stands against the other AI stocks.", sentiment_score: 0.94106907 },
-            { sentence: "A Bloomberg report from December 13, AI Wants More Data.", sentiment_score: 0.93741614 },
-            { sentence: "More Chips.", sentiment_score: 0.9341822 },
-            { sentence: "More Real Estate.", sentiment_score: 0.9383361 },
-            { sentence: "More Power.", sentiment_score: 0.92113954 },
-            { sentence: "More Water.", sentiment_score: 0.92024726 },
-            { sentence: "More Everything, explores the resource-intensive nature of artificial intelligence, emphasizing its demands on electricity, water, and infrastructure.", sentiment_score: 0.9168238 },
-            { sentence: "Number of Hedge Fund Holders: 279\nMicrosoft Corporation (NASDAQ:MSFT) uses AI across its cloud services, productivity tools, and business solutions to enhance automation, security, and user experience.", sentiment_score: 0.7505022 },
-            { sentence: "Its AI initiatives include intelligent cloud services, AI-driven applications for business operations, and advanced capabilities in language processing and cloud computing.", sentiment_score: 0.92186314 },
-            { sentence: "Omidia, a technology consultancy estimates that Microsoft purchased 485,000 of Nvidia's Hopper GPUs in 2024, as reported by Financial Times.", sentiment_score: 0.9121019 },
-            { sentence: "Overall MSFT ranks 2nd on our list of the trending AI stocks.", sentiment_score: 0.72807175 },
-            { sentence: "While we acknowledge the potential of MSFT as an investment, our conviction lies in the belief that AI stocks hold greater promise for delivering higher returns and doing so within a shorter timeframe.", sentiment_score: 0.04312906 }
-        ]
-    },
-    {
-        Link: "https://finance.yahoo.com/news/asked-5-ai-chatbots-pick-193700333.html",
-        Sentiments: [
-            { sentence: "The year 2025 is virtually here, bringing with it a wave of curiosity from investors eager to see what the stock market holds.", sentiment_score: 0.50006336 },
-            { sentence: "To capture the pulse of the moment, Quartz asked five AI chatbots — OpenAI's ChatGPT, Google's (GOOGL) Gemini, Meta (META) AI, Microsoft's (MSFT) Copilot, and Groq — to share predictions on the stocks that may outperform in 2025.", sentiment_score: 0.4835702 },
-            { sentence: "Microsoft (MSFT): Microsoft's strong product lineup, including Windows, Office, and Azure cloud platform, positions it well for future growth.", sentiment_score: 0.07472271 },
-            { sentence: "Its focus on productivity and collaboration tools is also driving strong demand.", sentiment_score: 0.2506462 },
-            { sentence: "Apple (AAPL): Apple's innovative products, including the iPhone, iPad, and Mac, continue to be popular with consumers.", sentiment_score: 0.52340305 },
-            { sentence: "Its strong brand loyalty and ecosystem of services provide a solid foundation for future growth.", sentiment_score: 0.17264448 },
-            { sentence: "Tesla (TSLA): Tesla is leading the electric vehicle revolution and is rapidly expanding its production capacity.", sentiment_score: 0.066005215 },
-            { sentence: "Its strong brand recognition and innovative technology give it a competitive advantage in the market.", sentiment_score: 0.10793233 },
-            { sentence: "Apple Inc. (AAPL): Apple continues to be a leader in technology with strong growth in its services segment, including payment processing and streaming media.", sentiment_score: 0.06272849 }
-    
-        ]
+const testJsonResponse = {
+    positiveSummary: `The stock market has continued to soar to new heights, with the Dow, S&P 500, and Russell 2000 reaching record highs despite threats of tariffs from former President Trump. Additionally, AI chipmaker Nvidia has taken a backseat to a lesser-known Ohio-based cooling technology stock, which has seen its market cap balloon in just two years since the launch of ChatGPT. Meanwhile, MicroStrategy, a tech company, has emerged as the best-performing stock in the Russell 1000 over the last seven years, with a return of over 3,400%. Despite some volatility, Nvidia's stock price has displayed a strong inverse head and shoulders pattern, leading many analysts to predict a bullish break-out above $135.70, potentially pushing the stock price to $141 or even $160, which could be a Christmas 
+gift in itself.`,
+    neutralSummary: `The provided social media posts are a mix of opinions and speculation about Nvidia's stock performance, with some users expressing concerns about its potential collapse and others being optimistic about its future growth. However, many of the posts also discuss the importance of Nvidia and other tech companies 
+to the state's social safety net, as they generate significant tax revenue. Additionally, some posts mention the company's recent stock performance and predictions for its future, with some users even claiming that its stock will continue to rise over the next year.`,
+    negativeSummary: `The Chinese central economic work conference has announced plans for greater liquidity, interest rate cuts, and larger fiscal deficits, sparking concern among economists. Meanwhile, problems with NVIDIA's "Blackwell" chip servers have further delayed the development of generative AI models, leading some to worry about the potential economic impact if AI technology suddenly becomes unreliable. Additionally, the vast investment in AI technology means that a collapse could have far-reaching consequences, potentially even destabilizing the economy. In the face of these challenges, investors are divided, with some urging caution and others, like Jim Cramer, refusing to sell their stocks in companies like Apple and NVIDIA. Despite these concerns, the S&P 500 index has continued to 
+rise, with the current level standing 22.9% above projections for Q2 2024 in the June 2024 budget forecast.`,
+    positiveScore: 0.3953,
+    neutralScore: 0.4884,
+    negativeScore: 0.1163,
+
+}
+
+const SocialMediaPage = () => {
+
+    let overallSentiment = "neutral";
+    if (testJsonResponse.positiveScore > testJsonResponse.neutralScore && testJsonResponse.positiveScore > testJsonResponse.negativeScore) {
+        overallSentiment = "positive";
+    } else if (testJsonResponse.negativeScore > testJsonResponse.neutralScore && testJsonResponse.negativeScore > testJsonResponse.positiveScore) {
+        overallSentiment = "negative";
     }
-];
-
-const testData = {
-    response: testJsonResponse.flatMap((json) => 
-        json.Sentiments.map((sentiment) => ({
-            link: json.Link,
-            sentence: sentiment.sentence,
-            sentiment_score: sentiment.sentiment_score
-        }))
-    ),
-};
-
-const negativeSentThreshold = -15.00;
-const positiveSentThreshold = 15.00;
-
-const NewsPage = () => {
-
-    const averageSentiment = parseFloat(((testData.response.reduce((acc, curr) => acc + curr.sentiment_score, 0) / testData.response.length) * 100).toFixed(2));
-
-    const sortedSentences = testData.response.sort((a, b) => b.sentiment_score - a.sentiment_score);
-    const highestSentences = sortedSentences.slice(0, 3);
-    const lowestSentences = sortedSentences.slice(-3).reverse();
 
     const { value, reset } = useCountUp({
         isCounting: true,
         duration: 1,
         start: 0,
-        end: averageSentiment,
+        end: testJsonResponse.positiveScore * 100,
       });
 
     let sentimentColour = 'text-violet-400';
-
-    if (averageSentiment < negativeSentThreshold) {
-        sentimentColour = 'text-red-500';
-    } else if (averageSentiment > positiveSentThreshold) {
-        sentimentColour = 'text-emerald-400';
-    }
 
     return (
         <div className="flex flex-col bg-neutral-900 w-full h-screen">
@@ -89,15 +48,23 @@ const NewsPage = () => {
                     <div className="grow w-3/5">
                         <div className="flex flex-col">
                             <div className="flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
-                                <p className={`text-2xl font-semibold ${openSans.className}`}>Average Sentiment Score</p>
-                                <CircularProgress value={value} className="size-52" colour={sentimentColour}/>
-                                <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.response.length}</span> sentences scraped.</p>
+                                <p className={`text-2xl font-semibold ${openSans.className}`}>Sentiment Scores Across # Posts</p>
+                                <div className="flex items-center gap-x-3 whitespace-nowrap">
+                                    <div className="flex w-80 h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" role="progressbar" aria-valuenow={25} aria-valuemin={0} aria-valuemax={100}>
+                                    <div className="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" style={{width: '25%'}}></div>
+                                    </div>
+                                    <div className="w-10 text-end">
+                                    <span className="text-sm text-white">25%</span>
+                                    </div>
+                                </div>
+
+                                {/* <p className="text-lg">Average sentiment score across <span className="font-bold">{testData.response.length}</span> sentences scraped.</p> */}
                             </div>
                         </div>
                     </div>
                     <div className="grow w-2/5">
                         <div className="flex flex-col gap-8">
-                            <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
+                            {/* <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
                                 <h2 className={`text-lg font-medium self-center ${openSans.className}`}>Highest Sentiment Sentences</h2>
                                 {highestSentences.map((sentence, index) => (
                                     
@@ -151,7 +118,7 @@ const NewsPage = () => {
                                         </Tooltip.Provider>
                                     </div>
                                 ))}
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
@@ -160,4 +127,4 @@ const NewsPage = () => {
     );
 }
 
-export default NewsPage;
+export default SocialMediaPage;
