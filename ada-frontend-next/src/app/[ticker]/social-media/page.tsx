@@ -25,25 +25,35 @@ rise, with the current level standing 22.9% above projections for Q2 2024 in the
             content: `Nvidia ($NVDA) invested $1 billion in AI startups in 2024. This move has significantly boosted its influence in the sector. 
 
 They have been one of the smartest investors in AI startups as witnessed last year as I was watching AI started funding rounds very closely.`,
-            authorName: 'Michael Kevin Spencer',
-            authorHandle: '@aisupremacy.bsky.social',
-            authorImage: 'https://bsky.app/profile/did:plc:5hkogxu5u4wkelj6qm6iarip?ref_src=embed', 
-            date: 'January 3, 2025 at 8:59 AM',
+            url: 'https://bsky.app/profile/aisupremacy.bsky.social/post/3letqsmnij22v',
+            uri: `at://did:plc:nmamxtwi7zxhd5ci7wcgephj/app.bsky.feed.post/3lezaydfryk24`,
+            cid: `bafyreidkv6pbmcerzvg5ptrb2qkfyq32jfbc2ndxycykb3zwhidyxi4sne`
+        },
+        {
+            content: `$NVDA: Nvidia Corp. benefits from strong AI infrastructure demand, as highlighted by partner Hon Hai's revenue beat.`,
+            url: `https://bsky.app/profile/financepulsehq.bsky.social/post/3lezprtedkk2h`,
+            uri: `at://did:plc:puwdi3kzppd6ekvrtw5advlh/app.bsky.feed.post/3lauz75agpc2m`,
+            cid: `bafyreidsce4ooixjtvvolzdkpqmiwr4ueiziw5g73w2odidyyzazbqlpby`
+        },
+        {
+            content: `meow meow meow`,
+            url: `https://bsky.app/profile/antirez.bsky.social/post/3leajmr5vx22z`,
+            uri: `at://did:plc:nmamxtwi7zxhd5ci7wcgephj/app.bsky.feed.post/3lezaydfryk24`,
+            cid: `bafyreidkv6pbmcerzvg5ptrb2qkfyq32jfbc2ndxycykb3zwhidyxi4sne`
         }
     ]
 
+
 }
 
-const BlueskyEmbed = () => {
-
-
+const BlueskyEmbed = ({ uri, cid }: { uri: string, cid: string }) => {
+    
     return (
         <div>
-            <blockquote className="bluesky-embed" data-bluesky-uri="at://did:plc:5hkogxu5u4wkelj6qm6iarip/app.bsky.feed.post/3le5ojisqg22j" data-bluesky-cid="bafyreihs45klonrm7bwcwwpwnpipunmwlyaajvglorvdojtcnbkyamvdyq">
-                <p lang="en">
-                    {text}
-                </p>&mdash; {authorName} (<a href={authorURL}>{authorHandle}</a>) <a href={postURL}>January 3, 2025 at 8:59 AM</a></blockquote><script async src="https://embed.bsky.app/static/embed.js" charSet="utf-8"></script>
-                            </div>
+            <blockquote className="bluesky-embed" data-bluesky-uri={uri} data-bluesky-cid={cid}>
+            </blockquote>
+            <script async src="https://embed.bsky.app/static/embed.js" charSet="utf-8"></script>
+        </div>
     )
 }
 
@@ -68,6 +78,18 @@ const SocialMediaPage = () => {
     const [direction, setDirection] = useState('next');
     const [nextIndex, setNextIndex] = useState(0);
     const [isClient, setIsClient] = useState(false);
+
+    const [postIndex, setPostIndex] = useState(0);
+                            
+    useEffect(() => {
+        const interval = setInterval(() => {
+        setPostIndex((current) => 
+                (current + 1) % testJsonResponse.rawBlueskyPosts.length
+            );
+        }, 3500);
+                                
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         setIsClient(true);
@@ -133,7 +155,7 @@ const SocialMediaPage = () => {
             <Header />
             <div className="flex flex-col px-8 pt-2 pb-8 h-full">
                 <div className="flex justify-between gap-12 h-full">
-                    <div className="grow w-2/5 flex flex-col justify-between">
+                    <div className="grow w-2/5 flex flex-col gap-6">
                         <div className="w-full flex flex-col rounded-xl bg-zinc-800 p-8 items-center gap-8">
                             <p className={`text-2xl font-medium ${openSans.className}`}>Sentiment Scores Across # Posts</p>
                             <div className="flex w-full gap-4 items-center">
@@ -149,12 +171,22 @@ const SocialMediaPage = () => {
                                 <p className="text-sm w-12">Negative</p>
                             </div>
                         </div>
-                        {isClient && (
-                            <div>
-                                <blockquote className="bluesky-embed" data-bluesky-uri="at://did:plc:5hkogxu5u4wkelj6qm6iarip/app.bsky.feed.post/3lexk5k5u7k2i" data-bluesky-cid="bafyreihs45klonrm7bwcwwpwnpipunmwlyaajvglorvdojtcnbkyamvdyq">
-                                    <p lang="en"></p></blockquote><script async src="https://embed.bsky.app/static/embed.js" charSet="utf-8"></script>
-                            </div>
-                        )}
+                        <div className="w-full h-1/2 relative">
+                            <p className={`text-white text-xl font-medium ${openSans.className}`}>Where we pulled from...</p>
+                            {isClient && testJsonResponse.rawBlueskyPosts.map((post, index) => (
+                                <div 
+                                    key={index}
+                                    className={`absolute w-full transition-opacity duration-300 ${
+                                        index === postIndex ? 'opacity-100' : 'opacity-0'
+                                    }`}
+                                >
+                                    <BlueskyEmbed 
+                                        uri={post.uri} 
+                                        cid={post.cid} 
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                     <div className="grow w-3/5 h-full">
                         <div className="h-1/2 relative overflow-hidden">
