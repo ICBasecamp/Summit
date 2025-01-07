@@ -23,7 +23,8 @@ async def fetch_reddit(subreddit_name: str, stock: str):
     for post in subreddit.search(stock, sort='new', limit=15):
         combined_content = f"Title: {post.title}\nBody: {post.selftext}\nLink: {post.url}"
         posts.append({
-            'Content': combined_content
+            'Content': combined_content,
+            'Source': 'Reddit'
         })
 
     return posts

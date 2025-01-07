@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
+import asyncio
+
 async def fetch_bluesky(query: str, limit: int = 10):
     url = f'https://bsky.app/search?q={query}'
     posts = []
@@ -23,7 +25,10 @@ async def fetch_bluesky(query: str, limit: int = 10):
             if tweets:
                 for tweet in tweets:
                     content = tweet.text.strip()
-                    post_data = {'Content': content}
+                    post_data = {'Content': content, 'Source': 'Bluesky'}
+
+                    # links = [a['href'] for a in tweet.find_all('a', href=True)]
+                    # print(links)
                     
                     # Check for images in the post
                     image_div = tweet.find_next('div', class_='css-175oi2r')
@@ -40,3 +45,5 @@ async def fetch_bluesky(query: str, limit: int = 10):
             await page.close()
 
     return posts
+
+# asyncio.run(fetch_bluesky('NVDA stock', limit=5))

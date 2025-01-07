@@ -33,7 +33,7 @@ async def fetch_stockwits(symbol: str, limit: int = 20):
             if messages:
                 for message in messages:
                     content = message.find('div', class_='RichTextMessage_body__4qUeP').text.strip()
-                    post_data = {'Content': content}
+                    post_data = {'Content': content, 'Source': 'Stocktwits'}
                     
                     # Check for images in the post
                     image_div = message.find('div', class_='StreamMessage_avatarImage__e5N6L')
