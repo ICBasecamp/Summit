@@ -21,17 +21,19 @@ async def fetch_bluesky(query: str, limit: int = 10):
             soup = BeautifulSoup(content_html, 'html.parser')
             
             # Extract the divs with the class 'css-146c3p1' and data-testid 'postText'
-            tweets = soup.find_all('div', class_='css-146c3p1', attrs={'data-testid': 'postText'}, limit=limit)
+            tweets = soup.find_all('div', class_='css-175oi2r r-18u37iz r-uaa2di', limit=limit)
+            # tweets = soup.find_all('div', class_='css-146c3p1', attrs={'data-testid': 'postText'}, limit=limit)
             if tweets:
                 for tweet in tweets:
-                    content = tweet.text.strip()
-                    post_data = {'Content': content, 'Source': 'Bluesky'}
+                    content = tweet.find('div', class_='css-146c3p1', attrs={'data-testid': 'postText'})
+                    text_content = content.text.strip()
+                    post_data = {'Content': text_content, 'Source': 'Bluesky'}
 
-                    # links = [a['href'] for a in tweet.find_all('a', href=True)]
-                    # print(links)
+                    post_link = tweet.find('a', class_="css-146c3p1 r-1loqt21", href=True)['href']
+                    print(post_link)
                     
                     # Check for images in the post
-                    image_div = tweet.find_next('div', class_='css-175oi2r')
+                    image_div = content.find_next('div', class_='css-175oi2r')
                     if image_div:
                         img_tag = image_div.find('img')
                         if img_tag and 'src' in img_tag.attrs:
@@ -46,4 +48,4 @@ async def fetch_bluesky(query: str, limit: int = 10):
 
     return posts
 
-# asyncio.run(fetch_bluesky('NVDA stock', limit=5))
+asyncio.run(fetch_bluesky('NVDA stock', limit=5))
