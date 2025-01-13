@@ -3,7 +3,6 @@ from flask_cors import CORS
 import asyncio
 import os
 import sys
-import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -14,19 +13,6 @@ from news.sentiment_analysis import sentiment_analysis_on_ticker as NA_NLPAnalys
 
 app = Flask(__name__)
 CORS(app)
-
-# test route to test sse
-@app.route('/updates')
-def updates():
-    def generate():
-        yield "data: Collecting data...\n\n"
-        time.sleep(2)  # Simulate lengthy process
-        yield "data: Processing data...\n\n"
-        time.sleep(2)
-        yield "data: Finalizing...\n\n"
-        time.sleep(1)
-        yield "data: Completed!\n\n"
-    return Response(generate(), content_type='text/event-stream')
 
 @app.route('/analyze/<ticker>')
 def analyze(ticker):
@@ -40,26 +26,34 @@ def analyze(ticker):
             # Social Media Analysis
             yield "data: Analyzing social media...\n\n"
             social_media = asyncio.run(SM_NLPAnalysis(ticker))
-            yield f"data: socialMedia: {social_media}\n\n"
+            if isinstance(social_media, list):
+                social_media = ' '.join(map(str, social_media))
+            yield f"data: socialMedia: {social_media.replace('\n', ' ')}\n\n"
 
             # Earnings Analysis
             yield "data: Analyzing earnings reports...\n\n"
             earnings = asyncio.run(ER_NLPAnalysis(ticker))
-            yield f"data: earnings: {earnings}\n\n"
+            if isinstance(earnings, (list, tuple)):
+                earnings = ' '.join(map(str, earnings))
+            yield f"data: earnings: {earnings.replace('\n', ' ')}\n\n"
 
             # News Analysis
             yield "data: Analyzing news articles...\n\n"
             news = asyncio.run(NA_NLPAnalysis(ticker))
-            yield f"data: news: {news}\n\n"
+            if isinstance(news, list):
+                news = ' '.join(map(str, news))
+            yield f"data: news: {news.replace('\n', ' ')}\n\n"
 
             # Economic Indicators Analysis
             yield "data: Analyzing economic indicators...\n\n"
             economic_indicators = asyncio.run(EI_NLPAnalysis(ticker))
-            yield f"data: economicIndicators: {economic_indicators}\n\n"
+            if isinstance(economic_indicators, (list, tuple)):
+                economic_indicators = ' '.join(map(str, economic_indicators))
+            yield f"data: economicIndicators: {economic_indicators.replace('\n', ' ')}\n\n"
 
             yield "data: Analysis complete.\n\n"
         except Exception as e:
-            yield f"data: An error occurred: {str(e)}\n\n"
+            yield f"data: error: {str(e).replace('\n', ' ')}\n\n"
 
     return Response(workflow(), content_type='text/event-stream')
 

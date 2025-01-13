@@ -14,7 +14,7 @@ async def run_calculations(ticker):
     financial_stats_results = await calculate_FS(ticker)
 
     # Run the non-statistical analysis
-    non_statistical_results = calculate_NSA(ticker)
+    non_statistical_results = await calculate_NSA(ticker)
 
     # Run the statistical analysis
     statistical_results = []
@@ -66,7 +66,10 @@ async def ER_NLPAnalysis(ticker):
     Please analyze the following financial data and provide insights on this stock: {ticker}. Provide insights on the data that you see and put it into human language. For context
     the statistical_results have feature importance with random forest regression and PCA components for each statistical dataframe. The financial_stats_results have financial metrics like PE Ratio, EPS, and earnings Date. The non_statistical_results have average scores by rating, time series analysis, correlation, margins, quarterly growth rates, and price gap. 
     I want you to include statistics in the analysis so you would say something like "The most important feature for X has 35% importance indicating Y". Make connections between the results and provide a clear and concise summary of the data. You have to explain what the data means and what it means for {ticker} not just state facts, in addition try and make it in
-    a readable paragraph not bullet points. Focus on each part of the data equally here are some examples for each part of the data:
+    a readable paragraph not bullet points. I want a paragraph for the analysis on each of the 4 dataframes in the earnings estimate meaning one for 
+    earnings, eps trend, earnings-history and revenue. One paragraph focusing on Non-statistical data, and one paragraph focusin on financial stats
+    therefore leading to 6 paragraphs of NLP. The paragraphs of statitical analysis should make remarks on BOTH the PCA scores grouping the labels together based on the results
+    AND the feature importance scores. The paragraphs should make remarks on everything needed. LABEL each section as **Earnings Estimate**, **Revenue Estimate**, **Earnings History Estimate**, **EPS trend Estimate**, **Non Statistical Estimate**, **Financial Estimate** MAKE sure to include analysis ON EACH OF THESE SECTIONS EQUALLY. Focus on each part of the data equally here are some examples for each part of the data:
 
     EXAMPLES:
     Non-Statistical Data:
@@ -77,6 +80,7 @@ async def ER_NLPAnalysis(ticker):
     Despite the decrease in Overall Score, the Price Target has increased, indicating higher expected future value.
 
     Financial Stats:
+    FOR FINANCIAL STATS FOCUS ON EVERY PART OF THE FINANCIAL STATS DON't SKIP ANY.
     PE Ratio (TTM) (56.08): This indicates that investors are willing to pay $56.08 for every $1 of earnings over the trailing twelve months. A high P/E ratio can suggest that the stock is overvalued, but it can also indicate strong growth expectations.
     Forward P/E (33.44): This indicates that investors are willing to pay $33.44 for every $1 of expected future earnings. While still high, it is lower than the trailing P/E, suggesting expectations of future earnings growth.
     PEG Ratio (5yr expected) (0.89): A PEG ratio below 1 suggests that the stock may be undervalued relative to its growth prospects. This is a positive indicator.
@@ -101,7 +105,7 @@ async def ER_NLPAnalysis(ticker):
     text_to_analyze = prompt + combined_results_str
 
     insights = await call_groqapi_service(text_to_analyze)
-    return insights
+    return insights, combined_results_str
 
 async def NLP(ticker):
     load_dotenv()

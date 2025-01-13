@@ -41,10 +41,9 @@ async def getDataframes(ticker):
         (earnings_history_df, 'earnings_history_df'),
         (eps_trend_df, 'eps_trend_df')
     ]
-    
+
     return dataframes_list
 
-# Function to preprocess and analyze the combined dataframe
 def preprocess_and_analyze(df, name):
     results = {
         'name': name,
@@ -94,6 +93,10 @@ def preprocess_and_analyze(df, name):
     if categorical_features:
         feature_names += list(preprocessor.named_transformers_['cat'].get_feature_names_out(categorical_features))
     preprocessed_df = pd.DataFrame(X, columns=feature_names, index=df.index)
+    
+    # Ensure all dataframes have matching dimensions
+    if preprocessed_df.shape[1] != len(feature_names):
+        return results
     
     X_df = pd.DataFrame(X, columns=feature_names, index=df.index)
     if X_df.empty:
@@ -146,15 +149,9 @@ def preprocess_and_analyze(df, name):
     
     # PCA for Dimensionality Reduction
     def pca_dimensionality_reduction(X_df, n_components=3):
-        X = X_df.select_dtypes(include=[np.number])
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        
         pca = PCA(n_components=n_components)
-        principal_components = pca.fit_transform(X_scaled)
-        
-        pca_df = pd.DataFrame(pca.components_.T, index=X.columns, columns=[f'PC{i+1}' for i in range(n_components)])
-        
+        principal_components = pca.fit_transform(X_df)
+        pca_df = pd.DataFrame(data=principal_components, columns=[f'PC{i+1}' for i in range(n_components)], index=X_df.index)
         return pca_df
     
     if name == 'earnings_df' or name == 'eps_trend_df' or name == 'revenue_df':

@@ -1,6 +1,9 @@
 import pandas as pd
 from earnings.AnalysisStats import main as calculate_stats
 from utilities import convert_to_number
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 async def main(ticker):
     dataframes = await calculate_stats(ticker)
@@ -11,9 +14,6 @@ async def main(ticker):
 
     # Clean up column names by stripping trailing spaces
     top_analysts_df.columns = top_analysts_df.columns.str.strip()
-
-    # Check the columns in top_analysts_df
-    print("Columns in top_analysts_df:", top_analysts_df.columns)
 
     # If 'Date' column is not present, print the first few rows to identify the correct column
     if 'Date' not in top_analysts_df.columns:
@@ -29,6 +29,9 @@ async def main(ticker):
     top_analysts_df['Direction Score'] = pd.to_numeric(top_analysts_df['Direction Score'], errors='coerce')
     top_analysts_df['Price Score'] = pd.to_numeric(top_analysts_df['Price Score'], errors='coerce')
     top_analysts_df['Price Target'] = pd.to_numeric(top_analysts_df['Price Target'], errors='coerce')
+    
+    # Handle missing values by filling with a default value or dropping
+    top_analysts_df = top_analysts_df.fillna(0)
 
     # Group by 'Latest Rating' and calculate the mean
     average_scores_by_rating = top_analysts_df.groupby('Latest Rating')[['Overall Score', 'Direction Score', 'Price Score']].mean()
@@ -36,7 +39,7 @@ async def main(ticker):
     # Time-series analysis to observe changes in analyst sentiment
     time_series_analysis = None
     if 'Date' in top_analysts_df.columns:
-        time_series_analysis = top_analysts_df.set_index('Date')[['Overall Score', 'Price Target']].resample('M').mean()
+        time_series_analysis = top_analysts_df.set_index('Date')[['Overall Score', 'Price Target']].resample('ME').mean()
 
     # Dataset 2: Revenue vs. Earnings Data
     revenue_earnings_df['Revenue'] = revenue_earnings_df['Revenue'].apply(convert_to_number)

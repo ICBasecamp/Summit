@@ -8,22 +8,22 @@ export const Header = () => {
     const tabs = [
         {
             title: "News",
-            value: "1",
+            value: "news",
             content: <></>
         },
         {
             title: "Social Media",
-            value: "2",
+            value: "social-media",
             content: <></>
         },
         {
             title: "Economic Indicators",
-            value: "3",
+            value: "economic-indicators/retail-sales",
             content: <></>
         },
         {
             title: "Earning Reports",
-            value: "4",
+            value: "earnings-reports/earnings",
             content: <></>
         },
 
