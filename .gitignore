@@ -5,3 +5,5 @@ earnings/results/*
 social_media/results/*
 
 economic_indicators/results/*
+
+node_modules/
