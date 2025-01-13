@@ -13,17 +13,17 @@ from handler import fetch_articles
 # as an array of dictionaries of individual sentences and their sentiment scores
 async def sentiment_analysis_on_ticker(ticker):
 
-    # df = await fetch_articles(ticker)
+    df = await fetch_articles(ticker)
 
-    # if df.empty:
-    #     print("No articles found for the ticker.")
-    #     return []
+    if df.empty:
+        print("No articles found for the ticker.")
+        return []
 
     # temporarily reading/storing from csv for testing, reduce time fetching
     # df.to_csv('news/results/raw_data.csv', index=False)
 
-    df = pd.read_csv('news/results/raw_data.csv')
-    df = df.head(3)
+    # df = pd.read_csv('news/results/raw_data.csv')
+    # df = df.head(3)
     
     df['Sentiments'] = None
 
