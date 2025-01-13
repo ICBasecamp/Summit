@@ -51,9 +51,9 @@ export default function RootLayout({
         <HeroHighlight className='h-screen'>
           <AnalysisProvider>
             <main>
-              {/* {pathname === '/' && <TickerForm setTicker={setTicker} />}
+              {pathname === '/' && <TickerForm setTicker={setTicker} />}
               {pathname.startsWith('/analyze') && <AnalysisResults ticker={ticker ?? ''} />}
-              {pathname.startsWith('/news') && <NewsPage />} */}
+              {pathname.startsWith('/news') && <NewsPage />}
               {children}
             </main>
           </AnalysisProvider>
