@@ -1,7 +1,38 @@
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
+import requests
 import asyncio
+
+async def fetch_bsky_uri_cid(post_url: str):
+    collection = "app.bsky.feed.post",
+
+    # Extract repo and rkey from URL format: /profile/{repo}/post/{rkey}
+    parts = post_url.strip('/').split('/')
+    if len(parts) >= 4 and parts[0] == 'profile' and parts[2] == 'post':
+        repo = parts[1]
+        rkey = parts[3]
+
+    if not repo or not rkey:
+        raise Exception(f"Invalid Bluesky post URL: {post_url}")
+    
+    params = {
+        "repo": repo,
+        "rkey": rkey,
+        "collection": collection
+    }
+
+    response = requests.get('https://bsky.social/xrpc/com.atproto.repo.getRecord', params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data['uri'], data['cid']
+    else:
+        raise Exception(f"Failed to fetch URI CID for post {post_url}")
+
+    
+
+    
 
 async def fetch_bluesky(query: str, limit: int = 10):
     url = f'https://bsky.app/search?q={query}'
@@ -30,7 +61,10 @@ async def fetch_bluesky(query: str, limit: int = 10):
                     post_data = {'Content': text_content, 'Source': 'Bluesky'}
 
                     post_link = tweet.find('a', class_="css-146c3p1 r-1loqt21", href=True)['href']
-                    print(post_link)
+                    uri, cid = await fetch_bsky_uri_cid(post_link)
+
+                    post_data['URI'] = uri
+                    post_data['CID'] = cid
                     
                     # Check for images in the post
                     image_div = content.find_next('div', class_='css-175oi2r')
@@ -44,6 +78,7 @@ async def fetch_bluesky(query: str, limit: int = 10):
         except Exception as e:
             print(f"Failed to fetch content {url}: {e}")
         finally:
+            print(posts)
             await page.close()
 
     return posts
