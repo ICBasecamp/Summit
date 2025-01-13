@@ -33,6 +33,9 @@ async def calculate_feature_importance(ticker):
             quarterly_values.append(quarterly_average)
         quarterly_econ_df[indicator] = quarterly_values
 
+    # Set the index to quarterly periods
+    quarterly_econ_df.index = pd.period_range(start=econ_df.index[0], periods=len(quarterly_econ_df), freq='Q')
+
     # Load the raw data from EarningsReports.py
     earnings_df = dataframes['earnings_df']
     revenue_df = dataframes['revenue_df']

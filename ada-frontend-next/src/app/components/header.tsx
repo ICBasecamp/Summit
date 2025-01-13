@@ -18,7 +18,7 @@ export const Header = () => {
         },
         {
             title: "Economic Indicators",
-            value: "economic-indicators",
+            value: "economic-indicators/retail-sales",
             content: <></>
         },
         {

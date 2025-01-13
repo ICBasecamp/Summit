@@ -39,16 +39,16 @@ const RetailSalesPage: React.FC<{ ticker: string }> = ({ ticker }) => {
           const correlationsData = JSON.parse(statisticalAnalysisData[1].replace(/'/g, '"').replace(/\s+/g, ' '));
           
           const retailSalesCorrelations = {
-            "Earnings Reports": parseFloat(correlationsData["Earnings Reports"]["Retail Sales"].toFixed(3)),
-            "Stock Revenue": parseFloat(correlationsData["Stock Revenue"]["Retail Sales"].toFixed(3)),
-            "Earnings History": parseFloat(correlationsData["Earnings History"]["Retail Sales"].toFixed(3)),
-            "EPS Trend": parseFloat(correlationsData["EPS Trend"]["Retail Sales"].toFixed(3))
+            "Earnings Reports": parseFloat(correlationsData["Earnings Reports"]["CPI"].toFixed(3)),
+            "Stock Revenue": parseFloat(correlationsData["Stock Revenue"]["CPI"].toFixed(3)),
+            "Earnings History": parseFloat(correlationsData["Earnings History"]["CPI"].toFixed(3)),
+            "EPS Trend": parseFloat(correlationsData["EPS Trend"]["CPI"].toFixed(3))
           };
 
           setCorrelations(retailSalesCorrelations);
 
           // Extract scatter plot data for "Retail Sales"
-          const retailSalesScatterDataMatch = parsedMessage.match(/"Retail Sales":\s*\{[^}]*"Earnings Data":\s*array\(([^)]*)\),\s*"Economic Indicators":\s*array\(([^)]*)\)/);
+          const retailSalesScatterDataMatch = parsedMessage.match(/"CPI":\s*\{[^}]*"Earnings Data":\s*array\(([^)]*)\),\s*"Economic Indicators":\s*array\(([^)]*)\)/);
           if (retailSalesScatterDataMatch) {
             const earningsData = retailSalesScatterDataMatch[1].replace(/[\[\]\s]/g, '').split(',').map(value => parseFloat(value));
             const economicIndicators = retailSalesScatterDataMatch[2].replace(/[\[\]\s]/g, '').split(',').map(value => parseFloat(value));
@@ -90,7 +90,7 @@ const RetailSalesPage: React.FC<{ ticker: string }> = ({ ticker }) => {
   useEffect(() => {
     const retailSalesMessage = messages?.find(message => message.includes("economicIndicators:"));
     if (retailSalesMessage) {
-      const retailSalesEstimationData = retailSalesMessage.match(/\*\*Retail Sales\*\*:([\s\S]*?)\*\*/);
+      const retailSalesEstimationData = retailSalesMessage.match(/\*\*CPI\*\*:([\s\S]*?)\*\*/);
       if (retailSalesEstimationData && retailSalesEstimationData[1]) {
         setRetailSalesEstimation(retailSalesEstimationData[1].trim());
       } else {
@@ -150,12 +150,12 @@ const RetailSalesPage: React.FC<{ ticker: string }> = ({ ticker }) => {
                 <div className="flex flex-col gap-8">
                   {scatterData && (
                     <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
-                      <h2 className="text-lg font-medium self-center">Retail Sales Scatter Plot</h2>
+                      <h2 className="text-lg font-medium self-center">CPI Scatter Plot</h2>
                       <Scatter
                         data={{
                           datasets: [
                             {
-                              label: 'Retail Sales vs Earnings Data',
+                              label: 'CPI vs Earnings Data',
                               data: scatterData['Economic Indicators'].map((indicator: number, index: number) => ({
                                 x: indicator,
                                 y: scatterData['Earnings Data'][index]
@@ -186,7 +186,7 @@ const RetailSalesPage: React.FC<{ ticker: string }> = ({ ticker }) => {
               <div className="grow w-1/3">
                 <div className="flex flex-col gap-8">
                   <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
-                    <h2 className="text-lg font-medium self-center">Retail Sales Analysis</h2>
+                    <h2 className="text-lg font-medium self-center">CPI Analysis</h2>
                     {retailSalesEstimation && <p>{retailSalesEstimation}</p>}
                   </div>
                   <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
@@ -196,7 +196,7 @@ const RetailSalesPage: React.FC<{ ticker: string }> = ({ ticker }) => {
                         <thead>
                           <tr>
                             <th className="text-left">Data Type</th>
-                            <th className="text-left">Retail Sales</th>
+                            <th className="text-left">CPI</th>
                           </tr>
                         </thead>
                         <tbody>
