@@ -30,9 +30,9 @@ async def call_groqapi_service(text):
     return chat_completion.choices[0].message.content.strip()
 
 async def fetch_posts(ticker):
-    bsky_posts, bsky_embeddings = fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100)
-    stockwits_posts = fetch_stockwits(ticker, limit=100)
-    reddit_posts = fetch_reddit('wallstreetbets', ticker)
+    bsky_posts, bsky_embeddings = await fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100)
+    stockwits_posts = await fetch_stockwits(ticker, limit=100)
+    reddit_posts = await fetch_reddit('wallstreetbets', ticker)
 
     return await asyncio.gather(bsky_posts, bsky_embeddings, stockwits_posts, reddit_posts)
 

@@ -171,8 +171,8 @@ const SocialMediaPage = () => {
                                 <p className="text-sm w-12">Negative</p>
                             </div>
                         </div>
-                        <div className="w-full h-1/2 relative">
-                            <p className={`text-white text-xl font-medium ${openSans.className}`}>Where we pulled from...</p>
+                        <div className="w-full h-1/2 relative gap-4">
+                            <p className={`text-white text-xl font-semibold ${openSans.className}`}>See where we got our data from</p>
                             {isClient && testJsonResponse.rawBlueskyPosts.map((post, index) => (
                                 <div 
                                     key={index}

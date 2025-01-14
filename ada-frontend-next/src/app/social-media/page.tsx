@@ -27,6 +27,8 @@ const SocialMediaPage: React.FC<{ ticker: string }> = ({ ticker }) => {
     const [overallSentiment, setOverallSentiment] = useState<number | null>(null);
     const [rawBlueskyPosts, setRawBlueskyPosts] = useState<any[]>([]);
 
+    const [blueskyEmbeddings, setBlueskyEmbeddings] = useState<any[]>([]);
+
     useEffect(() => {
         if (ticker && setTicker) {
             setTicker(ticker);
@@ -50,6 +52,10 @@ const SocialMediaPage: React.FC<{ ticker: string }> = ({ ticker }) => {
 
                 const rawBlueskyPostsMatch = parsedMessage.match(/rawBlueskyPosts:\s*\[(.*?)\]/s);
                 const rawBlueskyPosts = rawBlueskyPostsMatch ? JSON.parse(`[${rawBlueskyPostsMatch[1]}]`) : [];
+
+                const bskyEmbeddingsMatch = parsedMessage.match(/<bsky_embeddings>(.*?)<\/bsky_embeddings>/s);
+                const blueskyEmbeddings = bskyEmbeddingsMatch ? JSON.parse(bskyEmbeddingsMatch[1]) : [];
+                setBlueskyEmbeddings(blueskyEmbeddings);
 
                 setOverallSentiment(overallSentimentMatch ? parseFloat(overallSentimentMatch[1]) : null);
                 setPositiveInsights(positiveInsightsMatch ? positiveInsightsMatch[1].trim() : null);
@@ -181,7 +187,7 @@ const SocialMediaPage: React.FC<{ ticker: string }> = ({ ticker }) => {
                         </div>
                         <div className="w-full h-1/2 relative">
                             <p className={`text-white text-xl font-medium ${openSans.className}`}>Where we pulled from...</p>
-                            {isClient && rawBlueskyPosts.map((post, index) => (
+                            {isClient && blueskyEmbeddings.map((post, index) => (
                                 <div
                                     key={index}
                                     className={`absolute w-full transition-opacity duration-300 ${
