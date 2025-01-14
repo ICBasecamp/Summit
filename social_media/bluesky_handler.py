@@ -60,11 +60,7 @@ async def fetch_bluesky(query: str, limit: int = 10):
                     post_data = {'Content': text_content, 'Source': 'Bluesky'}
                     embedding = {}
 
-                    post_link_div = tweet.find('div', class_="css-175oi2r")
-                    post_link = post_link_div.find('a', href=True) if post_link_div else None
-
-                    if not post_link:
-                        post_link = tweet.find('a', class_="css-146c3p1 r-1loqt21", href=True)
+                    post_link = tweet.find('a', class_="css-146c3p1 r-1loqt21", href=True)
                     if post_link and 'href' in post_link.attrs:
                         uri, cid = await fetch_bsky_uri_cid(post_link['href'])
 
@@ -92,7 +88,7 @@ async def fetch_bluesky(query: str, limit: int = 10):
     return posts, embed_data
 
 async def test():
-    posts, embed_data = await fetch_bluesky('Tesla stock', limit=5)
+    posts, embed_data = await fetch_bluesky('APPL stock', limit=5)
     print(posts)
     print(embed_data)
 
