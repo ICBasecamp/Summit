@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAnalysis } from '../../context/AnalysisContext';
 import { SidebarDemo } from '../../pages/SideTabsER';
-import { Header } from '../../components/header';
+import Header from '../../components/header';
 import { Bar, Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 

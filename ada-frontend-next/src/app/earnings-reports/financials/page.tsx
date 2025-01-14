@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAnalysis } from '../../context/AnalysisContext';
 import { SidebarDemo } from '../../pages/SideTabsER';
-import { Header } from '../../components/header';
+import Header from '../../components/header';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CalendarStyles.css';

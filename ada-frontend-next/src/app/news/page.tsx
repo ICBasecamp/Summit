@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAnalysis } from '../context/AnalysisContext';
-import { Header } from '@/app/components/header';
+import Header from '@/app/components/header';
 import { CircularProgress } from '@/app/components/circular-progress';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { openSans } from '@/app/layout';
