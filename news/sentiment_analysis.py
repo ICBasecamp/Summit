@@ -103,10 +103,6 @@ async def sentiment_analysis_on_ticker(ticker):
         'neutral_summary': neutral_summary,
         'negative_summary': negative_summary
     }
-    print(summaries)
 
     print("Sentiment Analysis completed.")
     return summaries, df['Sentiments'].tolist()
-
-if __name__ == '__main__':
-    asyncio.run(sentiment_analysis_on_ticker("AAPL"))

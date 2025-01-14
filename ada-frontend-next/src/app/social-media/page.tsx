@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAnalysis } from '../context/AnalysisContext';
-import { Header } from '@/app/components/header';
+import Header from '@/app/components/header';
 import { ProgressBar } from '@/app/components/progress-bar';
 import { useCountUp } from 'use-count-up';
 import { openSans } from '@/app/layout';
