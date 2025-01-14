@@ -86,12 +86,3 @@ async def fetch_bluesky(query: str, limit: int = 10):
             await page.close()
 
     return posts, embed_data
-
-async def test():
-    posts, embed_data = await fetch_bluesky('APPL stock', limit=5)
-    print(posts)
-    print(embed_data)
-
-asyncio.run((
-    test()
-))
