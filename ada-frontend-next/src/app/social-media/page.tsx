@@ -16,7 +16,7 @@ import {
 
 const BlueskyEmbed = ({ uri, cid }: { uri: string, cid: string }) => {
     return (
-        <div>
+        <div className="w-full h-full">
             <blockquote className="bluesky-embed" data-bluesky-uri={uri} data-bluesky-cid={cid}></blockquote>
             <script async src="https://embed.bsky.app/static/embed.js" charSet="utf-8"></script>
         </div>
@@ -32,8 +32,23 @@ const SocialMediaPage: React.FC<{ ticker: string }> = ({ ticker }) => {
     const [negativeInsights, setNegativeInsights] = useState<string | null>(null);
     const [overallSentiment, setOverallSentiment] = useState<number | null>(null);
     const [rawBlueskyPosts, setRawBlueskyPosts] = useState<any[]>([]);
+    const [bskyEmbeddings, setBskyEmbeddings] = useState<any[]>([]);
 
-    const [bskyEmbeddings, setBskyEmbeddings] = useState<any[]>([{'uri': 'at://did:plc:fbjhx5yxow6y7hn4n3udu6if/app.bsky.feed.post/3lfn6d4yo4y2s', 'cid': 'bafyreiepgyqn7dzl6fh26auw3qf5jltsvc4fy2jzm74gjzlkabvh7qxgju'}, {'uri': 'at://did:plc:nsttbhhihov4y5yejsri2zlr/app.bsky.feed.post/3lffwb4wjks2n', 'cid': 'bafyreietqz76hz7bf5dnyhfglhwemjlwhrklufy572vzx6h43gdvbytlr4'}, {'uri': 'at://did:plc:r56tewdetlqjcxcmktcp4m2w/app.bsky.feed.post/3lfo3psgqaz2o', 'cid': 'bafyreiedgvp7mthmp3cd7m2ix4hysmlm7w7skp47jbbwsrzphxmykjs34a'}, {'uri': 'at://did:plc:5wrb5sodscmav7vknh7wwpey/app.bsky.feed.post/3lfn73kq32k2n', 'cid': 'bafyreigtsp5ybzaxwxqzwkmjvpjp7nc5rtrtrrhsk7vvyhiu6luw3bgzyu'}, {'uri': 'at://did:plc:s5tihdkhmusrhlsvntgxjx62/app.bsky.feed.post/3lfjicrq32k2q', 'cid': 'bafyreig6ojl5if4i7otfojmou3qh3ds66ixdgzypmvxxvnhl347m26zbfa'}]);
+    useEffect(() => {
+        const socialMediaMessage = messages?.find(message => message.includes("socialMedia:"));
+        if (socialMediaMessage) {
+            const embeddingsMatch = socialMediaMessage.match(/Embeddings:\s*(\[.*\])/);
+            if (embeddingsMatch) {
+                try {
+                    const sanitizedEmbeddings = embeddingsMatch[1].replace(/'/g, '"');
+                    const parsedEmbeddings = JSON.parse(sanitizedEmbeddings);
+                    setBskyEmbeddings(parsedEmbeddings);
+                } catch (error) {
+                    console.error("Failed to parse embeddings JSON:", error);
+                }
+            }
+        }
+    }, [messages]);
 
     useEffect(() => {
         if (ticker && setTicker) {
@@ -211,14 +226,14 @@ const SocialMediaPage: React.FC<{ ticker: string }> = ({ ticker }) => {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="relative flex-1 overflow-hidden">
+                                <div className="relative flex-1 overflow-hidden overflow-y-auto no-scrollbar">
                                     <div className={`absolute inset-0 transition-transform duration-300 ${isAnimating ? (direction === 'next' ? 'animate-swipe-out-right' : 'animate-swipe-out-left') : ''}`}>
-                                        <p className="text-sm text-neutral-300 overflow-hidden overflow-y-auto no-scrollbar h-full">
+                                        <p className="text-sm text-neutral-300 h-full">
                                             {summaries[currentIndex].content}
                                         </p>
                                     </div>
                                     <div className={`absolute inset-0 transition-transform duration-300 ${isAnimating ? (direction === 'next' ? 'animate-swipe-in-left' : 'animate-swipe-in-right') : ''}`}>
-                                        <p className="text-sm text-neutral-300 overflow-hidden overflow-y-auto no-scrollbar h-full">
+                                        <p className="text-sm text-neutral-300 h-full">
                                             {summaries[nextIndex].content}
                                         </p>
                                     </div>
@@ -239,7 +254,7 @@ const SocialMediaPage: React.FC<{ ticker: string }> = ({ ticker }) => {
                         
                     </div>
                     <div className="w-5/12 h-5/6 relative">
-                        <div className="flex justify-between items-end gap-4">
+                        <div className="flex items-end gap-4">
                             <div className="flex gap-2 items-center">
                                 <IconBrandBluesky className="text-white w-8 h-8" style={{fill: "white"}}/>
                                 <IconBrandStocktwits className="text-white w-8 h-8" style={{}} />
