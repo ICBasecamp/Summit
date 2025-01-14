@@ -12,6 +12,8 @@ async def fetch_bsky_uri_cid(post_url: str):
     if len(parts) >= 4 and parts[0] == 'profile' and parts[2] == 'post':
         repo = parts[1]
         rkey = parts[3]
+    else:
+        return None, None
 
     if not repo or not rkey:
         raise Exception(f"Invalid Bluesky post URL: {post_url}")
@@ -49,19 +51,29 @@ async def fetch_bluesky(query: str, limit: int = 10):
             
             # Extract the divs with the class 'css-146c3p1' and data-testid 'postText'
             tweets = soup.find_all('div', class_='css-175oi2r r-18u37iz r-uaa2di', limit=limit)
+            embed_data = []
             # tweets = soup.find_all('div', class_='css-146c3p1', attrs={'data-testid': 'postText'}, limit=limit)
             if tweets:
                 for tweet in tweets:
                     content = tweet.find('div', class_='css-146c3p1', attrs={'data-testid': 'postText'})
                     text_content = content.text.strip()
                     post_data = {'Content': text_content, 'Source': 'Bluesky'}
+                    embedding = {}
 
-                    post_link = tweet.find('a', class_="css-146c3p1 r-1loqt21", href=True)['href']
-                    uri, cid = await fetch_bsky_uri_cid(post_link)
+                    post_link_div = tweet.find('div', class_="css-175oi2r")
+                    post_link = post_link_div.find('a', href=True) if post_link_div else None
 
-                    post_data['URI'] = uri
-                    post_data['CID'] = cid
-                    
+                    if not post_link:
+                        post_link = tweet.find('a', class_="css-146c3p1 r-1loqt21", href=True)
+                    if post_link and 'href' in post_link.attrs:
+                        uri, cid = await fetch_bsky_uri_cid(post_link['href'])
+
+                        if uri and cid:
+                            embedding['uri'] = uri
+                            embedding['cid'] = cid
+                            embed_data.append(embedding)
+    
+                
                     # Check for images in the post
                     image_div = content.find_next('div', class_='css-175oi2r')
                     if image_div:
@@ -71,9 +83,19 @@ async def fetch_bluesky(query: str, limit: int = 10):
                     
                     posts.append(post_data)
                     
+                    
         except Exception as e:
             print(f"Failed to fetch content {url}: {e}")
         finally:
             await page.close()
 
-    return posts
+    return posts, embed_data
+
+async def test():
+    posts, embed_data = await fetch_bluesky('Tesla stock', limit=5)
+    print(posts)
+    print(embed_data)
+
+asyncio.run((
+    test()
+))
