@@ -39,10 +39,11 @@ def analyze(ticker):
 
             # News Analysis
             yield "data: Analyzing news articles...\n\n"
-            news = asyncio.run(NA_NLPAnalysis(ticker))
-            if isinstance(news, list):
-                news = ' '.join(map(str, news))
-            yield f"data: news: {news.replace('\n', ' ')}\n\n"
+            news_summaries, news_sentiments = asyncio.run(NA_NLPAnalysis(ticker))
+            news_summaries_str = ' '.join(f"{key}: {value}" for key, value in news_summaries.items())
+            yield f"data: newsSummaries: {news_summaries_str.replace('\n', ' ')}\n\n"
+            news_sentiments_str = ' '.join(map(str, news_sentiments))
+            yield f"data: newsSentiments: {news_sentiments_str.replace('\n', ' ')}\n\n"
 
             # Economic Indicators Analysis
             yield "data: Analyzing economic indicators...\n\n"

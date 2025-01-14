@@ -34,7 +34,7 @@ const AnalysisResults: React.FC<{ ticker: string | null }> = ({ ticker }) => {
       setLatestMessage(lastMessage);
 
       if (lastMessage.includes("Analysis complete.")) {
-        router.push(`/${ticker}/news`);
+        router.push(`/news`);
       }
     }
   }, [messages, router, ticker]);

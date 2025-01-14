@@ -140,16 +140,16 @@ const RetailSalesPage: React.FC<{ ticker: string }> = ({ ticker }) => {
   const lineOfBestFit = scatterData ? calculateLineOfBestFit(scatterData['Economic Indicators'], scatterData['Earnings Data']) : [];
 
   return (
-    <div className="flex flex-col bg-neutral-900 w-full h-screen">
+    <div className="flex flex-col bg-neutral-900 w-full h-screen overflow-hidden">
       <Header />
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         <SidebarDemo>
-          <div className="flex flex-col px-8 pt-2 pb-8">
-            <div className="flex justify-between gap-12">
-              <div className="grow w-1/2">
-                <div className="flex flex-col gap-8">
+          <div className="flex flex-col px-8 pt-2 pb-8 overflow-hidden">
+            <div className="flex justify-between gap-12 overflow-hidden">
+              <div className="grow w-1/2 overflow-hidden">
+                <div className="flex flex-col gap-8 overflow-hidden">
                   {scatterData && (
-                    <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
+                    <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2 overflow-hidden">
                       <h2 className="text-lg font-medium self-center">Retail Sales Scatter Plot</h2>
                       <Scatter
                         data={{
@@ -183,13 +183,13 @@ const RetailSalesPage: React.FC<{ ticker: string }> = ({ ticker }) => {
                   )}
                 </div>
               </div>
-              <div className="grow w-1/3">
-                <div className="flex flex-col gap-8">
-                  <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
+              <div className="grow w-1/3 overflow-hidden">
+                <div className="flex flex-col gap-8 overflow-hidden">
+                  <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2 overflow-hidden">
                     <h2 className="text-lg font-medium self-center">Retail Sales Analysis</h2>
                     {retailSalesEstimation && <p>{retailSalesEstimation}</p>}
                   </div>
-                  <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2">
+                  <div className="flex flex-col rounded-xl bg-zinc-800 p-6 gap-2 overflow-hidden">
                     <h2 className="text-lg font-medium self-center">Pearson Correlation Coefficients</h2>
                     {correlations && (
                       <table className="table-auto w-full">

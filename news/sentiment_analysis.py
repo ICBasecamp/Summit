@@ -1,30 +1,52 @@
 import pandas as pd
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import nltk
-from news.clean import clean_unstructured_data
-
 import sys
 import os
 import asyncio
+import requests
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from news.clean import clean_unstructured_data
 from news.handler import fetch_articles
+from dotenv import load_dotenv
+from groq import Groq
+
+nltk.download('punkt')
+
+# Configure Groq API
+load_dotenv()
+groq_api_key = os.getenv("groq_api_key")
+client = Groq(api_key=groq_api_key)
+
+async def call_groqapi_service(text, category):
+    prompt_template = f"""
+    Summarize the following {category} sentences in one paragraph. Include key points and statistics if available, clean up
+    any characters that do not below, round stats to 2 decimal places, and make sure the summary is coherent and detailed.
+
+    Sentences:
+    {text}
+    """
+    prompt = prompt_template.format(text=text)
+    chat_completion = await asyncio.get_event_loop().run_in_executor(
+        None,
+        lambda: client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama3-8b-8192"
+        )
+    )
+    return chat_completion.choices[0].message.content.strip()
 
 # accepts ticker as input, scrapes news articles and performs sentiment analysis, returning
 # as an array of dictionaries of individual sentences and their sentiment scores
 async def sentiment_analysis_on_ticker(ticker):
-
     df = await fetch_articles(ticker)
 
     if df.empty:
         print("No articles found for the ticker.")
         return []
 
-    # temporarily reading/storing from csv for testing, reduce time fetching
-    df.to_csv('news/results/raw_data.csv', index=False)
-
-    # df = pd.read_csv('news/results/raw_data.csv')
-    # df = df.head(3)
-    
     df['Sentiments'] = None
 
     # using automodel instead of pipeline
@@ -47,7 +69,6 @@ async def sentiment_analysis_on_ticker(ticker):
             sentiment_score = calculate_sentiment_score(sentiment)
             sentiments.append({
                 'sentence': sentence,
-                # 'sentiment': sentiment, # raw output not necessary right now
                 'sentiment_score': sentiment_score
             })
     
@@ -57,8 +78,35 @@ async def sentiment_analysis_on_ticker(ticker):
     
     sentiment_columns = ['Title', 'Link', 'Sentiments']
     df = df[sentiment_columns]
-    
-    df.to_csv('news/results/sentiment_analysis_results.csv', index=False)
+
+    # Extract positive, neutral, and negative sentences
+    positive_sentences = []
+    neutral_sentences = []
+    negative_sentences = []
+
+    for sentiments in df['Sentiments']:
+        for sentiment in sentiments:
+            if sentiment['sentiment_score'] > 0.66:
+                positive_sentences.append(sentiment['sentence'])
+            elif sentiment['sentiment_score'] < 0.33:
+                negative_sentences.append(sentiment['sentence'])
+            else:
+                neutral_sentences.append(sentiment['sentence'])
+
+    # Summarize each category using Groq
+    positive_summary = await call_groqapi_service("\n".join(positive_sentences), "positive")
+    neutral_summary = await call_groqapi_service("\n".join(neutral_sentences), "neutral")
+    negative_summary = await call_groqapi_service("\n".join(negative_sentences), "negative")
+
+    summaries = {
+        'positive_summary': positive_summary,
+        'neutral_summary': neutral_summary,
+        'negative_summary': negative_summary
+    }
+    print(summaries)
 
     print("Sentiment Analysis completed.")
-    return df['Sentiments'].tolist()
+    return summaries, df['Sentiments'].tolist()
+
+if __name__ == '__main__':
+    asyncio.run(sentiment_analysis_on_ticker("AAPL"))

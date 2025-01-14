@@ -2,6 +2,10 @@ import os
 from groq import Groq
 import asyncio
 from dotenv import load_dotenv
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from social_media.sentiment_analysis import calculate_sentiment, ticker_to_company
 from social_media.stockwits_handler import fetch_stockwits
 from social_media.bluesky_handler import fetch_bluesky
@@ -30,15 +34,15 @@ async def call_groqapi_service(text):
     return chat_completion.choices[0].message.content.strip()
 
 async def fetch_posts(ticker):
-    bsky_posts, bsky_embeddings = fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100)
+    bsky_posts = fetch_bluesky(ticker_to_company(ticker) + " stock", limit=100)
     stockwits_posts = fetch_stockwits(ticker, limit=100)
     reddit_posts = fetch_reddit('wallstreetbets', ticker)
 
-    return await asyncio.gather(bsky_posts, bsky_embeddings, stockwits_posts, reddit_posts)
+    return await asyncio.gather(bsky_posts, stockwits_posts, reddit_posts)
 
 async def social_media_sentiment_analysis(ticker):
     # Fetch posts
-    bluesky_posts, bsky_embeddings, stockwits_posts, reddit_posts = await fetch_posts(ticker)
+    bluesky_posts, stockwits_posts, reddit_posts = await fetch_posts(ticker)
 
     # Run sentiment analysis and get the results
     sentiment_counts, positive_posts, neutral_posts, negative_posts = calculate_sentiment(bluesky_posts, stockwits_posts, reddit_posts)
@@ -87,7 +91,4 @@ async def social_media_sentiment_analysis(ticker):
     print(insights)
     
 
-    return {
-        insights,
-        bsky_embeddings
-    }
+    return insights

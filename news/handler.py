@@ -1,14 +1,8 @@
 import asyncio
 from bs4 import BeautifulSoup
+import pandas as pd
 from playwright.async_api import async_playwright
 
-import pandas as pd
-
-ticker = 'AAPL'
-url = f'https://finance.yahoo.com/quote/{ticker}/'
-
-
-# open and read page at link
 async def fetch_article(browser, link):
     article_url = link if link.startswith('http') else f'https://finance.yahoo.com{link}'
     page = await browser.new_page()
@@ -18,7 +12,7 @@ async def fetch_article(browser, link):
     try:
         for attempt in range(1, retries + 1):
             try:
-                await page.goto(url, timeout=30000)
+                await page.goto(article_url, timeout=30000)
                 break
             except TimeoutError:
                 print(f"TimeoutError: Retrying {attempt}/{retries}...")
@@ -29,30 +23,28 @@ async def fetch_article(browser, link):
         # Grab the title before clicking the "Continue Reading" button
         article_html_content = await page.content()
         article_soup = BeautifulSoup(article_html_content, 'html.parser')
-        title_tag = article_soup.find('h1', class_='cover-title yf-1o1tx8g')
+        title_tag = article_soup.find('div', class_='cover-title yf-1at0uqp')
         title = title_tag.text if title_tag else "No title found"
         
         # Check for "Continue Reading" button and click it if present
         try:
-            # await page.wait_for_selector('button[aria-label="Continue Reading"]', timeout=10000)
-            await page.click('button[aria-label="Continue Reading"]')
+            await page.click('button.secondary-btn.fin-size-large.readmore-button.rounded.yf-15mk0m[aria-label="Story Continues"]', timeout=30000)
             print(f"Clicked 'Continue Reading' button for: {article_url}")
             
             # Fetch the content from <p> tags after clicking the button
             article_html_content = await page.content()
             article_soup = BeautifulSoup(article_html_content, 'html.parser')
-            content_tags = article_soup.find_all('p')
+            content_tags = article_soup.find_all('p', class_='yf-1pe5jgt')
             content = "\n".join(tag.text for tag in content_tags)
         except Exception as e:
             print(f"No 'Continue Reading' button for: {article_url} - {e}")
             
             # Fetch the content from <p> tags within the "article-wrap no-bb" class
             article_html_content = await page.content()
-            print(article_html_content)
             article_soup = BeautifulSoup(article_html_content, 'html.parser')
-            article_wrap = article_soup.find('div', class_='article-wrap no-bb')
+            article_wrap = article_soup.find('div', class_='body yf-tsvcyu')
             if article_wrap:
-                content_tags = article_wrap.find_all('p')
+                content_tags = article_wrap.find_all('p', class_='yf-1pe5jgt')
                 content = "\n".join(tag.text for tag in content_tags)
             else:
                 content = "No content found"
@@ -70,7 +62,6 @@ async def fetch_article(browser, link):
     finally:
         await page.close()
 
-# find and read articles scraped for the ticker (prev main)
 async def fetch_articles(ticker):
     url = f'https://finance.yahoo.com/quote/{ticker}/'
     async with async_playwright() as p:

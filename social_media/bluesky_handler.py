@@ -30,10 +30,6 @@ async def fetch_bsky_uri_cid(post_url: str):
     else:
         raise Exception(f"Failed to fetch URI CID for post {post_url}")
 
-    
-
-    
-
 async def fetch_bluesky(query: str, limit: int = 10):
     url = f'https://bsky.app/search?q={query}'
     posts = []
@@ -54,13 +50,8 @@ async def fetch_bluesky(query: str, limit: int = 10):
             # Extract the divs with the class 'css-146c3p1' and data-testid 'postText'
             tweets = soup.find_all('div', class_='css-175oi2r r-18u37iz r-uaa2di', limit=limit)
             # tweets = soup.find_all('div', class_='css-146c3p1', attrs={'data-testid': 'postText'}, limit=limit)
-
-            bsky_embeddings = []
-
             if tweets:
                 for tweet in tweets:
-                    embedding_data = {} 
-
                     content = tweet.find('div', class_='css-146c3p1', attrs={'data-testid': 'postText'})
                     text_content = content.text.strip()
                     post_data = {'Content': text_content, 'Source': 'Bluesky'}
@@ -68,8 +59,8 @@ async def fetch_bluesky(query: str, limit: int = 10):
                     post_link = tweet.find('a', class_="css-146c3p1 r-1loqt21", href=True)['href']
                     uri, cid = await fetch_bsky_uri_cid(post_link)
 
-                    embedding_data['URI'] = uri
-                    embedding_data['CID'] = cid
+                    post_data['URI'] = uri
+                    post_data['CID'] = cid
                     
                     # Check for images in the post
                     image_div = content.find_next('div', class_='css-175oi2r')
@@ -79,14 +70,10 @@ async def fetch_bluesky(query: str, limit: int = 10):
                             post_data['Image'] = img_tag['src']
                     
                     posts.append(post_data)
-                    bsky_embeddings.append(embedding_data)
                     
         except Exception as e:
             print(f"Failed to fetch content {url}: {e}")
         finally:
-            # print(posts)
             await page.close()
 
-    return posts, bsky_embeddings
-
-asyncio.run(fetch_bluesky('NVDA stock', limit=5))
+    return posts
