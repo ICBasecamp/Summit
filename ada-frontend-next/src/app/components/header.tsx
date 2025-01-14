@@ -7,6 +7,8 @@ import { Braces } from 'lucide-react';
 import { ArrowDownToLine } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+import Image from 'next/image';
+
 const Header = () => {
     const [tickerInput, setTickerInput] = useState('');
     const [ticker, setTicker] = useState('');
@@ -48,7 +50,10 @@ const Header = () => {
     return (
         <div className="w-screen py-4 px-8 gap-2 flex flex-col">
             <div className="flex h-20 w-full items-center gap-2">
-                <p className="font-semibold text-lg --font-geist-mono">Ice Climbers</p>
+                <div className="flex gap-2 items-end">
+                    <p className="font-semibold text-lg --font-geist-mono text-end">Summit</p>
+                    <Image src="/summit_logo1.png" alt="Summit Logo" height={24} width={66} />
+                </div>
                 <div className="flex w-1/2 items-center">
                     <PlaceholdersAndVanishInputHeader 
                         placeholders={['Search for a new ticker']}
