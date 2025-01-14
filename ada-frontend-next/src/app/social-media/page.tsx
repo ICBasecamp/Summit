@@ -250,9 +250,13 @@ const SocialMediaPage: React.FC<{ ticker: string }> = ({ ticker }) => {
                             {isClient && bskyEmbeddings.map((post, index) => (
                                 <div
                                     key={index}
-                                    className={`absolute w-full h-full transition-opacity duration-300 ${
+                                    className={`absolute w-full h-full transition-opacity duration-300 rounded-lg ${
                                         index === postIndex ? 'opacity-100' : 'opacity-0'
                                     }`}
+                                    style={{
+                                        maxHeight: '100%',
+                                        overflow: 'hidden'
+                                    }}
                                 >
                                     <BlueskyEmbed uri={post.uri} cid={post.cid} />
                                 </div>
