@@ -6,6 +6,14 @@ import {
   IconBrandTabler,
   IconSettings,
   IconUserBolt,
+  IconBuildingStore,
+  IconPercentage,
+  IconBasketDollar,
+  IconShoppingCart,
+  IconCash,
+  IconBriefcaseOff
+
+
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -18,42 +26,42 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
       label: "Retail Sales",
       href: `/economic-indicators/retail-sales`,
       icon: (
-        <IconBrandTabler className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconBuildingStore className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "FED Rate",
       href: `/economic-indicators/fed-rate`,
       icon: (
-        <IconUserBolt className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconPercentage className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Durable Goods",
       href: `/economic-indicators/durable-goods`,
       icon: (
-        <IconSettings className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconBasketDollar className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "CPI",
       href: `/economic-indicators/cpi`,
       icon: (
-        <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconShoppingCart className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Nonfarm Payroll",
       href: `/economic-indicators/nonfarm-payroll`,
       icon: (
-        <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconCash className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Unemployment Rate",
       href: `/economic-indicators/unemployment-rate`,
       icon: (
-        <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconBriefcaseOff className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
   ];

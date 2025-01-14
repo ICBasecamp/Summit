@@ -6,6 +6,13 @@ import {
   IconBrandTabler,
   IconSettings,
   IconUserBolt,
+  IconCoins,
+  IconFileAnalytics,
+  IconDeviceDesktopDollar,
+  IconHistory,
+  IconTimeline,
+  IconZoomMoney
+
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -18,42 +25,42 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
       label: "Earnings Report",
       href: `/earnings-reports/earnings`,
       icon: (
-        <IconBrandTabler className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconFileAnalytics className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Revenue",
       href: `/earnings-reports/revenue`,
       icon: (
-        <IconUserBolt className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconDeviceDesktopDollar className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Earnings History",
       href: `/earnings-reports/earnings-history`,
       icon: (
-        <IconSettings className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconHistory className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "EPS Trend",
       href: `/earnings-reports/eps-trend`,
       icon: (
-        <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconCoins className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Analyst Recommendations",
       href: `/earnings-reports/analyst`,
       icon: (
-        <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconTimeline className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Financials",
       href: `/earnings-reports/financials`,
       icon: (
-        <IconArrowLeft className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconZoomMoney className="text-neutral-100 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
   ];
