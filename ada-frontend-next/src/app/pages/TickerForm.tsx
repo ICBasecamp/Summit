@@ -29,48 +29,58 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const router = useRouter();
 
-  const testTickers = [
-    {
-      symbol: 'AAPL',
-      fullName: 'Apple Inc.',
-      icon: 'https://logo.clearbit.com/apple.com'
-    },
-    {
-      symbol: 'GOOGL',
-      fullName: 'Alphabet Inc.',
-      icon: 'https://logo.clearbit.com/google.com'
-    },
-    {
-      symbol: 'AMZN',
-      fullName: 'Amazon.com Inc.',
-      icon: 'https://logo.clearbit.com/amazon.com'
-    },
-    {
-      symbol: 'TSLA',
-      fullName: 'Tesla Inc.',
-      icon: 'https://logo.clearbit.com/tesla.com'
-    },
-    {
-      symbol: 'MSFT',
-      fullName: 'Microsoft Corporation',
-      icon: 'https://logo.clearbit.com/microsoft.com'
-    },
-    {
-      symbol: 'NFLX',
-      fullName: 'Netflix Inc.',
-      icon: 'https://logo.clearbit.com/netflix.com'
-    },
-    {
-      symbol: 'META',
-      fullName: 'Meta Platforms Inc.',
-      icon: 'https://logo.clearbit.com/meta.com'
-    },
-    {
-      symbol: 'NVDA',
-      fullName: 'Nvidia Corporation',
-      icon: 'https://logo.clearbit.com/nvidia.com'
-    },
-  ]
+  const stockList = [
+    { symbol: 'AAPL', fullName: 'Apple Inc.', icon: 'https://logo.clearbit.com/apple.com' },
+    { symbol: 'GOOGL', fullName: 'Alphabet Inc.', icon: 'https://logo.clearbit.com/google.com' },
+    { symbol: 'AMZN', fullName: 'Amazon.com Inc.', icon: 'https://logo.clearbit.com/amazon.com' },
+    { symbol: 'TSLA', fullName: 'Tesla Inc.', icon: 'https://logo.clearbit.com/tesla.com' },
+    { symbol: 'MSFT', fullName: 'Microsoft Corporation', icon: 'https://logo.clearbit.com/microsoft.com' },
+    { symbol: 'NFLX', fullName: 'Netflix Inc.', icon: 'https://logo.clearbit.com/netflix.com' },
+    { symbol: 'META', fullName: 'Meta Platforms Inc.', icon: 'https://logo.clearbit.com/meta.com' },
+    { symbol: 'NVDA', fullName: 'Nvidia Corporation', icon: 'https://logo.clearbit.com/nvidia.com' },
+    { symbol: 'AMD', fullName: 'Advanced Micro Devices Inc.', icon: 'https://logo.clearbit.com/amd.com' },
+    { symbol: 'INTC', fullName: 'Intel Corporation', icon: 'https://logo.clearbit.com/intel.com' },
+    { symbol: 'CSCO', fullName: 'Cisco Systems Inc.', icon: 'https://logo.clearbit.com/cisco.com' },
+    { symbol: 'ORCL', fullName: 'Oracle Corporation', icon: 'https://logo.clearbit.com/oracle.com' },
+    { symbol: 'IBM', fullName: 'International Business Machines Corporation', icon: 'https://logo.clearbit.com/ibm.com' },
+    { symbol: 'CRM', fullName: 'Salesforce Inc.', icon: 'https://logo.clearbit.com/salesforce.com' },
+    { symbol: 'ADBE', fullName: 'Adobe Inc.', icon: 'https://logo.clearbit.com/adobe.com' },
+    { symbol: 'PYPL', fullName: 'PayPal Holdings Inc.', icon: 'https://logo.clearbit.com/paypal.com' },
+    { symbol: 'QCOM', fullName: 'Qualcomm Incorporated', icon: 'https://logo.clearbit.com/qualcomm.com' },
+    { symbol: 'AVGO', fullName: 'Broadcom Inc.', icon: 'https://logo.clearbit.com/broadcom.com' },
+    { symbol: 'TXN', fullName: 'Texas Instruments Incorporated', icon: 'https://logo.clearbit.com/ti.com' },
+    { symbol: 'MU', fullName: 'Micron Technology Inc.', icon: 'https://logo.clearbit.com/micron.com' },
+    { symbol: 'AMAT', fullName: 'Applied Materials Inc.', icon: 'https://logo.clearbit.com/appliedmaterials.com' },
+    { symbol: 'LRCX', fullName: 'Lam Research Corporation', icon: 'https://logo.clearbit.com/lamresearch.com' },
+    { symbol: 'KLAC', fullName: 'KLA Corporation', icon: 'https://logo.clearbit.com/kla.com' },
+    { symbol: 'ASML', fullName: 'ASML Holding N.V.', icon: 'https://logo.clearbit.com/asml.com' },
+    { symbol: 'BA', fullName: 'The Boeing Company', icon: 'https://logo.clearbit.com/boeing.com' },
+    { symbol: 'CAT', fullName: 'Caterpillar Inc.', icon: 'https://logo.clearbit.com/caterpillar.com' },
+    { symbol: 'DIS', fullName: 'The Walt Disney Company', icon: 'https://logo.clearbit.com/disney.com' },
+    { symbol: 'XOM', fullName: 'Exxon Mobil Corporation', icon: 'https://logo.clearbit.com/exxonmobil.com' },
+    { symbol: 'CVX', fullName: 'Chevron Corporation', icon: 'https://logo.clearbit.com/chevron.com' },
+    { symbol: 'JNJ', fullName: 'Johnson & Johnson', icon: 'https://logo.clearbit.com/jnj.com' },
+    { symbol: 'PFE', fullName: 'Pfizer Inc.', icon: 'https://logo.clearbit.com/pfizer.com' },
+    { symbol: 'MRK', fullName: 'Merck & Co., Inc.', icon: 'https://logo.clearbit.com/merck.com' },
+    { symbol: 'PEP', fullName: 'PepsiCo Inc.', icon: 'https://logo.clearbit.com/pepsico.com' },
+    { symbol: 'KO', fullName: 'The Coca-Cola Company', icon: 'https://logo.clearbit.com/coca-cola.com' },
+    { symbol: 'WMT', fullName: 'Walmart Inc.', icon: 'https://logo.clearbit.com/walmart.com' },
+    { symbol: 'HD', fullName: 'The Home Depot Inc.', icon: 'https://logo.clearbit.com/homedepot.com' },
+    { symbol: 'COST', fullName: 'Costco Wholesale Corporation', icon: 'https://logo.clearbit.com/costco.com' },
+    { symbol: 'TGT', fullName: 'Target Corporation', icon: 'https://logo.clearbit.com/target.com' },
+    { symbol: 'UPS', fullName: 'United Parcel Service Inc.', icon: 'https://logo.clearbit.com/ups.com' },
+    { symbol: 'FDX', fullName: 'FedEx Corporation', icon: 'https://logo.clearbit.com/fedex.com' },
+    { symbol: 'V', fullName: 'Visa Inc.', icon: 'https://logo.clearbit.com/visa.com' },
+    { symbol: 'MA', fullName: 'Mastercard Incorporated', icon: 'https://logo.clearbit.com/mastercard.com' },
+    { symbol: 'BAC', fullName: 'Bank of America Corporation', icon: 'https://logo.clearbit.com/bankofamerica.com' },
+    { symbol: 'JPM', fullName: 'JPMorgan Chase & Co.', icon: 'https://logo.clearbit.com/jpmorganchase.com' },
+    { symbol: 'GS', fullName: 'The Goldman Sachs Group Inc.', icon: 'https://logo.clearbit.com/goldmansachs.com' },
+    { symbol: 'C', fullName: 'Citigroup Inc.', icon: 'https://logo.clearbit.com/citigroup.com' },
+    { symbol: 'AXP', fullName: 'American Express Company', icon: 'https://logo.clearbit.com/americanexpress.com' },
+    { symbol: 'T', fullName: 'AT&T Inc.', icon: 'https://logo.clearbit.com/att.com' },
+    { symbol: 'VZ', fullName: 'Verizon Communications Inc.', icon: 'https://logo.clearbit.com/verizon.com' },
+    { symbol: 'TMUS', fullName: 'T-Mobile US Inc.', icon: 'https://logo.clearbit.com/t-mobile.com' },
+  ];
 
   const flipWords = [
     '$META?', '$AAPL?', '$AMZN?', '$NFLX?', '$GOOGL?', 
@@ -90,7 +100,7 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
       setSuggestions([]);
       return;
     } 
-    setSuggestions(testTickers.filter(ticker => ticker.symbol.includes(e.target.value.toUpperCase())));
+    setSuggestions(stockList.filter(ticker => ticker.symbol.includes(e.target.value.toUpperCase())));
 
   };
 
@@ -131,7 +141,16 @@ const TickerForm: React.FC<TickerFormProps> = ({ setTicker }) => {
                   onClick={() => handleSuggestionClick(suggestion.symbol)}
                 >
                   {suggestion.symbol} - {suggestion.fullName}
-                  <span><Image src={suggestion.icon} alt={suggestion.fullName} width={28} height={28} className='rounded-md' /></span>
+                    <span>
+                    <Image 
+                      src={suggestion.icon} 
+                      alt={""} 
+                      width={28} 
+                      height={28} 
+                      className='rounded-md' 
+                      onError={(e) => { e.currentTarget.src = '/svg'; }} 
+                    />
+                    </span>
                 </li>
               ))}
             </ul>
