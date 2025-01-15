@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from "framer-motion";
 import { cn } from "../../../lib/utils";
 
+import { useRouter, usePathname } from 'next/navigation';
 import { Open_Sans } from 'next/font/google';
 
 const openSans = Open_Sans({ subsets: ['latin'] })
@@ -28,8 +29,14 @@ export const Tabs = ({
   tabClassName?: string;
   contentClassName?: string;
 }) => {
-  const [active, setActive] = useState<Tab>(propTabs[0]);
+  // const [active, setActive] = useState<Tab>(propTabs[0]);
   const [tabs, setTabs] = useState<Tab[]>(propTabs);
+
+  const pathname = usePathname();
+
+  const currentTab = pathname.split('/')[1];
+
+  const active = tabs.find((tab) => tab.value.split("/")[0] === currentTab) || tabs[0];
 
   const moveSelectedTabToTop = (idx: number) => {
     setTabs(newTabs);
