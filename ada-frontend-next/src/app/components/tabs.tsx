@@ -29,7 +29,6 @@ export const Tabs = ({
   tabClassName?: string;
   contentClassName?: string;
 }) => {
-  // const [active, setActive] = useState<Tab>(propTabs[0]);
   const [tabs, setTabs] = useState<Tab[]>(propTabs);
 
   const pathname = usePathname();
@@ -39,8 +38,10 @@ export const Tabs = ({
   const active = tabs.find((tab) => tab.value.split("/")[0] === currentTab) || tabs[0];
 
   const moveSelectedTabToTop = (idx: number) => {
+    const newTabs = [...tabs];
+    const [selectedTab] = newTabs.splice(idx, 1);
+    newTabs.unshift(selectedTab);
     setTabs(newTabs);
-    setActive(newTabs[0]);
   };
 
   const [hovering, setHovering] = useState(false);

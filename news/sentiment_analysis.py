@@ -23,7 +23,8 @@ client = Groq(api_key=groq_api_key)
 async def call_groqapi_service(text, category):
     prompt_template = f"""
     Summarize the following {category} sentences in one paragraph. Include key points and statistics if available, clean up
-    any characters that do not below, round stats to 2 decimal places, and make sure the summary is coherent and detailed.
+    any characters that do not below, round stats to 2 decimal places, and make sure the summary is coherent and detailed. Just give the data after the label
+    don't say anything like "Here is a summary of the positive sentences in one paragraph, including key points and statistics:" or "Note: I removed the error messages and irrelevant text from the original paragraph."
 
     Sentences:
     {text}
