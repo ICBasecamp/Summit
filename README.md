@@ -4,7 +4,7 @@
 
 Summit is a comprehensive, real-time stock analysis platform that aggregates and analyzes data from multiple sources to provide investors with actionable insights. By combining social media sentiment, news analysis, earnings reports, and economic indicators, Summit delivers a 360-degree view of any stock's market sentiment and financial health.
 
-![Summit Demo](https://www.linkedin.com/posts/samuils-georgiev_excited-to-share-summit-a-project-ive-been-activity-7285515688859914240-btRA?utm_source=share&utm_medium=member_desktop&rcm=ACoAADjzWe8B8_0Mr2NAGSestqgsnjY6e1y7-m0)
+[Summit Demo](https://www.linkedin.com/posts/samuils-georgiev_excited-to-share-summit-a-project-ive-been-activity-7285515688859914240-btRA?utm_source=share&utm_medium=member_desktop&rcm=ACoAADjzWe8B8_0Mr2NAGSestqgsnjY6e1y7-m0)
 
 ## 🌟 Features
 
