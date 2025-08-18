@@ -35,6 +35,7 @@ async def fetch_bsky_uri_cid(post_url: str):
 async def fetch_bluesky(query: str, limit: int = 10):
     url = f'https://bsky.app/search?q={query}'
     posts = []
+    embed_data = []  # Initialize embed_data at the beginning of the function
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -51,7 +52,6 @@ async def fetch_bluesky(query: str, limit: int = 10):
             
             # Extract the divs with the class 'css-146c3p1' and data-testid 'postText'
             tweets = soup.find_all('div', class_='css-175oi2r r-18u37iz r-uaa2di', limit=limit)
-            embed_data = []
             # tweets = soup.find_all('div', class_='css-146c3p1', attrs={'data-testid': 'postText'}, limit=limit)
             if tweets:
                 for tweet in tweets:
