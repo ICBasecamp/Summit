@@ -1,0 +1,29 @@
+# API and HTTP
+groq
+requests
+
+# Data analysis and ML
+pandas
+scikit-learn
+numpy
+
+# Environment and configuration
+python-dotenv
+
+# Async processing
+aiohttp
+
+# Data manipulation
+openpyxl
+xlrd
+
+# Web scraping (if needed)
+beautifulsoup4
+selenium
+
+# Financial data (if needed)
+yfinance
+alpha_vantage
+
+# Utilities
+python-dateutil
